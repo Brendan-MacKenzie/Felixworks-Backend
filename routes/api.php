@@ -14,6 +14,18 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+/**
+ * Non Authenticated Routes
+ */
+Route::group(['middleware' => ['api']], function () {
+    
+});
+
+
+/**
+ * Authenticated Routes
+ */
+
 Route::group(['middleware' => ['api', 'authserver']], function () {
     
 });
