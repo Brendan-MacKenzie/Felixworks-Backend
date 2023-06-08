@@ -96,12 +96,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/Brendan-MacKenzie/Auth-Server-PHP-Client.git",
-                "reference": "75f7d4a34a26cec65964e2d323a44c78be51ca6c"
+                "reference": "7bf48e0c06af00a9ba0a0a13044b40fd602e9581"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Brendan-MacKenzie/Auth-Server-PHP-Client/zipball/75f7d4a34a26cec65964e2d323a44c78be51ca6c",
-                "reference": "75f7d4a34a26cec65964e2d323a44c78be51ca6c",
+                "url": "https://api.github.com/repos/Brendan-MacKenzie/Auth-Server-PHP-Client/zipball/7bf48e0c06af00a9ba0a0a13044b40fd602e9581",
+                "reference": "7bf48e0c06af00a9ba0a0a13044b40fd602e9581",
                 "shasum": ""
             },
             "require": {
@@ -149,7 +149,7 @@
                 "source": "https://github.com/Brendan-MacKenzie/Auth-Server-PHP-Client/tree/main",
                 "issues": "https://github.com/Brendan-MacKenzie/Auth-Server-PHP-Client/issues"
             },
-            "time": "2023-06-07T13:35:13+00:00"
+            "time": "2023-06-08T09:02:40+00:00"
         },
         {
             "name": "brick/math",
