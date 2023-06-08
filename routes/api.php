@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,18 +13,21 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-/**
+/*
  * Non Authenticated Routes
  */
 Route::group(['middleware' => ['api']], function () {
-    
+    Route::get('/hello', function () {
+        echo 'hello!';
+    });
 });
 
-
-/**
+/*
  * Authenticated Routes
  */
 
 Route::group(['middleware' => ['api', 'authserver']], function () {
-    
+    Route::get('/hello/auth', function () {
+        echo 'hello authenticated!';
+    });
 });
