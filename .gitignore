@@ -4,3 +4,16 @@
 .phpunit.result.cache
 yarn-error.log
 .DS_Store
+/.phpunit.cache
+/node_modules
+/public/build
+/public/hot
+/public/storage
+.env.backup
+Homestead.json
+Homestead.yaml
+auth.json
+npm-debug.log
+/.fleet
+/.idea
+**/.DS_Store

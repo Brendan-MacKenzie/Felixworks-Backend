@@ -1,0 +1,17 @@
+{
+    "eslint.validate": ["vue", "javascript"],
+    "editor.formatOnSave": false,
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": false,
+      "source.fixAll.eslint": true,
+      "source.fixAll.stylelint": true,
+    },
+    "files.eol": "\n",
+    "vetur.format.enable": false,
+    "vetur.trace.server": "messages",
+    "php-cs-fixer.onsave": true,
+    "[php]": { 
+      "editor.defaultFormatter": "junstyle.php-cs-fixer",
+      "editor.formatOnSave": true
+    }
+  }
