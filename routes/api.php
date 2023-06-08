@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\OfficeController;
+use App\Http\Controllers\WorkplaceController;
 
 /*
 |--------------------------------------------------------------------------
@@ -33,13 +34,14 @@ Route::group(['middleware' => ['api', 'authserver']], function () {
     });
 
     Route::group(['prefix' => '/offices'], function () {
-        // Post office
         Route::post('/', [OfficeController::class, 'store']);
-
-        // Update office
         Route::patch('/{office}', [OfficeController::class, 'update']);
-
-        // Delete office
         Route::delete('/{office}', [OfficeController::class, 'destroy']);
+    });
+
+    Route::group(['prefix' => '/workplaces'], function () {
+        Route::get('/', [WorkplaceController::class, 'index']);
+        Route::post('/', [WorkplaceController::class, 'store']);
+        Route::patch('/{workplace}', [WorkplaceController::class, 'update']);
     });
 });
