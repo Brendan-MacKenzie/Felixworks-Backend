@@ -32,6 +32,14 @@ Route::group(['middleware' => ['api', 'authserver']], function () {
         echo 'hello authenticated!';
     });
 
-    // Post office
-    Route::post('/offices', [OfficeController::class, 'store']);
+    Route::group(['prefix' => '/offices'], function () {
+        // Post office
+        Route::post('/', [OfficeController::class, 'store']);
+
+        // Update office
+        Route::patch('/{office}', [OfficeController::class, 'update']);
+
+        // Delete office
+        Route::delete('/{office}', [OfficeController::class, 'destroy']);
+    });
 });
