@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\OfficeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -30,4 +31,7 @@ Route::group(['middleware' => ['api', 'authserver']], function () {
     Route::get('/hello/auth', function () {
         echo 'hello authenticated!';
     });
+
+    // Post office
+    Route::post('/offices', [OfficeController::class, 'store']);
 });
