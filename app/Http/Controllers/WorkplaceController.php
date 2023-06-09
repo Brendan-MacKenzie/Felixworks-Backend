@@ -17,9 +17,8 @@ class WorkplaceController extends Controller
         $this->workplaceService = $workplaceService;
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        //validator for search
         $validator = Validator::make(request()->all(), [
             'search' => 'string',
         ]);
@@ -31,11 +30,10 @@ class WorkplaceController extends Controller
             ], 400);
         }
 
+        $search = $request->input('search', null);
+
         try {
-            $workplaces = $this->workplaceService->list(
-                //pass search query
-                request()->get('search'),
-            );
+            $workplaces = $this->workplaceService->list(0, '', $search);
         } catch (Exception $exception) {
             return response()->json([
                 'status' => 'fail',

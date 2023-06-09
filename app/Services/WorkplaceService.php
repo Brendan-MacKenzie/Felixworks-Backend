@@ -31,5 +31,6 @@ class WorkplaceService extends Service
 
     public function list(int $perPage = 25, string $archiveStatus = 'active', string $query = null)
     {
+        return Workplace::where('name', 'like', "%{$query}%")->get();
     }
 }
