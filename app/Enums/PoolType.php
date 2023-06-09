@@ -6,6 +6,6 @@ use BenSampo\Enum\Enum;
 
 class PoolType extends Enum
 {
-    const Unspecified = 0;
-    const Default = 1;
+    public const Unspecified = 0;
+    public const Default = 1;
 }
