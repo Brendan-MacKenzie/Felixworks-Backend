@@ -2,17 +2,16 @@
 
 namespace Database\Seeders;
 
-use App\Models\Agency;
-use App\Models\Employee;
-use App\Models\Placement;
-use App\Models\PlacementType;
+use Carbon\Carbon;
 use App\Models\Pool;
-use App\Models\Posting;
+use App\Models\Agency;
 use App\Models\Region;
 use App\Models\Sector;
+use App\Models\Posting;
+use App\Models\Employee;
+use App\Models\Placement;
 use App\Models\Workplace;
-use Carbon\Carbon;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\PlacementType;
 use Illuminate\Database\Seeder;
 
 class PostingSeeder extends Seeder
@@ -51,6 +50,7 @@ class PostingSeeder extends Seeder
             'car' => true,
         ]);
         $employee->pools()->attach($pools);
+        $employee->clients()->attach(1);
 
         $employee = Employee::updateOrCreate([
             'agency_id' => 1,
@@ -61,6 +61,7 @@ class PostingSeeder extends Seeder
             'drivers_license' => true,
             'car' => false,
         ]);
+        $employee->clients()->attach(1);
 
         // Placements
         foreach (Employee::all() as $employee) {
