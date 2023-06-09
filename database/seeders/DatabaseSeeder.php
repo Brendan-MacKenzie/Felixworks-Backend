@@ -13,8 +13,8 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call(RoleAndPermissionSeeder::class);
-        
-        $this->call(SectorAndRegionSeeder::class);
+
+        $this->call(SectorSeeder::class);
 
         $this->call(ClientSeeder::class);
 
@@ -23,5 +23,7 @@ class DatabaseSeeder extends Seeder
         $this->call(UserSeeder::class);
 
         $this->call(PostingSeeder::class);
+
+        $this->call(RegionSeeder::class);
     }
 }

@@ -1,11 +1,10 @@
 <?php
 
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -15,6 +14,10 @@ return new class extends Migration
             $table->id();
             $table->timestamps();
             $table->string('name');
+
+            $table->unsignedBigInteger('parent_id')->nullable();
+
+            $table->foreign('parent_id')->references('id')->on('regions');
         });
 
         Schema::create('region_models', function (Blueprint $table) {
@@ -33,6 +36,10 @@ return new class extends Migration
     {
         Schema::table('region_models', function (Blueprint $table) {
             $table->dropForeign('region_models_region_id_foreign');
+        });
+
+        Schema::table('regions', function (Blueprint $table) {
+            $table->dropForeign('regions_parent_id_foreign');
         });
 
         Schema::dropIfExists('region_models');
