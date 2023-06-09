@@ -2,12 +2,14 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Workplace extends Model
 {
     use HasFactory;
+    use SoftDeletes;
 
     protected $fillable = [
         'name',
@@ -18,7 +20,7 @@ class Workplace extends Model
     {
         return $this->belongsTo(Client::class, 'client_id');
     }
-    
+
     public function placements()
     {
         return $this->hasMany(Placement::class, 'workplace_id');

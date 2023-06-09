@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Client extends Model
 {
@@ -11,6 +11,8 @@ class Client extends Model
 
     protected $fillable = [
         'name',
+        'dresscode',
+        'briefing',
         'created_by',
     ];
 
@@ -42,5 +44,10 @@ class Client extends Model
     public function postings()
     {
         return $this->hasMany(Posting::class, 'client_id');
+    }
+
+    public function employees()
+    {
+        return $this->belongsToMany(Employee::class, 'client_employees');
     }
 }
