@@ -29,7 +29,7 @@ class WorkplaceService extends Service
         return Workplace::FindOrFail($id);
     }
 
-    public function list(int $perPage = 25, string $archiveStatus = 'active', string $query = null)
+    public function list(int $perPage = 25, string $query = null)
     {
         return Workplace::where('name', 'like', "%{$query}%")->get();
     }
