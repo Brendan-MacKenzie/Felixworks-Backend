@@ -2,16 +2,14 @@
 
 namespace Database\Seeders;
 
-use App\Models\Client;
 use App\Models\User;
-use BrendanMacKenzie\AuthServerClient\AuthServer;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\Client;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Role;
+use BrendanMacKenzie\AuthServerClient\AuthServer;
 
 class UserSeeder extends Seeder
 {
-
     private $authServerClient;
 
     public function __construct(AuthServer $authServerClient)
@@ -38,16 +36,15 @@ class UserSeeder extends Seeder
             'name' => 'agent',
             'guard_name' => 'api',
         ]);
-    
+
         // Admin
         $user = User::updateOrCreate([
             'first_name' => 'Admin',
             'last_name' => 'Role',
             'email' => 'admin@felix.nl',
-            'password' => password_hash('Mokahola1', PASSWORD_BCRYPT),
         ]);
         $user->assignRole($admin);
-        
+
         $authProfile = $this->authServerClient->register($user, true, null);
         $user->profile_id = $authProfile->getProfileId();
         $user->save();
@@ -57,8 +54,7 @@ class UserSeeder extends Seeder
             'first_name' => 'Client',
             'last_name' => 'Role',
             'email' => 'client@felix.nl',
-            'password' => password_hash('Mokahola1', PASSWORD_BCRYPT),
-            'client_id' => 1
+            'client_id' => 1,
         ]);
         $user->assignRole('client');
 
@@ -71,8 +67,7 @@ class UserSeeder extends Seeder
             'first_name' => 'Agent',
             'last_name' => 'Role',
             'email' => 'agent@felix.nl',
-            'password' => password_hash('Mokahola1', PASSWORD_BCRYPT),
-            'agency_id' => 1
+            'agency_id' => 1,
         ]);
         $user->assignRole('agent');
 
