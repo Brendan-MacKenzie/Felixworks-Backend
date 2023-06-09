@@ -133,7 +133,7 @@ class OfficeController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'message' => 'Óffice removed successfully',
+            'message' => 'Office removed successfully',
         ], 200);
     }
 }

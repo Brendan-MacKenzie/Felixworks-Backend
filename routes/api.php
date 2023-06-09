@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\OfficeController;
+use App\Http\Controllers\RegionController;
 use App\Http\Controllers\WorkplaceController;
 
 /*
@@ -43,5 +44,9 @@ Route::group(['middleware' => ['api', 'authserver']], function () {
         Route::get('/', [WorkplaceController::class, 'index']);
         Route::post('/', [WorkplaceController::class, 'store']);
         Route::patch('/{workplace}', [WorkplaceController::class, 'update']);
+    });
+
+    Route::group(['prefix' => '/regions'], function () {
+        Route::get('/', [RegionController::class, 'index']);
     });
 });

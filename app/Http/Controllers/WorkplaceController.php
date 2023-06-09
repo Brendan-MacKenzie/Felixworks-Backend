@@ -26,6 +26,8 @@ class WorkplaceController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'status' => 'fail',
+                'message' => __('exceptions.validation'),
+                'issue' => $validator->failed(),
                 'errors' => $validator->errors(),
             ], 400);
         }
@@ -33,14 +35,12 @@ class WorkplaceController extends Controller
         $search = $request->input('search', null);
 
         try {
-            $workplaces = $this->workplaceService->list(0, '', $search);
+            $workplaces = $this->workplaceService->list(0, $search);
         } catch (Exception $exception) {
             return response()->json([
                 'status' => 'fail',
-                'message' => __('exceptions.validation'),
-                'issue' => $validator->failed(),
-                'errors' => $validator->errors(),
-            ], 400);
+                'message' => $exception->getMessage(),
+            ], 500);
         }
 
         return response()->json([
@@ -59,6 +59,8 @@ class WorkplaceController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'status' => 'fail',
+                'message' => __('exceptions.validation'),
+                'issue' => $validator->failed(),
                 'errors' => $validator->errors(),
             ], 400);
         }
@@ -71,10 +73,8 @@ class WorkplaceController extends Controller
         } catch (Exception $exception) {
             return response()->json([
                 'status' => 'fail',
-                'message' => __('exceptions.validation'),
-                'issue' => $validator->failed(),
-                'errors' => $validator->errors(),
-            ], 400);
+                'message' => $exception->getMessage(),
+            ], 500);
         }
 
         return response()->json([
@@ -93,6 +93,8 @@ class WorkplaceController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'status' => 'fail',
+                'message' => __('exceptions.validation'),
+                'issue' => $validator->failed(),
                 'errors' => $validator->errors(),
             ], 400);
         }
@@ -105,10 +107,8 @@ class WorkplaceController extends Controller
         } catch (Exception $exception) {
             return response()->json([
                 'status' => 'fail',
-                'message' => __('exceptions.validation'),
-                'issue' => $validator->failed(),
-                'errors' => $validator->errors(),
-            ], 400);
+                'message' => $exception->getMessage(),
+            ], 500);
         }
 
         return response()->json([

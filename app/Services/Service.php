@@ -12,5 +12,5 @@ abstract class Service
 
     abstract public function get(int $id, bool $withArchived = false);
 
-    abstract public function list(int $perPage = 25, string $archiveStatus = 'active', string $query = null);
+    abstract public function list(int $perPage = 25, string $query = null);
 }
