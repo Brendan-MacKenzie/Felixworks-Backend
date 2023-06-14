@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Office extends Model
 {
@@ -31,11 +31,6 @@ class Office extends Model
     public function createdBy()
     {
         return $this->belongsTo(User::class, 'created_by');
-    }
-
-    public function sectors()
-    {
-        return $this->morphToMany(Sector::class, 'model', 'sector_models');
     }
 
     public function regions()

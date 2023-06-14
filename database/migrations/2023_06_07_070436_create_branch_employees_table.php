@@ -10,13 +10,13 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('placement_types', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
-            $table->softDeletes();
-            $table->string('name');
+        Schema::create('branch_employees', function (Blueprint $table) {
             $table->unsignedBigInteger('branch_id');
+            $table->unsignedBigInteger('employee_id');
             $table->foreign('branch_id')->references('id')->on('branches')
+                ->onDelete('cascade')
+                ->onUpdate('restrict');
+            $table->foreign('employee_id')->references('id')->on('employees')
                 ->onDelete('cascade')
                 ->onUpdate('restrict');
         });
@@ -27,10 +27,11 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::table('placement_types', function (Blueprint $table) {
-            $table->dropForeign('placement_types_branch_id_foreign');
+        Schema::table('branch_employees', function (Blueprint $table) {
+            $table->dropForeign('branch_employees_branch_id_foreign');
+            $table->dropForeign('branch_employees_employee_id_foreign');
         });
 
-        Schema::dropIfExists('placement_types');
+        Schema::dropIfExists('branch_employees');
     }
 };

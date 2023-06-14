@@ -23,7 +23,7 @@ class User extends Authenticatable
         'password',
         'profile_id',
         'agency_id',
-        'client_id',
+        'branch_id',
         'created_by',
     ];
 
@@ -42,9 +42,9 @@ class User extends Authenticatable
         return $this->belongsTo(Agency::class, 'agency_id');
     }
 
-    public function client()
+    public function branch()
     {
-        return $this->belongsTo(Client::class, 'client_id');
+        return $this->belongsTo(Branch::class, 'branch_id');
     }
 
     public function createdBy()

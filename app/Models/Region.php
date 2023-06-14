@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Region extends Model
 {
@@ -32,8 +32,8 @@ class Region extends Model
         return $this->morphedByMany(Agency::class, 'model', 'region_models');
     }
 
-    public function clients()
+    public function branches()
     {
-        return $this->morphedByMany(Client::class, 'model', 'region_models');
+        return $this->morphedByMany(Branch::class, 'model', 'region_models');
     }
 }

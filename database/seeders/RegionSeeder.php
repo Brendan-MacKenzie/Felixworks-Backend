@@ -3,11 +3,9 @@
 namespace Database\Seeders;
 
 use App\Models\Region;
-use App\Models\Sector;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
-class SectorAndRegionSeeder extends Seeder
+class RegionSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -24,14 +22,6 @@ class SectorAndRegionSeeder extends Seeder
 
         $region = Region::updateOrCreate([
             'name' => 'Amsterdam',
-        ]);
-        
-        $sector = Sector::updateOrCreate([
-            'name' => 'Horeca',
-        ]);
-
-        $sector = Sector::updateOrCreate([
-            'name' => 'Hotel',
         ]);
     }
 }

@@ -5,8 +5,6 @@ namespace Database\Seeders;
 use App\Models\Agency;
 use App\Models\Office;
 use App\Models\Region;
-use App\Models\Sector;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class AgencySeeder extends Seeder
@@ -17,17 +15,15 @@ class AgencySeeder extends Seeder
     public function run(): void
     {
         $regions = Region::all()->pluck('id')->all();
-        $sectors = Sector::all()->pluck('id')->all();
 
         $agency = Agency::updateOrCreate([
-            'name' => 'Felix Uitzendbureau', 
+            'name' => 'Felix Uitzendbureau',
             'full_name' => 'Felix Uitzendbureau BV',
             'code' => 'FELX',
             'brand_color' => '#ffff',
         ]);
 
         $agency->regions()->attach($regions);
-        $agency->sectors()->attach($sectors);
 
         $office = Office::updateOrCreate([
             'agency_id' => $agency->id,
@@ -43,6 +39,5 @@ class AgencySeeder extends Seeder
         ]);
 
         $office->regions()->attach($regions);
-        $office->sectors()->attach($sectors);
     }
 }

@@ -6,7 +6,6 @@ use Carbon\Carbon;
 use App\Models\Pool;
 use App\Models\Agency;
 use App\Models\Region;
-use App\Models\Sector;
 use App\Models\Posting;
 use App\Models\Employee;
 use App\Models\Placement;
@@ -22,7 +21,6 @@ class PostingSeeder extends Seeder
     public function run(): void
     {
         $regions = Region::all()->pluck('id')->all();
-        $sectors = Sector::all()->pluck('id')->all();
         $pools = Pool::all()->pluck('id')->all();
 
         $startAt = Carbon::now()->addDays(7);
@@ -37,7 +35,6 @@ class PostingSeeder extends Seeder
             'information' => 'Dit is informatie.',
         ]);
         $posting->regions()->attach($regions);
-        $posting->sectors()->attach($sectors);
 
         // Employees
         $employee = Employee::updateOrCreate([
@@ -50,7 +47,7 @@ class PostingSeeder extends Seeder
             'car' => true,
         ]);
         $employee->pools()->attach($pools);
-        $employee->clients()->attach(1);
+        $employee->branches()->attach(1);
 
         $employee = Employee::updateOrCreate([
             'agency_id' => 1,
@@ -61,7 +58,7 @@ class PostingSeeder extends Seeder
             'drivers_license' => true,
             'car' => false,
         ]);
-        $employee->clients()->attach(1);
+        $employee->branches()->attach(1);
 
         // Placements
         foreach (Employee::all() as $employee) {

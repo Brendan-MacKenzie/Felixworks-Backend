@@ -52,8 +52,8 @@ class Employee extends Model
         return $this->hasMany(Placement::class, 'employee_id');
     }
 
-    public function clients()
+    public function branches()
     {
-        return $this->belongsToMany(Client::class, 'client_employees');
+        return $this->belongsToMany(Branch::class, 'branch_employees');
     }
 }

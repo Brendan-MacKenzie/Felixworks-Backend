@@ -59,11 +59,6 @@ class Posting extends Model
         return $this->belongsToMany(Agency::class, 'posting_agencies');
     }
 
-    public function sectors()
-    {
-        return $this->morphToMany(Sector::class, 'model', 'sector_models');
-    }
-
     public function regions()
     {
         return $this->morphToMany(Region::class, 'model', 'region_models');

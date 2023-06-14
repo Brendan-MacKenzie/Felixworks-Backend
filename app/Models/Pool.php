@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Pool extends Model
 {
@@ -13,21 +13,21 @@ class Pool extends Model
         'type',
         'name',
         'created_by',
-        'client_id',
+        'branch_id',
     ];
 
     public function createdBy()
     {
-        return $this->belongsTo(User::class, 'created_by'); 
+        return $this->belongsTo(User::class, 'created_by');
     }
 
     public function employees()
     {
-        return $this->belongsToMany(Employee::class, 'pool_employees'); 
+        return $this->belongsToMany(Employee::class, 'pool_employees');
     }
 
-    public function client()
+    public function branch()
     {
-        return $this->belongsTo(Client::class, 'client_id');
+        return $this->belongsTo(Branch::class, 'branch_id');
     }
 }
