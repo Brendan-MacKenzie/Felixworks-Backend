@@ -30,17 +30,6 @@ return new class extends Migration {
                 ->onDelete('set null')
                 ->onUpdate('restrict');
         });
-
-        Schema::create('client_employees', function (Blueprint $table) {
-            $table->unsignedBigInteger('client_id');
-            $table->unsignedBigInteger('employee_id');
-            $table->foreign('client_id')->references('id')->on('clients')
-                ->onDelete('cascade')
-                ->onUpdate('restrict');
-            $table->foreign('employee_id')->references('id')->on('employees')
-                ->onDelete('cascade')
-                ->onUpdate('restrict');
-        });
     }
 
     /**
@@ -53,12 +42,6 @@ return new class extends Migration {
             $table->dropForeign('employees_created_by_foreign');
         });
 
-        Schema::table('client_employees', function (Blueprint $table) {
-            $table->dropForeign('client_employees_client_id_foreign');
-            $table->dropForeign('client_employees_employee_id_foreign');
-        });
-
-        Schema::dropIfExists('client_employees');
         Schema::dropIfExists('employees');
     }
 };

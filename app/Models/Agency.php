@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Agency extends Model
 {
@@ -46,11 +46,6 @@ class Agency extends Model
     public function employees()
     {
         return $this->hasMany(Employee::class, 'agency_id');
-    }
-
-    public function sectors()
-    {
-        return $this->morphToMany(Sector::class, 'model', 'sector_models');
     }
 
     public function regions()

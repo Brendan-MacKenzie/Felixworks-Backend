@@ -15,8 +15,8 @@ return new class extends Migration {
             $table->timestamps();
             $table->softDeletes();
             $table->string('name');
-            $table->unsignedBigInteger('client_id');
-            $table->foreign('client_id')->references('id')->on('clients')
+            $table->unsignedBigInteger('address_id');
+            $table->foreign('address_id')->references('id')->on('addresses')
                 ->onDelete('cascade')
                 ->onUpdate('restrict');
         });
@@ -28,7 +28,7 @@ return new class extends Migration {
     public function down(): void
     {
         Schema::table('workplaces', function (Blueprint $table) {
-            $table->dropForeign('workplaces_client_id_foreign');
+            $table->dropForeign('workplaces_address_id_foreign');
         });
 
         Schema::dropIfExists('workplaces');

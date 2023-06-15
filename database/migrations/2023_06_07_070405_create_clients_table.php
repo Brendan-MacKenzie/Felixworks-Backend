@@ -14,8 +14,6 @@ return new class extends Migration {
             $table->id();
             $table->timestamps();
             $table->string('name');
-            $table->text('dresscode')->nullable();
-            $table->text('briefing')->nullable();
             $table->unsignedBigInteger('created_by')->nullable();
             $table->foreign('created_by')->references('id')->on('users')
                 ->onDelete('set null')

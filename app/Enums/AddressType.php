@@ -6,7 +6,6 @@ use BenSampo\Enum\Enum;
 
 class AddressType extends Enum
 {
-    public const Unspecified = 0;
-    public const Default = 1;
-    public const Created = 2;
+    public const Default = 0;
+    public const Branch = 1;
 }

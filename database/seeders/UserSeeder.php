@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-use App\Models\Client;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Role;
 use BrendanMacKenzie\AuthServerClient\AuthServer;
@@ -54,7 +53,7 @@ class UserSeeder extends Seeder
             'first_name' => 'Client',
             'last_name' => 'Role',
             'email' => 'client@felix.nl',
-            'client_id' => 1,
+            'branch_id' => 1,
         ]);
         $user->assignRole('client');
 

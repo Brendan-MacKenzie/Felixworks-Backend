@@ -12,7 +12,7 @@ class Address extends Model
     use SoftDeletes;
 
     protected $fillable = [
-        'client_id',
+        'branch_id',
         'name',
         'type',
         'street_name',
@@ -23,9 +23,9 @@ class Address extends Model
         'created_by',
     ];
 
-    public function client()
+    public function branch()
     {
-        return $this->belongsTo(Client::class, 'client_id');
+        return $this->belongsTo(Branch::class, 'branch_id');
     }
 
     public function createdBy()

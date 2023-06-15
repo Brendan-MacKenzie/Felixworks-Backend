@@ -1,11 +1,10 @@
 <?php
 
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -20,8 +19,8 @@ return new class extends Migration
             $table->foreign('created_by')->references('id')->on('users')
                 ->onDelete('set null')
                 ->onUpdate('restrict');
-            $table->unsignedBigInteger('client_id');
-            $table->foreign('client_id')->references('id')->on('clients')
+            $table->unsignedBigInteger('branch_id');
+            $table->foreign('branch_id')->references('id')->on('branches')
                 ->onDelete('cascade')
                 ->onUpdate('restrict');
         });
@@ -34,7 +33,7 @@ return new class extends Migration
     {
         Schema::table('pools', function (Blueprint $table) {
             $table->dropForeign('pools_created_by_foreign');
-            $table->dropForeign('pools_client_id_foreign');
+            $table->dropForeign('pools_branch_id_foreign');
         });
 
         Schema::dropIfExists('pools');
