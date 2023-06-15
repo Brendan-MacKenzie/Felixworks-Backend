@@ -137,4 +137,20 @@ class AgencyController extends Controller
             'data' => $agency,
         ], 200);
     }
+
+    public function show(Agency $agency)
+    {
+        $agency->load([
+            'offices',
+            'commitments',
+            'users',
+            'employees',
+            'regions',
+        ]);
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $agency,
+        ], 200);
+    }
 }

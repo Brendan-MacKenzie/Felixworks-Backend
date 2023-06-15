@@ -40,6 +40,7 @@ Route::group(['middleware' => ['api', 'authserver']], function () {
         Route::get('/', [AgencyController::class, 'index']);
         Route::post('/', [AgencyController::class, 'store']);
         Route::patch('/{agency}', [AgencyController::class, 'update']);
+        Route::get('/{agency}', [AgencyController::class, 'show']);
     });
 
     Route::group(['prefix' => '/offices'], function () {

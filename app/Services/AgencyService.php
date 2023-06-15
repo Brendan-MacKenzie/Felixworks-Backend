@@ -42,7 +42,7 @@ class AgencyService extends Service
 
     public function get(int $id)
     {
-        return Agency::FindOrFail($id);
+        return Agency::findOrFail($id);
     }
 
     public function list(int $perPage = 25, string $query = null)
