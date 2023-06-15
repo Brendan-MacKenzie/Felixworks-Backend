@@ -14,7 +14,6 @@ return new class extends Migration {
             $table->id();
             $table->timestamps();
             $table->softDeletes();
-            $table->unsignedBigInteger('branch_id')->nullable();
             $table->string('name');
             $table->tinyInteger('type')->default(0);
             $table->string('street_name');
@@ -35,7 +34,6 @@ return new class extends Migration {
     public function down(): void
     {
         Schema::table('addresses', function (Blueprint $table) {
-            $table->dropForeign('addresses_branch_id_foreign');
             $table->dropForeign('addresses_created_by_foreign');
         });
 

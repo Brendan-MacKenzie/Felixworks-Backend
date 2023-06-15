@@ -35,12 +35,6 @@ return new class extends Migration {
                 ->onDelete('set null')
                 ->onUpdate('restrict');
         });
-
-        Schema::table('addresses', function (Blueprint $table) {
-            $table->foreign('branch_id')->references('id')->on('branches')
-                ->onDelete('set null')
-                ->onUpdate('restrict');
-        });
     }
 
     /**
