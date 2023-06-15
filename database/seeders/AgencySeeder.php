@@ -7,6 +7,7 @@ use App\Models\Office;
 use App\Models\Region;
 use App\Models\Address;
 use App\Enums\AddressType;
+use Illuminate\Support\Str;
 use Illuminate\Database\Seeder;
 
 class AgencySeeder extends Seeder
@@ -22,6 +23,9 @@ class AgencySeeder extends Seeder
             'name' => 'Felix Uitzendbureau',
             'full_name' => 'Felix Uitzendbureau BV',
             'brand_color' => '#ffff',
+            'api_key' => Str::random(32),
+            'ip_address' => '172.19.0.1',
+            'webhook' => 'https://planworks.test/felix',
         ]);
 
         $agency->regions()->attach($regions);

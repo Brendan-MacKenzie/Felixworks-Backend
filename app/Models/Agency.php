@@ -2,20 +2,57 @@
 
 namespace App\Models;
 
+use FlexFlux\Encryptor\Encryptable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Agency extends Model
 {
     use HasFactory;
+    use Encryptable;
 
     protected $fillable = [
         'name',
         'full_name',
         'brand_color',
+        'api_key',
+        'ip_address',
+        'webhook',
         'logo_id',
         'created_by',
     ];
+
+    protected $encryptable = [
+        'api_key',
+        'ip_address',
+        'webhook',
+    ];
+
+    protected $hidden = [
+        'api_key',
+        'ip_address',
+        'webhook',
+    ];
+
+    public function toArray()
+    {
+        $this->checkModelPermissions();
+
+        return parent::toArray();
+    }
+
+    private function checkModelPermissions()
+    {
+        if (
+            auth()->user() &&
+            auth()->user()->hasRole('admin')
+        ) {
+            $this->makeVisible([
+                'ip_address',
+                'webhook',
+            ]);
+        }
+    }
 
     public function logo()
     {

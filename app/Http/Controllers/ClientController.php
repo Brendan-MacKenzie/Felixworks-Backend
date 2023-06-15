@@ -65,7 +65,7 @@ class ClientController extends Controller
                 'name',
             ]));
         } catch (Exception $exception) {
-            return  $this->failedExceptionResponse($exception);
+            return $this->failedExceptionResponse($exception);
         }
 
         return $this->successResponse($client);

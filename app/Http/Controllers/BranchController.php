@@ -33,7 +33,7 @@ class BranchController extends Controller
         try {
             $branches = $this->branchService->list($perPage, $search);
         } catch (Exception $exception) {
-            return  $this->failedExceptionResponse($exception);
+            return $this->failedExceptionResponse($exception);
         }
 
         return $this->successResponse($branches);

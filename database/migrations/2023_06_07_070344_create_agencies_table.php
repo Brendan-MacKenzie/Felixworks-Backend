@@ -16,6 +16,9 @@ return new class extends Migration {
             $table->string('name');
             $table->string('full_name');
             $table->string('brand_color');
+            $table->text('api_key')->nullable();
+            $table->text('ip_address')->nullable();
+            $table->text('webhook')->nullable();
             $table->unsignedBigInteger('logo_id')->nullable();
             $table->unsignedBigInteger('created_by')->nullable();
             $table->foreign('created_by')->references('id')->on('users')

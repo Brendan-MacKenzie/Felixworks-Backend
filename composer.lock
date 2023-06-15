@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "aaf24c13d197de230ff2557ee5a52279",
+    "content-hash": "5a7cb1913b28ebf8843dc65ba64ea9c5",
     "packages": [
         {
             "name": "bensampo/laravel-enum",
@@ -783,6 +783,56 @@
                 "source": "https://github.com/firebase/php-jwt/tree/v6.7.0"
             },
             "time": "2023-06-14T15:29:26+00:00"
+        },
+        {
+            "name": "flexflux/encryptor",
+            "version": "3.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/wouterdeberg/encryptor.git",
+                "reference": "a127d52280342a469d10b244c64319518bfe660b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/wouterdeberg/encryptor/zipball/a127d52280342a469d10b244c64319518bfe660b",
+                "reference": "a127d52280342a469d10b244c64319518bfe660b",
+                "shasum": ""
+            },
+            "require": {
+                "laravel/framework": "^10"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "FlexFlux\\Encryptor\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Wouter de Berg",
+                    "email": "info@wouterdeberg.nl"
+                }
+            ],
+            "description": "Package to automatically encrypt and decrypt model attributes in your Laravel project.",
+            "keywords": [
+                "decryption",
+                "encrypter",
+                "encryption",
+                "encryptor",
+                "flexflux",
+                "laravel",
+                "security"
+            ],
+            "support": {
+                "email": "info@wouterdeberg.nl",
+                "issues": "https://github.com/wouterdeberg/encryptor/issues",
+                "source": "https://github.com/wouterdeberg/encryptor/tree/3.0.1"
+            },
+            "time": "2023-05-17T07:02:59+00:00"
         },
         {
             "name": "flexflux/laravel-elastic-email",

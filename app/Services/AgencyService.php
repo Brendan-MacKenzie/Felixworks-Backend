@@ -2,22 +2,54 @@
 
 namespace App\Services;
 
+use Exception;
+use App\Models\Media;
 use App\Models\Agency;
+use App\Enums\MediaType;
+use Illuminate\Support\Str;
 
 class AgencyService extends Service
 {
+    protected $mediaService;
+
+    public function __construct(MediaService $mediaService)
+    {
+        $this->mediaService = $mediaService;
+    }
+
     public function store(array $data)
     {
         $data['created_by'] = auth()->user()->id;
 
-        if (key_exists('logo_id', $data)) {
-            // Todo
+        if (
+            key_exists('logo_id', $data) &&
+            !is_null($data['logo_id'])
+        ) {
+            $media = Media::findOrFail($data['logo_id']);
+            if ($media->type !== MediaType::Logo) {
+                throw new Exception('Image is not a logo.', 403);
+            }
+        }
+
+        if (
+            key_exists('ip_address', $data) &&
+            key_exists('webhook', $data)
+        ) {
+            $data['api_key'] = Str::random(32);
+            $data['webhook_key'] = Str::random(32);
         }
 
         $agency = Agency::create($data);
 
         if (key_exists('regions', $data)) {
             $agency->regions()->sync($data['regions']);
+        }
+
+        if (
+            key_exists('ip_address', $data) &&
+            key_exists('webhook', $data)
+        ) {
+            $agency->makeVisible(['api_key', 'webhook_key']);
         }
 
         $agency->load('regions');
@@ -27,6 +59,20 @@ class AgencyService extends Service
 
     public function update(array $data, mixed $agency)
     {
+        if (
+            key_exists('logo_id', $data) &&
+            !is_null($data['logo_id'])
+        ) {
+            $media = Media::findOrFail($data['logo_id']);
+            if ($media->type !== MediaType::Logo) {
+                throw new Exception('Image is not a logo.', 403);
+            }
+
+            if ($agency->logo_id && $agency->logo_id !== $media->id) {
+                $this->mediaService->delete($agency->logo);
+            }
+        }
+
         $agency->update($data);
 
         if (key_exists('regions', $data)) {

@@ -82,7 +82,7 @@ class WorkplaceController extends Controller
             return $this->failedExceptionResponse($exception);
         }
 
-       return $this->successResponse($workplace);
+        return $this->successResponse($workplace);
     }
 
     public function destroy(Workplace $workplace)
