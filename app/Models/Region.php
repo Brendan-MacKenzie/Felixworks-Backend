@@ -11,6 +11,7 @@ class Region extends Model
 
     protected $fillable = [
         'name',
+        'parent_id',
     ];
 
     protected $hidden = [

@@ -53,7 +53,7 @@ class WorkplaceController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
-            'client_id' => 'required|integer|exists:clients,id',
+            'address_id' => 'required|integer|exists:addresses,id',
         ]);
 
         if ($validator->fails()) {
@@ -68,7 +68,7 @@ class WorkplaceController extends Controller
         try {
             $workplace = $this->workplaceService->store($request->only([
                 'name',
-                'client_id',
+                'address_id',
             ]));
         } catch (Exception $exception) {
             return response()->json([
@@ -87,7 +87,7 @@ class WorkplaceController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
-            'client_id' => 'required|integer|exists:clients,id',
+            'address_id' => 'required|integer|exists:addresses,id',
         ]);
 
         if ($validator->fails()) {
@@ -102,7 +102,7 @@ class WorkplaceController extends Controller
         try {
             $workplace = $this->workplaceService->update($request->only([
                 'name',
-                'client_id',
+                'address_id',
             ]), $workplace->id);
         } catch (Exception $exception) {
             return response()->json([

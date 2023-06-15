@@ -13,12 +13,12 @@ class Workplace extends Model
 
     protected $fillable = [
         'name',
-        'branch_id',
+        'address_id',
     ];
 
     public function branch()
     {
-        return $this->belongsTo(Branch::class, 'branch_id');
+        return $this->belongsTo(Branch::class, 'address_id');
     }
 
     public function placements()

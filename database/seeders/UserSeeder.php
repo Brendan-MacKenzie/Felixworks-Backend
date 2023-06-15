@@ -44,9 +44,9 @@ class UserSeeder extends Seeder
         ]);
         $user->assignRole($admin);
 
-        $authProfile = $this->authServerClient->register($user, true, null);
-        $user->profile_id = $authProfile->getProfileId();
-        $user->save();
+        // $authProfile = $this->authServerClient->register($user, true, null);
+        // $user->profile_id = $authProfile->getProfileId();
+        // $user->save();
 
         // Client
         $user = User::updateOrCreate([
@@ -57,9 +57,9 @@ class UserSeeder extends Seeder
         ]);
         $user->assignRole('client');
 
-        $authProfile = $this->authServerClient->register($user, true, null);
-        $user->profile_id = $authProfile->getProfileId();
-        $user->save();
+        // $authProfile = $this->authServerClient->register($user, true, null);
+        // $user->profile_id = $authProfile->getProfileId();
+        // $user->save();
 
         // Agency
         $agent = User::updateOrCreate([
@@ -70,8 +70,8 @@ class UserSeeder extends Seeder
         ]);
         $user->assignRole('agent');
 
-        $authProfile = $this->authServerClient->register($user, true, null);
-        $user->profile_id = $authProfile->getProfileId();
-        $user->save();
+        // $authProfile = $this->authServerClient->register($user, true, null);
+        // $user->profile_id = $authProfile->getProfileId();
+        // $user->save();
     }
 }

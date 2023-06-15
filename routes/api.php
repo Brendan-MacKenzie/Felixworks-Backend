@@ -29,7 +29,7 @@ Route::group(['middleware' => ['api']], function () {
  * Authenticated Routes
  */
 
-Route::group(['middleware' => ['api', 'authserver']], function () {
+Route::group(['middleware' => ['api']], function () {
     Route::get('/hello/auth', function () {
         echo 'hello authenticated!';
     });
