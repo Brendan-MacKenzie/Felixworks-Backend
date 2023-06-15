@@ -30,7 +30,7 @@ class Branch extends Model
 
     public function addresses()
     {
-        return $this->hasMany(Client::class, 'branch_id');
+        return $this->belongsTo(Address::class, 'address_id');
     }
 
     public function regions()
