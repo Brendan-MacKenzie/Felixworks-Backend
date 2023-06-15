@@ -45,10 +45,10 @@ Route::group(['middleware' => ['api', 'authserver']], function () {
     });
 
     Route::group(['prefix' => '/media'], function () {
-        Route::get('/', [MediaController::class, 'index']);
         Route::post('/', [MediaController::class, 'store']);
         Route::delete('/{media}', [MediaController::class, 'destroy']);
         Route::get('/{media}', [MediaController::class, 'show']);
+        Route::get('/{media}/base64', [MediaController::class, 'base64']);
     });
 
     Route::group(['prefix' => '/offices'], function () {

@@ -6,6 +6,7 @@ use Exception;
 use App\Models\Media;
 use App\Enums\MediaType;
 use Illuminate\Support\Facades\Storage;
+use Intervention\Image\ImageManagerStatic;
 
 class MediaService extends Service
 {
@@ -55,6 +56,24 @@ class MediaService extends Service
     public function get(int $id)
     {
         return Media::findOrFail($id);
+    }
+
+    public function getMediaFile(int $id, bool $base64 = false)
+    {
+        $media = $this->get($id);
+        $fullpath = $this->getFullPath($media->type, $media->name, false);
+
+        if (!Storage::disk('media')->exists($fullpath)) {
+            throw new Exception('Could not find image.', 404);
+        }
+
+        if ($base64) {
+            $mediaFile = ImageManagerStatic::make($this->getFullPath($media->type, $media->name));
+
+            return $mediaFile->encode('data-url')->encoded;
+        }
+
+        return Storage::disk('media')->download($fullpath);
     }
 
     public function list(int $perPage = 25, string $query = null)

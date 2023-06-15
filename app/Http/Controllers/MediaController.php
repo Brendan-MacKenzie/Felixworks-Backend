@@ -52,6 +52,38 @@ class MediaController extends Controller
         ], 201);
     }
 
+    public function show(Media $media)
+    {
+        try {
+            $file = $this->mediaService->getMediaFile($media->id);
+        } catch (Exception $exception) {
+            return response()->json([
+                'status' => 'fail',
+                'message' => $exception->getMessage(),
+            ], 500);
+        }
+
+        return $file;
+    }
+
+    public function base64(Media $media)
+    {
+        try {
+            $data = $this->mediaService->getMediaFile($media->id, true);
+        } catch (Exception $exception) {
+            return response()->json([
+                'status' => 'fail',
+                'message' => $exception->getMessage(),
+            ], 500);
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'media' => $media,
+            'data' => $data,
+        ], 201);
+    }
+
     public function destroy(Media $media)
     {
         try {
