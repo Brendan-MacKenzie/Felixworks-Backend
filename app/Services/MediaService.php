@@ -38,13 +38,12 @@ class MediaService extends Service
         return $mediaObject;
     }
 
-    public function update(array $data, int $id)
+    public function update(array $data, mixed $media)
     {
     }
 
-    public function delete(int $id)
+    public function delete(mixed $media)
     {
-        $media = $this->get($id);
         $fullpath = $this->getFullPath($media->type, $media->name, false);
         if (!Storage::disk('media')->delete($fullpath)) {
             throw new Exception('Could not delete image item.', 500);
@@ -53,12 +52,12 @@ class MediaService extends Service
         $media->delete();
     }
 
-    public function get(int $id)
+    public function get(mixed $media)
     {
-        return Media::findOrFail($id);
+        return $media;
     }
 
-    public function getMediaFile(int $id, bool $base64 = false)
+    public function getMediaFile(Media $media, bool $base64 = false)
     {
         $media = $this->get($id);
         $fullpath = $this->getFullPath($media->type, $media->name, false);

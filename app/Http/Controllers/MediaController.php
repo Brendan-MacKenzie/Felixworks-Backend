@@ -55,7 +55,7 @@ class MediaController extends Controller
     public function show(Media $media)
     {
         try {
-            $file = $this->mediaService->getMediaFile($media->id);
+            $file = $this->mediaService->getMediaFile($media);
         } catch (Exception $exception) {
             return response()->json([
                 'status' => 'fail',
@@ -69,7 +69,7 @@ class MediaController extends Controller
     public function base64(Media $media)
     {
         try {
-            $data = $this->mediaService->getMediaFile($media->id, true);
+            $data = $this->mediaService->getMediaFile($media, true);
         } catch (Exception $exception) {
             return response()->json([
                 'status' => 'fail',
@@ -87,7 +87,7 @@ class MediaController extends Controller
     public function destroy(Media $media)
     {
         try {
-            $media = $this->mediaService->delete($media->id);
+            $media = $this->mediaService->delete($media);
         } catch (Exception $exception) {
             return response()->json([
                 'status' => 'fail',

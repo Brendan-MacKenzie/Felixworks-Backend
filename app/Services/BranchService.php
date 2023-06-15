@@ -11,40 +11,44 @@ class BranchService extends Service
         $data['created_by'] = auth()->user()->id;
 
         $branch = Branch::create($data);
-
         $branch->regions()->sync($data['regions']);
+        $branch->refresh();
+        $branch->load('regions');
 
-        return Branch::with('regions')->find($branch->id);
+        return $branch;
     }
 
-    public function update(array $data, int $id)
+    public function update(array $data, mixed $branch)
     {
-        $branch = Branch::findOrFail($id);
-        $branch->fill($data);
-        $branch->save();
-
-        // Sync the regions
+        $branch->update($data);
         $branch->regions()->sync($data['regions']);
+        $branch->refresh();
+        $branch->load(['regions']);
 
-        return Branch::with('regions')->find($branch->id);
+        return $branch;
     }
 
-    public function delete(int $id)
+    public function delete(mixed $branch)
     {
     }
 
-    public function get(int $id, bool $withArchived = false)
+    public function get(mixed $branch)
     {
-        $query = Branch::query()
-        ->with('addresses', 'regions', 'createdBy', 'coordinators', 'employees');
-
-        $branch = $query->findOrFail($id);
+        $branch->load([
+            'addresses',
+            'regions',
+            'createdBy',
+            'coordinators',
+            'employees',
+        ]);
 
         return $branch;
     }
 
     public function list(int $perPage = 25, string $query = null)
     {
-        return Branch::where('name', 'like', "%{$query}%")->get();
+        return Branch::when(!is_null($query), function ($q) use ($query) {
+            $q->where('name', 'like', "%{$query}%");
+        })->paginate($perPage);
     }
 }

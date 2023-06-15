@@ -32,10 +32,11 @@ class WorkplaceController extends Controller
             ], 400);
         }
 
+        $perPage = $request->input('per_page', 25);
         $search = $request->input('search', null);
 
         try {
-            $workplaces = $this->workplaceService->list(0, $search);
+            $workplaces = $this->workplaceService->list($perPage, $search);
         } catch (Exception $exception) {
             return response()->json([
                 'status' => 'fail',
@@ -103,7 +104,7 @@ class WorkplaceController extends Controller
             $workplace = $this->workplaceService->update($request->only([
                 'name',
                 'address_id',
-            ]), $workplace->id);
+            ]), $workplace);
         } catch (Exception $exception) {
             return response()->json([
                 'status' => 'fail',
@@ -120,7 +121,7 @@ class WorkplaceController extends Controller
     public function destroy(Workplace $workplace)
     {
         try {
-            $this->workplaceService->delete($workplace->id);
+            $this->workplaceService->delete($workplace);
         } catch (Exception $exception) {
             return response()->json([
                 'status' => 'fail',

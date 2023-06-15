@@ -13,20 +13,22 @@ class ClientService extends Service
         return Client::create($data);
     }
 
-    public function update(array $data, int $id)
+    public function update(array $data, mixed $client)
     {
     }
 
-    public function delete(int $id)
+    public function delete(mixed $client)
     {
     }
 
-    public function get(int $id)
+    public function get(mixed $client)
     {
     }
 
     public function list(int $perPage = 25, string $query = null)
     {
-        return Client::where('name', 'like', "%{$query}%")->paginate($perPage);
+        return Client::when(!is_null($query), function ($q) use ($query) {
+            $q->where('name', 'like', "%{$query}%");
+        })->paginate($perPage);
     }
 }

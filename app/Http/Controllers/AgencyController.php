@@ -79,8 +79,6 @@ class AgencyController extends Controller
                 'logo_id',
                 'regions',
             ]));
-
-            $agency->load('regions');
         } catch (Exception $exception) {
             return response()->json([
                 'status' => 'fail',
@@ -122,9 +120,7 @@ class AgencyController extends Controller
                 'brand_color',
                 'logo_id',
                 'regions',
-            ]), $agency->id);
-
-            $agency->load('regions');
+            ]), $agency);
         } catch (Exception $exception) {
             return response()->json([
                 'status' => 'fail',
@@ -140,13 +136,16 @@ class AgencyController extends Controller
 
     public function show(Agency $agency)
     {
-        $agency->load([
-            'offices',
-            'commitments',
-            'users',
-            'employees',
-            'regions',
-        ]);
+        try {
+            $agency = $this->agencyService->get($agency);
+
+            $agency->load('regions');
+        } catch (Exception $exception) {
+            return response()->json([
+                'status' => 'fail',
+                'message' => $exception->getMessage(),
+            ], 500);
+        }
 
         return response()->json([
             'status' => 'success',

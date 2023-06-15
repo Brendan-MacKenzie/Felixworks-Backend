@@ -27,11 +27,7 @@ class OfficeController extends Controller
             'description' => 'nullable|string',
             'website' => 'nullable|url',
             'phone' => 'nullable|string|max:20',
-            'street_name' => 'required|string|max:255',
-            'number' => 'required|string|max:20',
-            'zip_code' => 'required|string|max:20',
-            'city' => 'required|string|max:100',
-            'country' => 'required|string|max:100',
+            'address_id' => 'required|integer|exists:addresses,id',
         ]);
 
         if ($validator->fails()) {
@@ -50,11 +46,7 @@ class OfficeController extends Controller
                 'description',
                 'website',
                 'phone',
-                'street_name',
-                'number',
-                'zip_code',
-                'city',
-                'country',
+                'address_id',
             ]));
         } catch (Exception $exception) {
             return response()->json([
@@ -78,11 +70,7 @@ class OfficeController extends Controller
             'description' => 'nullable|string',
             'website' => 'nullable|url',
             'phone' => 'nullable|string|max:20',
-            'street_name' => 'required_with:number,zip_code,city,country|string|max:255',
-            'number' => 'required_with:street_name,zip_code,city,country|string|max:20',
-            'zip_code' => 'required_with:street_name,number,city,country|string|max:20',
-            'city' => 'required_with:street_name,number,zip_code,country|string|max:100',
-            'country' => 'required_with:street_name,number,zip_code,city|string|max:100',
+            'address_id' => 'integer|exists:addresses,id',
         ]);
 
         if ($validator->fails()) {
@@ -101,12 +89,8 @@ class OfficeController extends Controller
                 'description',
                 'website',
                 'phone',
-                'street_name',
-                'number',
-                'zip_code',
-                'city',
-                'country',
-            ]), $office->id);
+                'address_id',
+            ]), $office);
         } catch (Exception $exception) {
             return response()->json([
                 'status' => 'fail',
@@ -123,7 +107,7 @@ class OfficeController extends Controller
     public function destroy(Office $office)
     {
         try {
-            $this->officeService->delete($office->id);
+            $this->officeService->delete($office);
         } catch (Exception $exception) {
             return response()->json([
                 'status' => 'fail',

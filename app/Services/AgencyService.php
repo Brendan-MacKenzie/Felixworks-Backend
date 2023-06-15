@@ -20,29 +20,40 @@ class AgencyService extends Service
             $agency->regions()->sync($data['regions']);
         }
 
+        $agency->load('regions');
+
         return $agency;
     }
 
-    public function update(array $data, int $id)
+    public function update(array $data, mixed $agency)
     {
-        $agency = $this->get($id);
-
         $agency->update($data);
 
         if (key_exists('regions', $data)) {
             $agency->regions()->sync($data['regions']);
         }
 
+        $agency->refresh();
+        $agency->load('regions');
+
         return $agency;
     }
 
-    public function delete(int $id)
+    public function delete(mixed $agency)
     {
     }
 
-    public function get(int $id)
+    public function get(mixed $agency)
     {
-        return Agency::findOrFail($id);
+        $agency->load([
+            'offices',
+            'commitments',
+            'users',
+            'employees',
+            'regions',
+        ]);
+
+        return $agency;
     }
 
     public function list(int $perPage = 25, string $query = null)
