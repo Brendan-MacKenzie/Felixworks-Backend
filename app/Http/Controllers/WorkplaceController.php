@@ -116,4 +116,21 @@ class WorkplaceController extends Controller
             'data' => $workplace,
         ], 200);
     }
+
+    public function destroy(Workplace $workplace)
+    {
+        try {
+            $this->workplaceService->delete($workplace->id);
+        } catch (Exception $exception) {
+            return response()->json([
+                'status' => 'fail',
+                'message' => $exception->getMessage(),
+            ], 500);
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Workplace removed successfully',
+        ], 200);
+    }
 }

@@ -45,6 +45,7 @@ Route::group(['middleware' => ['api', 'authserver']], function () {
         Route::get('/', [WorkplaceController::class, 'index']);
         Route::post('/', [WorkplaceController::class, 'store']);
         Route::patch('/{workplace}', [WorkplaceController::class, 'update']);
+        Route::delete('/{workplace}', [WorkplaceController::class, 'destroy']);
     });
 
     Route::group(['prefix' => '/regions'], function () {
