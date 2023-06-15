@@ -49,7 +49,7 @@ class ClientController extends Controller
         ], 200);
     }
 
-    public function Store(Request $request)
+    public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
