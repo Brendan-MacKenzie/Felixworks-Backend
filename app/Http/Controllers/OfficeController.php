@@ -73,16 +73,16 @@ class OfficeController extends Controller
     {
         // Validate input
         $validator = Validator::make($request->all(), [
-            'agency_id' => 'required|integer|exists:agencies,id',
-            'name' => 'required|string|max:255',
+            'agency_id' => 'integer|exists:agencies,id',
+            'name' => 'string|max:255',
             'description' => 'nullable|string',
             'website' => 'nullable|url',
             'phone' => 'nullable|string|max:20',
-            'street_name' => 'required|string|max:255',
-            'number' => 'required|string|max:20',
-            'zip_code' => 'required|string|max:20',
-            'city' => 'required|string|max:100',
-            'country' => 'required|string|max:100',
+            'street_name' => 'required_with:number,zip_code,city,country|string|max:255',
+            'number' => 'required_with:street_name,zip_code,city,country|string|max:20',
+            'zip_code' => 'required_with:street_name,number,city,country|string|max:20',
+            'city' => 'required_with:street_name,number,zip_code,country|string|max:100',
+            'country' => 'required_with:street_name,number,zip_code,city|string|max:100',
         ]);
 
         if ($validator->fails()) {

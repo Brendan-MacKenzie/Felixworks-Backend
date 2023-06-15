@@ -86,8 +86,8 @@ class WorkplaceController extends Controller
     public function update(Request $request, Workplace $workplace)
     {
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
-            'address_id' => 'required|integer|exists:addresses,id',
+            'name' => 'string|max:255',
+            'address_id' => 'integer|exists:addresses,id',
         ]);
 
         if ($validator->fails()) {

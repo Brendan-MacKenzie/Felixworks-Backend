@@ -19,6 +19,14 @@ class BranchService extends Service
 
     public function update(array $data, int $id)
     {
+        $branch = Branch::findOrFail($id);
+        $branch->fill($data);
+        $branch->save();
+
+        // Sync the regions
+        $branch->regions()->sync($data['regions']);
+
+        return Branch::with('regions')->find($branch->id);
     }
 
     public function delete(int $id)
