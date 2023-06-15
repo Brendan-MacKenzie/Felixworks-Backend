@@ -37,4 +37,9 @@ class Address extends Model
     {
         return $this->hasMany(Posting::class, 'address_id');
     }
+
+    public function office()
+    {
+        return $this->hasOne(Office::class, 'address_id');
+    }
 }

@@ -12,7 +12,6 @@ class Agency extends Model
     protected $fillable = [
         'name',
         'full_name',
-        'code',
         'brand_color',
         'logo_id',
         'created_by',

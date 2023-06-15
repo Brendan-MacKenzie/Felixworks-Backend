@@ -15,7 +15,6 @@ return new class extends Migration {
             $table->timestamps();
             $table->string('name');
             $table->string('full_name');
-            $table->string('code');
             $table->string('brand_color');
             $table->unsignedBigInteger('logo_id')->nullable();
             $table->unsignedBigInteger('created_by')->nullable();
