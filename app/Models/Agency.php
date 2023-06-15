@@ -12,7 +12,6 @@ class Agency extends Model
     protected $fillable = [
         'name',
         'full_name',
-        'code',
         'brand_color',
         'logo_id',
         'created_by',
@@ -55,6 +54,11 @@ class Agency extends Model
 
     public function offices()
     {
-        return $this->hasMany(Office::class, 'office_id');
+        return $this->hasMany(Office::class, 'agency_id');
+    }
+
+    public function users()
+    {
+        return $this->hasMany(User::class, 'agency_id');
     }
 }

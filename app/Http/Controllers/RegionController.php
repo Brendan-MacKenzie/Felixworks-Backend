@@ -31,10 +31,11 @@ class RegionController extends Controller
             ], 400);
         }
 
+        $perPage = $request->input('per_page', 25);
         $search = $request->input('search', null);
 
         try {
-            $regions = $this->regionService->list(0, $search);
+            $regions = $this->regionService->list($perPage, $search);
         } catch (Exception $exception) {
             return response()->json([
                 'status' => 'fail',

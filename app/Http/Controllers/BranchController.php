@@ -32,10 +32,11 @@ class BranchController extends Controller
             ], 400);
         }
 
+        $perPage = $request->input('per_page', 25);
         $search = $request->input('search', null);
 
         try {
-            $branches = $this->branchService->list(0, $search);
+            $branches = $this->branchService->list($perPage, $search);
         } catch (Exception $exception) {
             return response()->json([
                 'status' => 'fail',
@@ -52,7 +53,7 @@ class BranchController extends Controller
     public function show(Branch $branch)
     {
         try {
-            $branch = $this->branchService->get($branch->id);
+            $branch = $this->branchService->get($branch);
         } catch (Exception $exception) {
             return response()->json([
                 'status' => 'fail',
@@ -74,8 +75,8 @@ class BranchController extends Controller
             'briefing' => 'required|string|max:255',
             'client_id' => 'required|integer|exists:clients,id',
             'address_id' => 'required|integer|exists:addresses,id',
-            'regions' => 'required|array|min:1', // Validation for regions as an array with minimum 1 element
-            'regions.*' => 'integer|exists:regions,id', // Validation for each region ID in the array
+            'regions' => 'required|array|min:1',
+            'regions.*' => 'integer|exists:regions,id',
         ]);
 
         if ($validator->fails()) {
@@ -117,8 +118,8 @@ class BranchController extends Controller
             'briefing' => 'string|max:255',
             'client_id' => 'integer|exists:clients,id',
             'address_id' => 'integer|exists:addresses,id',
-            'regions' => 'required|array|min:1', // Validation for regions as an array with minimum 1 element
-            'regions.*' => 'integer|exists:regions,id', // Validation for each region ID in the array
+            'regions' => 'required|array|min:1',
+            'regions.*' => 'integer|exists:regions,id',
         ]);
 
         if ($validator->fails()) {
@@ -138,7 +139,7 @@ class BranchController extends Controller
                 'client_id',
                 'address_id',
                 'regions',
-            ]), $branch->id);
+            ]), $branch);
         } catch (Exception $exception) {
             return response()->json([
                 'status' => 'fail',

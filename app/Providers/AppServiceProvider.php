@@ -2,10 +2,17 @@
 
 namespace App\Providers;
 
+use App\Sync\QueueTracker\QueueTracker;
 use Illuminate\Support\ServiceProvider;
+use App\Sync\QueueTracker\AgencyQueueTracker;
+use App\Sync\QueueTracker\QueueTrackerInterface;
 
 class AppServiceProvider extends ServiceProvider
 {
+    public $bindings = [
+        QueueTrackerInterface::class => AgencyQueueTracker::class,
+    ];
+
     /**
      * Register any application services.
      */
@@ -19,6 +26,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        QueueTracker::setQueueSettings();
     }
 }

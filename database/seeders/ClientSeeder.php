@@ -43,7 +43,6 @@ class ClientSeeder extends Seeder
         ]);
 
         $address = Address::updateOrCreate([
-            'branch_id' => $branch->id,
             'name' => 'Werkadres 1',
             'type' => AddressType::Default,
             'street_name' => 'Fellenoord',
@@ -54,6 +53,7 @@ class ClientSeeder extends Seeder
         ]);
 
         $branch->regions()->attach($regions);
+        $branch->addresses()->attach($address);
 
         $workplace = Workplace::updateOrCreate([
             'name' => 'Restaurant',

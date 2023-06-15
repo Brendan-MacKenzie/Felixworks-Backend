@@ -28,9 +28,14 @@ class Branch extends Model
         return $this->hasMany(User::class, 'branch_id');
     }
 
-    public function addresses()
+    public function address()
     {
         return $this->belongsTo(Address::class, 'address_id');
+    }
+
+    public function addresses()
+    {
+        return $this->belongsToMany(Address::class, 'branch_addresses');
     }
 
     public function regions()

@@ -15,17 +15,18 @@ class Office extends Model
         'description',
         'website',
         'phone',
-        'street_name',
-        'number',
-        'zip_code',
-        'city',
-        'country',
+        'address_id',
         'created_by',
     ];
 
     public function agency()
     {
         return $this->belongsTo(Agency::class, 'agency_id');
+    }
+
+    public function address()
+    {
+        return $this->belongsTo(Address::class, 'address_id');
     }
 
     public function createdBy()

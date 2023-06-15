@@ -20,7 +20,6 @@ class User extends Authenticatable
         'first_name',
         'last_name',
         'email',
-        'password',
         'profile_id',
         'agency_id',
         'branch_id',

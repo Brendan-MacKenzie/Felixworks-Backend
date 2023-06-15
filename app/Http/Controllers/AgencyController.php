@@ -3,18 +3,18 @@
 namespace App\Http\Controllers;
 
 use Exception;
-use App\Models\Workplace;
+use App\Models\Agency;
 use Illuminate\Http\Request;
-use App\Services\WorkplaceService;
+use App\Services\AgencyService;
 use Illuminate\Support\Facades\Validator;
 
-class WorkplaceController extends Controller
+class AgencyController extends Controller
 {
-    private $workplaceService;
+    private $agencyService;
 
-    public function __construct(WorkplaceService $workplaceService)
+    public function __construct(AgencyService $agencyService)
     {
-        $this->workplaceService = $workplaceService;
+        $this->agencyService = $agencyService;
     }
 
     public function index(Request $request)
@@ -36,7 +36,7 @@ class WorkplaceController extends Controller
         $search = $request->input('search', null);
 
         try {
-            $workplaces = $this->workplaceService->list($perPage, $search);
+            $agencies = $this->agencyService->list($perPage, $search);
         } catch (Exception $exception) {
             return response()->json([
                 'status' => 'fail',
@@ -46,7 +46,7 @@ class WorkplaceController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'data' => $workplaces,
+            'data' => $agencies,
         ], 200);
     }
 
@@ -54,7 +54,12 @@ class WorkplaceController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
-            'address_id' => 'required|integer|exists:addresses,id',
+            'full_name' => 'required|string|max:255',
+            'brand_color' => 'required|string|max:255',
+            'logo_id' => 'nullable|integer',
+
+            'regions' => 'required|array|min:1',
+            'regions.*' => 'integer',
         ]);
 
         if ($validator->fails()) {
@@ -67,9 +72,12 @@ class WorkplaceController extends Controller
         }
 
         try {
-            $workplace = $this->workplaceService->store($request->only([
+            $agency = $this->agencyService->store($request->only([
                 'name',
-                'address_id',
+                'full_name',
+                'brand_color',
+                'logo_id',
+                'regions',
             ]));
         } catch (Exception $exception) {
             return response()->json([
@@ -80,15 +88,20 @@ class WorkplaceController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'data' => $workplace,
+            'data' => $agency,
         ], 201);
     }
 
-    public function update(Request $request, Workplace $workplace)
+    public function update(Request $request, Agency $agency)
     {
         $validator = Validator::make($request->all(), [
             'name' => 'string|max:255',
-            'address_id' => 'integer|exists:addresses,id',
+            'full_name' => 'string|max:255',
+            'brand_color' => 'string|max:255',
+            'logo_id' => 'nullable|integer',
+
+            'regions' => 'array|min:1',
+            'regions.*' => 'integer',
         ]);
 
         if ($validator->fails()) {
@@ -101,10 +114,13 @@ class WorkplaceController extends Controller
         }
 
         try {
-            $workplace = $this->workplaceService->update($request->only([
+            $agency = $this->agencyService->update($request->only([
                 'name',
-                'address_id',
-            ]), $workplace);
+                'full_name',
+                'brand_color',
+                'logo_id',
+                'regions',
+            ]), $agency);
         } catch (Exception $exception) {
             return response()->json([
                 'status' => 'fail',
@@ -114,14 +130,16 @@ class WorkplaceController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'data' => $workplace,
+            'data' => $agency,
         ], 200);
     }
 
-    public function destroy(Workplace $workplace)
+    public function show(Agency $agency)
     {
         try {
-            $this->workplaceService->delete($workplace);
+            $agency = $this->agencyService->get($agency);
+
+            $agency->load('regions');
         } catch (Exception $exception) {
             return response()->json([
                 'status' => 'fail',
@@ -131,7 +149,7 @@ class WorkplaceController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'message' => 'Workplace removed successfully',
+            'data' => $agency,
         ], 200);
     }
 }

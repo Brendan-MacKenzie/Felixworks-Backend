@@ -1,6 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\MediaController;
+use App\Http\Controllers\AgencyController;
 use App\Http\Controllers\BranchController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\OfficeController;
@@ -34,6 +36,20 @@ Route::group(['middleware' => ['api']], function () {
 Route::group(['middleware' => ['api', 'authserver']], function () {
     Route::get('/hello/auth', function () {
         echo 'hello authenticated!';
+    });
+
+    Route::group(['prefix' => '/agencies'], function () {
+        Route::get('/', [AgencyController::class, 'index']);
+        Route::post('/', [AgencyController::class, 'store']);
+        Route::patch('/{agency}', [AgencyController::class, 'update']);
+        Route::get('/{agency}', [AgencyController::class, 'show']);
+    });
+
+    Route::group(['prefix' => '/media'], function () {
+        Route::post('/', [MediaController::class, 'store']);
+        Route::delete('/{media}', [MediaController::class, 'destroy']);
+        Route::get('/{media}', [MediaController::class, 'show']);
+        Route::get('/{media}/base64', [MediaController::class, 'base64']);
     });
 
     Route::group(['prefix' => '/offices'], function () {

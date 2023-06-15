@@ -2,7 +2,10 @@
 
 namespace App\Services;
 
+use Exception;
 use App\Models\Office;
+use App\Models\Address;
+use App\Enums\AddressType;
 
 class OfficeService extends Service
 {
@@ -10,31 +13,44 @@ class OfficeService extends Service
     {
         $data['created_by'] = auth()->user()->id;
 
+        if (key_exists('address_id', $data)) {
+            $this->checkAddress($data['address_id']);
+        }
+
         return Office::create($data);
     }
 
-    public function update(array $data, int $id)
+    public function update(array $data, mixed $office)
     {
-        $office = $this->get($id);
+        if (key_exists('address_id', $data)) {
+            $this->checkAddress($data['address_id']);
+        }
 
         $office->update($data);
 
         return $office;
     }
 
-    public function delete(int $id)
+    public function delete(mixed $office)
     {
-        $office = $this->get($id);
-
         $office->delete();
     }
 
-    public function get(int $id, bool $withArchived = false)
+    public function get(mixed $office)
     {
-        return Office::FindOrFail($id);
+        return $office;
     }
 
     public function list(int $perPage = 25, string $query = null)
     {
+    }
+
+    private function checkAddress(int $addressId)
+    {
+        $address = Address::findOrFail($addressId);
+
+        if ($address->type !== AddressType::Office) {
+            throw new Exception('This address is not an office address.', 403);
+        }
     }
 }

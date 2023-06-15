@@ -12,7 +12,6 @@ class Address extends Model
     use SoftDeletes;
 
     protected $fillable = [
-        'branch_id',
         'name',
         'type',
         'street_name',
@@ -25,7 +24,12 @@ class Address extends Model
 
     public function branch()
     {
-        return $this->belongsTo(Branch::class, 'branch_id');
+        return $this->hasOne(Branch::class, 'address_id');
+    }
+
+    public function branches()
+    {
+        return $this->belongsToMany(Branch::class, 'branch_addresses');
     }
 
     public function createdBy()
@@ -36,5 +40,10 @@ class Address extends Model
     public function postings()
     {
         return $this->hasMany(Posting::class, 'address_id');
+    }
+
+    public function office()
+    {
+        return $this->hasOne(Office::class, 'address_id');
     }
 }

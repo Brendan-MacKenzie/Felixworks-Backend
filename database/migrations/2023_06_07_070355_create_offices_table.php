@@ -1,11 +1,10 @@
 <?php
 
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -22,11 +21,10 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->string('website')->nullable();
             $table->string('phone');
-            $table->string('street_name');
-            $table->string('number');
-            $table->string('zip_code');
-            $table->string('city');
-            $table->string('country');
+            $table->unsignedBigInteger('address_id')->nullable();
+            $table->foreign('address_id')->references('id')->on('addresses')
+                ->onDelete('set null')
+                ->onUpdate('restrict');
             $table->unsignedBigInteger('created_by')->nullable();
             $table->foreign('created_by')->references('id')->on('users')
                 ->onDelete('set null')
@@ -42,6 +40,7 @@ return new class extends Migration
         Schema::table('offices', function (Blueprint $table) {
             $table->dropForeign('offices_agency_id_foreign');
             $table->dropForeign('offices_created_by_foreign');
+            $table->dropForeign('offices_address_id_foreign');
         });
 
         Schema::dropIfExists('offices');

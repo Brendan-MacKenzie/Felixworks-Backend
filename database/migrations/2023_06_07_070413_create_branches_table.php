@@ -21,6 +21,9 @@ return new class extends Migration {
                 ->onDelete('cascade')
                 ->onUpdate('restrict');
             $table->unsignedBigInteger('address_id')->nullable();
+            $table->foreign('address_id')->references('id')->on('addresses')
+                ->onDelete('set null')
+                ->onUpdate('restrict');
             $table->unsignedBigInteger('created_by')->nullable();
             $table->foreign('created_by')->references('id')->on('users')
                 ->onDelete('set null')
@@ -42,6 +45,7 @@ return new class extends Migration {
         Schema::table('branches', function (Blueprint $table) {
             $table->dropForeign('branches_client_id_foreign');
             $table->dropForeign('branches_created_by_foreign');
+            $table->dropForeign('branches_address_id_foreign');
         });
 
         Schema::table('users', function (Blueprint $table) {

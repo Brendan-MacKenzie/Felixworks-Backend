@@ -10,20 +10,22 @@ class RegionService extends Service
     {
     }
 
-    public function update(array $data, int $id)
+    public function update(array $data, mixed $region)
     {
     }
 
-    public function delete(int $id)
+    public function delete(mixed $region)
     {
     }
 
-    public function get(int $id, bool $withArchived = false)
+    public function get(mixed $region)
     {
     }
 
     public function list(int $perPage = 25, string $query = null)
     {
-        return Region::where('name', 'like', "%{$query}%")->get();
+        return Region::when(!is_null($query), function ($q) use ($query) {
+            $q->where('name', 'like', "%{$query}%");
+        })->get();
     }
 }
