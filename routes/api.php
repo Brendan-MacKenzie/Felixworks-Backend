@@ -68,6 +68,7 @@ Route::group(['middleware' => ['api', 'authserver']], function () {
     });
 
     Route::group(['prefix' => '/clients'], function () {
+        Route::get('/', [ClientController::class, 'index']);
         Route::post('/', [ClientController::class, 'store']);
     });
 });

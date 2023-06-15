@@ -15,6 +15,39 @@ class ClientController extends Controller
         $this->clientService = $clientService;
     }
 
+    public function index(Request $request)
+    {
+        $validator = Validator::make(request()->all(), [
+            'search' => 'string',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'fail',
+                'message' => __('exceptions.validation'),
+                'issue' => $validator->failed(),
+                'errors' => $validator->errors(),
+            ], 400);
+        }
+
+        $search = $request->input('search', null);
+        $perPage = $request->input('per_page', 2);
+
+        try {
+            $clients = $this->clientService->list($perPage, $search);
+        } catch (Exception $exception) {
+            return response()->json([
+                'status' => 'fail',
+                'message' => $exception->getMessage(),
+            ], 500);
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $clients,
+        ], 200);
+    }
+
     public function Store(Request $request)
     {
         $validator = Validator::make($request->all(), [
