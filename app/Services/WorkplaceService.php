@@ -22,6 +22,9 @@ class WorkplaceService extends Service
 
     public function delete(int $id)
     {
+        $workplace = $this->get($id);
+
+        $workplace->delete();
     }
 
     public function get(int $id)
