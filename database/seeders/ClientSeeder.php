@@ -20,7 +20,7 @@ class ClientSeeder extends Seeder
      */
     public function run(): void
     {
-        $regions = Region::all()->pluck('id')->all();
+        $regions = Region::inRandomOrder()->limit(10)->pluck('id')->all();
 
         $client = Client::updateOrCreate([
             'name' => 'Klant 1',

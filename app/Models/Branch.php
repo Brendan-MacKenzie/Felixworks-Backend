@@ -52,4 +52,14 @@ class Branch extends Model
     {
         return $this->belongsToMany(Employee::class, 'branch_employees');
     }
+
+    public function pools()
+    {
+        return $this->hasMany(Pool::class, 'branch_id');
+    }
+
+    public function users()
+    {
+        return $this->hasMany(User::class, 'branch_id');
+    }
 }

@@ -16,7 +16,7 @@ class AgencySeeder extends Seeder
      */
     public function run(): void
     {
-        $regions = Region::all()->pluck('id')->all();
+        $regions = Region::inRandomOrder()->limit(10)->pluck('id')->all();
 
         $agency = Agency::updateOrCreate([
             'name' => 'Felix Uitzendbureau',

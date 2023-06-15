@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use Exception;
-use Exception;
 use App\Models\Client;
 use Illuminate\Http\Request;
 use App\Services\ClientService;
@@ -43,18 +42,12 @@ class ClientController extends Controller
     public function show(Client $client)
     {
         try {
-            $client = $this->clientService->get($client->id);
+            $client = $this->clientService->get($client);
         } catch (Exception $exception) {
-            return response()->json([
-                'status' => 'fail',
-                'message' => $exception->getMessage(),
-            ], 500);
+            $this->failedExceptionResponse($exception);
         }
 
-        return response()->json([
-            'status' => 'success',
-            'data' => $client,
-        ], 200);
+        $this->successResponse($client);
     }
 
     public function store(Request $request)

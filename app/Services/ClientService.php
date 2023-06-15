@@ -23,7 +23,9 @@ class ClientService extends Service
 
     public function get(mixed $client)
     {
-        //todo
+        $client->load(['branches', 'branches.addresses', 'branches.pools', 'branches.users', 'branches.regions']);
+
+        return $client;
     }
 
     public function list(int $perPage = 25, string $query = null)

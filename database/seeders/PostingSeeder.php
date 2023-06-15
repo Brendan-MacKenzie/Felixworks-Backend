@@ -20,7 +20,8 @@ class PostingSeeder extends Seeder
      */
     public function run(): void
     {
-        $regions = Region::all()->pluck('id')->all();
+        $regions = Region::inRandomOrder()->limit(10)->pluck('id')->all();
+
         $pools = Pool::all()->pluck('id')->all();
 
         $startAt = Carbon::now()->addDays(7);
