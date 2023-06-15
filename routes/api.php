@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ClientController;
 use App\Http\Controllers\OfficeController;
 use App\Http\Controllers\RegionController;
 use App\Http\Controllers\WorkplaceController;
@@ -48,5 +49,9 @@ Route::group(['middleware' => ['api']], function () {
 
     Route::group(['prefix' => '/regions'], function () {
         Route::get('/', [RegionController::class, 'index']);
+    });
+
+    Route::group(['prefix' => '/clients'], function () {
+        Route::post('/', [ClientController::class, 'store']);
     });
 });
