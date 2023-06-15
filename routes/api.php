@@ -30,7 +30,7 @@ Route::group(['middleware' => ['api']], function () {
  * Authenticated Routes
  */
 
-Route::group(['middleware' => ['api']], function () {
+Route::group(['middleware' => ['api', 'authserver']], function () {
     Route::get('/hello/auth', function () {
         echo 'hello authenticated!';
     });
@@ -52,6 +52,7 @@ Route::group(['middleware' => ['api']], function () {
     });
 
     Route::group(['prefix' => '/clients'], function () {
+        Route::get('/', [ClientController::class, 'index']);
         Route::post('/', [ClientController::class, 'store']);
     });
 });

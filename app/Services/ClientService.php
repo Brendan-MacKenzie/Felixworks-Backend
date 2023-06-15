@@ -8,9 +8,7 @@ class ClientService extends Service
 {
     public function store(array $data)
     {
-        // $data['created_by'] = auth()->user()->id;
-
-        $data['created_by'] = 1;
+        $data['created_by'] = auth()->user()->id;
 
         return Client::create($data);
     }
@@ -29,5 +27,6 @@ class ClientService extends Service
 
     public function list(int $perPage = 25, string $query = null)
     {
+        return Client::where('name', 'like', "%{$query}%")->paginate($perPage);
     }
 }
