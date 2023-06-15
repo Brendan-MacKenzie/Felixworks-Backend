@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Exception;
-use App\Models\Workplace;
+use App\Models\Agency;
 use Illuminate\Http\Request;
 use App\Services\AgencyService;
 use Illuminate\Support\Facades\Validator;
@@ -78,6 +78,8 @@ class AgencyController extends Controller
                 'logo_id',
                 'regions',
             ]));
+
+            $agency->load('regions');
         } catch (Exception $exception) {
             return response()->json([
                 'status' => 'fail',
@@ -91,11 +93,16 @@ class AgencyController extends Controller
         ], 201);
     }
 
-    public function update(Request $request, Workplace $workplace)
+    public function update(Request $request, Agency $agency)
     {
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
-            'address_id' => 'required|integer|exists:addresses,id',
+            'name' => 'string|max:255',
+            'full_name' => 'string|max:255',
+            'brand_color' => 'string|max:255',
+            'logo_id' => 'nullable|integer',
+
+            'regions' => 'array|min:1',
+            'regions.*' => 'integer',
         ]);
 
         if ($validator->fails()) {
@@ -108,10 +115,15 @@ class AgencyController extends Controller
         }
 
         try {
-            $workplace = $this->workplaceService->update($request->only([
+            $agency = $this->agencyService->update($request->only([
                 'name',
-                'address_id',
-            ]), $workplace->id);
+                'full_name',
+                'brand_color',
+                'logo_id',
+                'regions',
+            ]), $agency->id);
+
+            $agency->load('regions');
         } catch (Exception $exception) {
             return response()->json([
                 'status' => 'fail',
@@ -121,7 +133,7 @@ class AgencyController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'data' => $workplace,
+            'data' => $agency,
         ], 200);
     }
 }

@@ -25,18 +25,22 @@ class AgencyService extends Service
 
     public function update(array $data, int $id)
     {
-        $workplace = $this->get($id);
+        $agency = $this->get($id);
 
-        $workplace->update($data);
+        $agency->update($data);
 
-        return $workplace;
+        if (key_exists('regions', $data)) {
+            $agency->regions()->sync($data['regions']);
+        }
+
+        return $agency;
     }
 
     public function delete(int $id)
     {
     }
 
-    public function get(int $id, bool $withArchived = false)
+    public function get(int $id)
     {
         return Agency::FindOrFail($id);
     }

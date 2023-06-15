@@ -29,7 +29,7 @@ class OfficeService extends Service
         $office->delete();
     }
 
-    public function get(int $id, bool $withArchived = false)
+    public function get(int $id)
     {
         return Office::FindOrFail($id);
     }

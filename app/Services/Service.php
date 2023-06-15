@@ -10,7 +10,7 @@ abstract class Service
 
     abstract public function delete(int $id);
 
-    abstract public function get(int $id, bool $withArchived = false);
+    abstract public function get(int $id);
 
     abstract public function list(int $perPage = 25, string $query = null);
 }

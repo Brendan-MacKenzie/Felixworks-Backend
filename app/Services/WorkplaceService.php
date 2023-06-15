@@ -24,7 +24,7 @@ class WorkplaceService extends Service
     {
     }
 
-    public function get(int $id, bool $withArchived = false)
+    public function get(int $id)
     {
         return Workplace::FindOrFail($id);
     }
