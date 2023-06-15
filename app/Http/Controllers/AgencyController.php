@@ -32,10 +32,11 @@ class AgencyController extends Controller
             ], 400);
         }
 
+        $perPage = $request->input('per_page', 25);
         $search = $request->input('search', null);
 
         try {
-            $workplaces = $this->workplaceService->list(0, $search);
+            $agencies = $this->agencyService->list($perPage, $search);
         } catch (Exception $exception) {
             return response()->json([
                 'status' => 'fail',
@@ -45,7 +46,7 @@ class AgencyController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'data' => $workplaces,
+            'data' => $agencies,
         ], 200);
     }
 

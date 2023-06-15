@@ -47,6 +47,8 @@ class AgencyService extends Service
 
     public function list(int $perPage = 25, string $query = null)
     {
-        return Agency::where('name', 'like', "%{$query}%")->get();
+        return Agency::when(!is_null($query), function ($q) use ($query) {
+            $q->where('name', 'like', "%{$query}%");
+        })->with('regions')->paginate($perPage);
     }
 }
