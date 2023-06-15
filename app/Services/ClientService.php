@@ -23,6 +23,7 @@ class ClientService extends Service
 
     public function get(int $id, bool $withArchived = false)
     {
+        //todo
     }
 
     public function list(int $perPage = 25, string $query = null)

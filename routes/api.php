@@ -55,6 +55,7 @@ Route::group(['middleware' => ['api', 'authserver']], function () {
 
     Route::group(['prefix' => '/clients'], function () {
         Route::get('/', [ClientController::class, 'index']);
+        Route::get('/{client}', [ClientController::class, 'show']);
         Route::post('/', [ClientController::class, 'store']);
     });
 

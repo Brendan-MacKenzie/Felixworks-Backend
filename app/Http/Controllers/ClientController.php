@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Exception;
+use App\Models\Client;
 use Illuminate\Http\Request;
 use App\Services\ClientService;
 use Illuminate\Support\Facades\Validator;
@@ -32,7 +33,7 @@ class ClientController extends Controller
         }
 
         $search = $request->input('search', null);
-        $perPage = $request->input('per_page', 2);
+        $perPage = $request->input('per_page', 25);
 
         try {
             $clients = $this->clientService->list($perPage, $search);
@@ -46,6 +47,23 @@ class ClientController extends Controller
         return response()->json([
             'status' => 'success',
             'data' => $clients,
+        ], 200);
+    }
+
+    public function show(Client $client)
+    {
+        try {
+            $client = $this->clientService->get($client->id);
+        } catch (Exception $exception) {
+            return response()->json([
+                'status' => 'fail',
+                'message' => $exception->getMessage(),
+            ], 500);
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $client,
         ], 200);
     }
 
