@@ -5,6 +5,7 @@ namespace App\Services;
 use Exception;
 use App\Models\Media;
 use App\Enums\MediaType;
+use Illuminate\Support\Facades\Storage;
 
 class MediaService extends Service
 {
@@ -42,10 +43,18 @@ class MediaService extends Service
 
     public function delete(int $id)
     {
+        $media = $this->get($id);
+        $fullpath = $this->getFullPath($media->type, $media->name, false);
+        if (!Storage::disk('media')->delete($fullpath)) {
+            throw new Exception('Could not delete image item.', 500);
+        }
+
+        $media->delete();
     }
 
     public function get(int $id)
     {
+        return Media::findOrFail($id);
     }
 
     public function list(int $perPage = 25, string $query = null)
@@ -83,18 +92,22 @@ class MediaService extends Service
         return $clean;
     }
 
-    private function getFullPath(int $type, string $filename)
+    private function getFullPath(int $type, string $filename, bool $fromRoot = true)
     {
         switch($type) {
             case MediaType::Avatar:
-                $fullpath = storage_path('app/avatars/'.$filename);
+                $fullpath = 'avatars/'.$filename;
                 break;
             case MediaType::Logo:
-                $fullpath = storage_path('app/logos/'.$filename);
+                $fullpath = 'logos/'.$filename;
                 break;
             default:
-                $fullpath = storage_path('app/default/'.$filename);
+                $fullpath = 'default/'.$filename;
                 break;
+        }
+
+        if ($fromRoot) {
+            $fullpath = storage_path('app/'.$fullpath);
         }
 
         return $fullpath;

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Exception;
+use App\Models\Media;
 use App\Enums\MediaType;
 use Illuminate\Http\Request;
 use App\Services\MediaService;
@@ -48,6 +49,23 @@ class MediaController extends Controller
         return response()->json([
             'status' => 'success',
             'data' => $media,
+        ], 201);
+    }
+
+    public function destroy(Media $media)
+    {
+        try {
+            $media = $this->mediaService->delete($media->id);
+        } catch (Exception $exception) {
+            return response()->json([
+                'status' => 'fail',
+                'message' => $exception->getMessage(),
+            ], 500);
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Media item is removed.',
         ], 201);
     }
 }
