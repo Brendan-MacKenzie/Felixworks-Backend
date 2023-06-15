@@ -49,6 +49,23 @@ class BranchController extends Controller
         ], 200);
     }
 
+    public function show(Branch $branch)
+    {
+        try {
+            $branch = $this->branchService->get($branch->id);
+        } catch (Exception $exception) {
+            return response()->json([
+                'status' => 'fail',
+                'message' => $exception->getMessage(),
+            ], 500);
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $branch,
+        ], 200);
+    }
+
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [

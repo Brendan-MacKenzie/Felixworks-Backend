@@ -35,6 +35,12 @@ class BranchService extends Service
 
     public function get(int $id, bool $withArchived = false)
     {
+        $query = Branch::query()
+        ->with('addresses', 'regions', 'createdBy', 'coordinators', 'employees');
+
+        $branch = $query->findOrFail($id);
+
+        return $branch;
     }
 
     public function list(int $perPage = 25, string $query = null)
