@@ -59,6 +59,7 @@ Route::group(['middleware' => ['api', 'authserver']], function () {
     });
 
     Route::group(['prefix' => '/branches'], function () {
+        Route::get('/', [BranchController::class, 'index']);
         Route::post('/', [BranchController::class, 'store']);
         Route::patch('/{branch}', [BranchController::class, 'update']);
     });

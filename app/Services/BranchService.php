@@ -39,5 +39,6 @@ class BranchService extends Service
 
     public function list(int $perPage = 25, string $query = null)
     {
+        return Branch::where('name', 'like', "%{$query}%")->get();
     }
 }
