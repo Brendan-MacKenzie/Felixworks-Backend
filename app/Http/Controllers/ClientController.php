@@ -25,12 +25,7 @@ class ClientController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json([
-                'status' => 'fail',
-                'message' => __('exceptions.validation'),
-                'issue' => $validator->failed(),
-                'errors' => $validator->errors(),
-            ], 400);
+            $this->failedValidationResponse($validator);
         }
 
         $search = $request->input('search', null);
@@ -39,16 +34,10 @@ class ClientController extends Controller
         try {
             $clients = $this->clientService->list($perPage, $search);
         } catch (Exception $exception) {
-            return response()->json([
-                'status' => 'fail',
-                'message' => $exception->getMessage(),
-            ], 500);
+            $this->failedExceptionResponse($exception);
         }
 
-        return response()->json([
-            'status' => 'success',
-            'data' => $clients,
-        ], 200);
+        $this->successResponse($clients);
     }
 
     public function show(Client $client)
@@ -75,12 +64,7 @@ class ClientController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json([
-                'status' => 'fail',
-                'message' => __('exceptions.validation'),
-                'issue' => $validator->failed(),
-                'errors' => $validator->errors(),
-            ], 400);
+            $this->failedValidationResponse($validator);
         }
 
         try {
@@ -88,15 +72,9 @@ class ClientController extends Controller
                 'name',
             ]));
         } catch (Exception $exception) {
-            return response()->json([
-                'status' => 'fail',
-                'message' => $exception->getMessage(),
-            ], 500);
+            $this->failedExceptionResponse($exception);
         }
 
-        return response()->json([
-            'status' => 'success',
-            'data' => $client,
-        ], 201);
+        $this->successResponse($client);
     }
 }

@@ -24,12 +24,7 @@ class BranchController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json([
-                'status' => 'fail',
-                'message' => __('exceptions.validation'),
-                'issue' => $validator->failed(),
-                'errors' => $validator->errors(),
-            ], 400);
+            $this->failedValidationResponse($validator);
         }
 
         $perPage = $request->input('per_page', 25);
@@ -38,16 +33,10 @@ class BranchController extends Controller
         try {
             $branches = $this->branchService->list($perPage, $search);
         } catch (Exception $exception) {
-            return response()->json([
-                'status' => 'fail',
-                'message' => $exception->getMessage(),
-            ], 500);
+            $this->failedExceptionResponse($exception);
         }
 
-        return response()->json([
-            'status' => 'success',
-            'data' => $branches,
-        ], 200);
+        $this->successResponse($branches);
     }
 
     public function show(Branch $branch)
@@ -55,16 +44,10 @@ class BranchController extends Controller
         try {
             $branch = $this->branchService->get($branch);
         } catch (Exception $exception) {
-            return response()->json([
-                'status' => 'fail',
-                'message' => $exception->getMessage(),
-            ], 500);
+            $this->failedExceptionResponse($exception);
         }
 
-        return response()->json([
-            'status' => 'success',
-            'data' => $branch,
-        ], 200);
+        $this->successResponse($branch);
     }
 
     public function store(Request $request)
@@ -80,12 +63,7 @@ class BranchController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json([
-                'status' => 'fail',
-                'message' => __('exceptions.validation'),
-                'issue' => $validator->failed(),
-                'errors' => $validator->errors(),
-            ], 400);
+            $this->failedValidationResponse($validator);
         }
 
         try {
@@ -98,16 +76,10 @@ class BranchController extends Controller
                 'regions',
             ]));
         } catch (Exception $exception) {
-            return response()->json([
-                'status' => 'fail',
-                'message' => $exception->getMessage(),
-            ], 500);
+            $this->failedExceptionResponse($exception);
         }
 
-        return response()->json([
-            'status' => 'success',
-            'data' => $branch,
-        ], 201);
+        $this->successResponse($branch);
     }
 
     public function update(Request $request, Branch $branch)
@@ -123,12 +95,7 @@ class BranchController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json([
-                'status' => 'fail',
-                'message' => __('exceptions.validation'),
-                'issue' => $validator->failed(),
-                'errors' => $validator->errors(),
-            ], 400);
+            $this->failedValidationResponse($validator);
         }
 
         try {
@@ -141,15 +108,9 @@ class BranchController extends Controller
                 'regions',
             ]), $branch);
         } catch (Exception $exception) {
-            return response()->json([
-                'status' => 'fail',
-                'message' => $exception->getMessage(),
-            ], 500);
+            $this->failedExceptionResponse($exception);
         }
 
-        return response()->json([
-            'status' => 'success',
-            'data' => $branch,
-        ], 200);
+        $this->successResponse($branch);
     }
 }

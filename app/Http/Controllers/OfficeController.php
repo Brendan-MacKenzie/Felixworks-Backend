@@ -31,12 +31,7 @@ class OfficeController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json([
-                'status' => 'fail',
-                'message' => __('exceptions.validation'),
-                'issue' => $validator->failed(),
-                'errors' => $validator->errors(),
-            ], 400);
+            $this->failedValidationResponse($validator);
         }
 
         try {
@@ -49,16 +44,10 @@ class OfficeController extends Controller
                 'address_id',
             ]));
         } catch (Exception $exception) {
-            return response()->json([
-                'status' => 'fail',
-                'message' => $exception->getMessage(),
-            ], 500);
+            $this->failedExceptionResponse($exception);
         }
 
-        return response()->json([
-            'status' => 'success',
-            'data' => $office,
-        ], 201);
+        $this->successResponse($office);
     }
 
     public function update(Request $request, Office $office)
@@ -74,12 +63,7 @@ class OfficeController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json([
-                'status' => 'fail',
-                'message' => __('exceptions.validation'),
-                'issue' => $validator->failed(),
-                'errors' => $validator->errors(),
-            ], 400);
+            $this->failedValidationResponse($validator);
         }
 
         try {
@@ -92,16 +76,10 @@ class OfficeController extends Controller
                 'address_id',
             ]), $office);
         } catch (Exception $exception) {
-            return response()->json([
-                'status' => 'fail',
-                'message' => $exception->getMessage(),
-            ], 500);
+            $this->failedExceptionResponse($exception);
         }
 
-        return response()->json([
-            'status' => 'success',
-            'data' => $office,
-        ], 200);
+        $this->successResponse($office);
     }
 
     public function destroy(Office $office)
@@ -109,15 +87,9 @@ class OfficeController extends Controller
         try {
             $this->officeService->delete($office);
         } catch (Exception $exception) {
-            return response()->json([
-                'status' => 'fail',
-                'message' => $exception->getMessage(),
-            ], 500);
+            $this->failedExceptionResponse($exception);
         }
 
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Office removed successfully',
-        ], 200);
+        $this->messageResponse('Office removed successfully');
     }
 }

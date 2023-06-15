@@ -24,12 +24,7 @@ class AgencyController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json([
-                'status' => 'fail',
-                'message' => __('exceptions.validation'),
-                'issue' => $validator->failed(),
-                'errors' => $validator->errors(),
-            ], 400);
+            $this->failedValidationResponse($validator);
         }
 
         $perPage = $request->input('per_page', 25);
@@ -44,10 +39,7 @@ class AgencyController extends Controller
             ], 500);
         }
 
-        return response()->json([
-            'status' => 'success',
-            'data' => $agencies,
-        ], 200);
+        $this->successResponse($agencies);
     }
 
     public function store(Request $request)
@@ -63,12 +55,7 @@ class AgencyController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json([
-                'status' => 'fail',
-                'message' => __('exceptions.validation'),
-                'issue' => $validator->failed(),
-                'errors' => $validator->errors(),
-            ], 400);
+            $this->failedValidationResponse($validator);
         }
 
         try {
@@ -80,16 +67,10 @@ class AgencyController extends Controller
                 'regions',
             ]));
         } catch (Exception $exception) {
-            return response()->json([
-                'status' => 'fail',
-                'message' => $exception->getMessage(),
-            ], 500);
+            $this->failedExceptionResponse($exception);
         }
 
-        return response()->json([
-            'status' => 'success',
-            'data' => $agency,
-        ], 201);
+        $this->successResponse($agency);
     }
 
     public function update(Request $request, Agency $agency)
@@ -105,12 +86,7 @@ class AgencyController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json([
-                'status' => 'fail',
-                'message' => __('exceptions.validation'),
-                'issue' => $validator->failed(),
-                'errors' => $validator->errors(),
-            ], 400);
+            $this->failedValidationResponse($validator);
         }
 
         try {
@@ -122,16 +98,10 @@ class AgencyController extends Controller
                 'regions',
             ]), $agency);
         } catch (Exception $exception) {
-            return response()->json([
-                'status' => 'fail',
-                'message' => $exception->getMessage(),
-            ], 500);
+            $this->failedExceptionResponse($exception);
         }
 
-        return response()->json([
-            'status' => 'success',
-            'data' => $agency,
-        ], 200);
+        $this->successResponse($agency);
     }
 
     public function show(Agency $agency)
@@ -141,15 +111,9 @@ class AgencyController extends Controller
 
             $agency->load('regions');
         } catch (Exception $exception) {
-            return response()->json([
-                'status' => 'fail',
-                'message' => $exception->getMessage(),
-            ], 500);
+            $this->failedExceptionResponse($exception);
         }
 
-        return response()->json([
-            'status' => 'success',
-            'data' => $agency,
-        ], 200);
+        $this->successResponse($agency);
     }
 }

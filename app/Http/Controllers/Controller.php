@@ -39,4 +39,26 @@ class Controller extends BaseController
             'message' => $message,
         ], 500);
     }
+
+    public function successResponse($data, $extra = null)
+    {
+        $json = [
+            'status' => 'success',
+            'data' => $data,
+        ];
+
+        if ($extra) {
+            $json['extra'] = $extra;
+        }
+
+        return response()->json($json, 200);
+    }
+
+    public function messageResponse($message)
+    {
+        return response()->json([
+            'status' => 'success',
+            'message' => $message,
+        ], 200);
+    }
 }

@@ -23,12 +23,7 @@ class RegionController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json([
-                'status' => 'fail',
-                'message' => __('exceptions.validation'),
-                'issue' => $validator->failed(),
-                'errors' => $validator->errors(),
-            ], 400);
+            $this->failedValidationResponse($validator);
         }
 
         $perPage = $request->input('per_page', 25);
@@ -37,10 +32,7 @@ class RegionController extends Controller
         try {
             $regions = $this->regionService->list($perPage, $search);
         } catch (Exception $exception) {
-            return response()->json([
-                'status' => 'fail',
-                'message' => $exception->getMessage(),
-            ], 500);
+            $this->failedExceptionResponse($exception);
         }
 
         return response()->json([

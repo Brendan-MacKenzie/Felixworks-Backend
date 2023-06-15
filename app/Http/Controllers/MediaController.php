@@ -26,12 +26,7 @@ class MediaController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json([
-                'status' => 'fail',
-                'message' => __('exceptions.validation'),
-                'issue' => $validator->failed(),
-                'errors' => $validator->errors(),
-            ], 400);
+            $this->failedValidationResponse($validator);
         }
 
         try {
@@ -40,16 +35,10 @@ class MediaController extends Controller
                 'type',
             ]));
         } catch (Exception $exception) {
-            return response()->json([
-                'status' => 'fail',
-                'message' => $exception->getMessage(),
-            ], 500);
+            $this->failedExceptionResponse($exception);
         }
 
-        return response()->json([
-            'status' => 'success',
-            'data' => $media,
-        ], 201);
+        $this->successResponse($media);
     }
 
     public function show(Media $media)
@@ -57,10 +46,7 @@ class MediaController extends Controller
         try {
             $file = $this->mediaService->getMediaFile($media);
         } catch (Exception $exception) {
-            return response()->json([
-                'status' => 'fail',
-                'message' => $exception->getMessage(),
-            ], 500);
+            $this->failedExceptionResponse($exception);
         }
 
         return $file;
@@ -71,17 +57,10 @@ class MediaController extends Controller
         try {
             $data = $this->mediaService->getMediaFile($media, true);
         } catch (Exception $exception) {
-            return response()->json([
-                'status' => 'fail',
-                'message' => $exception->getMessage(),
-            ], 500);
+            $this->failedExceptionResponse($exception);
         }
 
-        return response()->json([
-            'status' => 'success',
-            'media' => $media,
-            'data' => $data,
-        ], 201);
+        $this->successResponse($media, $data);
     }
 
     public function destroy(Media $media)
@@ -89,15 +68,9 @@ class MediaController extends Controller
         try {
             $media = $this->mediaService->delete($media);
         } catch (Exception $exception) {
-            return response()->json([
-                'status' => 'fail',
-                'message' => $exception->getMessage(),
-            ], 500);
+            $this->failedExceptionResponse($exception);
         }
 
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Media item is removed.',
-        ], 201);
+        $this->messageResponse('Media item is removed.');
     }
 }
