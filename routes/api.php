@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\MediaController;
 use App\Http\Controllers\AgencyController;
+use App\Http\Controllers\BranchController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\OfficeController;
 use App\Http\Controllers\RegionController;
@@ -71,5 +72,9 @@ Route::group(['middleware' => ['api', 'authserver']], function () {
     Route::group(['prefix' => '/clients'], function () {
         Route::get('/', [ClientController::class, 'index']);
         Route::post('/', [ClientController::class, 'store']);
+    });
+
+    Route::group(['prefix' => '/branches'], function () {
+        Route::post('/', [BranchController::class, 'store']);
     });
 });
