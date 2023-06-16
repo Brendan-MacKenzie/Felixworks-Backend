@@ -16,11 +16,6 @@ class Workplace extends Model
         'address_id',
     ];
 
-    public function branch()
-    {
-        return $this->belongsTo(Branch::class, 'address_id');
-    }
-
     public function placements()
     {
         return $this->hasMany(Placement::class, 'workplace_id');

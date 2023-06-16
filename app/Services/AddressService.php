@@ -31,15 +31,17 @@ class AddressService extends Service
         return $address;
     }
 
-    public function update(array $data, mixed $office)
+    public function update(array $data, mixed $address)
     {
     }
 
-    public function delete(mixed $office)
+    public function delete(mixed $address)
     {
+        $address->workplaces()->delete();
+        $address->delete();
     }
 
-    public function get(mixed $office)
+    public function get(mixed $address)
     {
     }
 

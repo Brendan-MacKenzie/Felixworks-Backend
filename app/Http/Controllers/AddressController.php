@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Exception;
+use App\Models\Address;
 use Illuminate\Http\Request;
 use App\Services\AddressService;
 use Illuminate\Support\Facades\Validator;
@@ -50,5 +51,16 @@ class AddressController extends Controller
         }
 
         return $this->successResponse($address);
+    }
+
+    public function destroy(Address $address)
+    {
+        try {
+            $this->addressService->delete($address);
+        } catch (Exception $exception) {
+            return $this->failedExceptionResponse($exception);
+        }
+
+        return $this->messageResponse('Address and associated workplaces removed successfully');
     }
 }
