@@ -17,7 +17,17 @@ class AddressController extends Controller
         $this->addressService = $addressService;
     }
 
-    //store address
+    public function index()
+    {
+        try {
+            $addresses = $this->addressService->list();
+        } catch (Exception $exception) {
+            return $this->failedExceptionResponse($exception);
+        }
+
+        return $this->successResponse($addresses);
+    }
+
     public function store(Request $request)
     {
         // Validate input

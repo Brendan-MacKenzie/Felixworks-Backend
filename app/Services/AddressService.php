@@ -53,5 +53,8 @@ class AddressService extends Service
 
     public function list(int $perPage = 25, string $query = null)
     {
+        $addresses = Address::query()->with('workplaces')->get();
+
+        return $addresses;
     }
 }

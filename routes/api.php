@@ -84,6 +84,7 @@ Route::group(['middleware' => ['api', 'authserver']], function () {
     });
 
     Route::group(['prefix' => '/addresses'], function () {
+        Route::get('/', [AddressController::class, 'index']);
         Route::post('/', [AddressController::class, 'store']);
         Route::delete('/{address}', [AddressController::class, 'destroy']);
         Route::patch('/{address}', [AddressController::class, 'update']);
