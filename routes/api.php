@@ -8,6 +8,7 @@ use App\Http\Controllers\ClientController;
 use App\Http\Controllers\OfficeController;
 use App\Http\Controllers\RegionController;
 use App\Http\Controllers\AddressController;
+use App\Http\Controllers\PlacementController;
 use App\Http\Controllers\WorkplaceController;
 
 /*
@@ -88,5 +89,9 @@ Route::group(['middleware' => ['api', 'authserver']], function () {
         Route::post('/', [AddressController::class, 'store']);
         Route::delete('/{address}', [AddressController::class, 'destroy']);
         Route::patch('/{address}', [AddressController::class, 'update']);
+    });
+
+    Route::group(['prefix' => '/placements'], function () {
+        Route::post('/', [PlacementController::class, 'store']);
     });
 });
