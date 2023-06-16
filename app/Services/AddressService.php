@@ -33,6 +33,12 @@ class AddressService extends Service
 
     public function update(array $data, mixed $address)
     {
+        $address->update($data);
+
+        $address->refresh();
+        $address->load('workplaces');
+
+        return $address;
     }
 
     public function delete(mixed $address)
