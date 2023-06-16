@@ -31,7 +31,7 @@ class OfficeController extends Controller
         ]);
 
         if ($validator->fails()) {
-            $this->failedValidationResponse($validator);
+            return $this->failedValidationResponse($validator);
         }
 
         try {
@@ -44,10 +44,10 @@ class OfficeController extends Controller
                 'address_id',
             ]));
         } catch (Exception $exception) {
-            $this->failedExceptionResponse($exception);
+            return $this->failedExceptionResponse($exception);
         }
 
-        $this->successResponse($office);
+        return $this->successResponse($office);
     }
 
     public function update(Request $request, Office $office)
@@ -63,7 +63,7 @@ class OfficeController extends Controller
         ]);
 
         if ($validator->fails()) {
-            $this->failedValidationResponse($validator);
+            return $this->failedValidationResponse($validator);
         }
 
         try {
@@ -76,10 +76,10 @@ class OfficeController extends Controller
                 'address_id',
             ]), $office);
         } catch (Exception $exception) {
-            $this->failedExceptionResponse($exception);
+            return $this->failedExceptionResponse($exception);
         }
 
-        $this->successResponse($office);
+        return $this->successResponse($office);
     }
 
     public function destroy(Office $office)
@@ -87,9 +87,9 @@ class OfficeController extends Controller
         try {
             $this->officeService->delete($office);
         } catch (Exception $exception) {
-            $this->failedExceptionResponse($exception);
+            return $this->failedExceptionResponse($exception);
         }
 
-        $this->messageResponse('Office removed successfully');
+        return $this->messageResponse('Office removed successfully');
     }
 }

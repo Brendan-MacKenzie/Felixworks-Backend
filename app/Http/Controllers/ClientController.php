@@ -19,12 +19,12 @@ class ClientController extends Controller
 
     public function index(Request $request)
     {
-        $validator = Validator::make(request()->all(), [
+        $validator = Validator::make($request->all(), [
             'search' => 'string',
         ]);
 
         if ($validator->fails()) {
-            $this->failedValidationResponse($validator);
+            return $this->failedValidationResponse($validator);
         }
 
         $search = $request->input('search', null);
@@ -33,10 +33,10 @@ class ClientController extends Controller
         try {
             $clients = $this->clientService->list($perPage, $search);
         } catch (Exception $exception) {
-            $this->failedExceptionResponse($exception);
+            return $this->failedExceptionResponse($exception);
         }
 
-        $this->successResponse($clients);
+        return $this->successResponse($clients);
     }
 
     public function show(Client $client)
@@ -44,10 +44,10 @@ class ClientController extends Controller
         try {
             $client = $this->clientService->get($client);
         } catch (Exception $exception) {
-            $this->failedExceptionResponse($exception);
+            return $this->failedExceptionResponse($exception);
         }
 
-        $this->successResponse($client);
+        return $this->successResponse($client);
     }
 
     public function store(Request $request)
@@ -57,7 +57,7 @@ class ClientController extends Controller
         ]);
 
         if ($validator->fails()) {
-            $this->failedValidationResponse($validator);
+            return $this->failedValidationResponse($validator);
         }
 
         try {
@@ -65,9 +65,9 @@ class ClientController extends Controller
                 'name',
             ]));
         } catch (Exception $exception) {
-            $this->failedExceptionResponse($exception);
+            return  $this->failedExceptionResponse($exception);
         }
 
-        $this->successResponse($client);
+        return $this->successResponse($client);
     }
 }

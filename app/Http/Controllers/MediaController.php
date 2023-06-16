@@ -26,7 +26,7 @@ class MediaController extends Controller
         ]);
 
         if ($validator->fails()) {
-            $this->failedValidationResponse($validator);
+            return $this->failedValidationResponse($validator);
         }
 
         try {
@@ -35,10 +35,10 @@ class MediaController extends Controller
                 'type',
             ]));
         } catch (Exception $exception) {
-            $this->failedExceptionResponse($exception);
+            return $this->failedExceptionResponse($exception);
         }
 
-        $this->successResponse($media);
+        return $this->successResponse($media);
     }
 
     public function show(Media $media)
@@ -46,7 +46,7 @@ class MediaController extends Controller
         try {
             $file = $this->mediaService->getMediaFile($media);
         } catch (Exception $exception) {
-            $this->failedExceptionResponse($exception);
+            return $this->failedExceptionResponse($exception);
         }
 
         return $file;
@@ -57,10 +57,10 @@ class MediaController extends Controller
         try {
             $data = $this->mediaService->getMediaFile($media, true);
         } catch (Exception $exception) {
-            $this->failedExceptionResponse($exception);
+            return $this->failedExceptionResponse($exception);
         }
 
-        $this->successResponse($media, $data);
+        return $this->successResponse($media, $data);
     }
 
     public function destroy(Media $media)
@@ -68,9 +68,9 @@ class MediaController extends Controller
         try {
             $media = $this->mediaService->delete($media);
         } catch (Exception $exception) {
-            $this->failedExceptionResponse($exception);
+            return $this->failedExceptionResponse($exception);
         }
 
-        $this->messageResponse('Media item is removed.');
+        return $this->messageResponse('Media item is removed.');
     }
 }

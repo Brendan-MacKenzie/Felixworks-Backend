@@ -19,12 +19,12 @@ class WorkplaceController extends Controller
 
     public function index(Request $request)
     {
-        $validator = Validator::make(request()->all(), [
+        $validator = Validator::make($request->all(), [
             'search' => 'string',
         ]);
 
         if ($validator->fails()) {
-            $this->failedValidationResponse($validator);
+            return $this->failedValidationResponse($validator);
         }
 
         $perPage = $request->input('per_page', 25);
@@ -33,13 +33,10 @@ class WorkplaceController extends Controller
         try {
             $workplaces = $this->workplaceService->list($perPage, $search);
         } catch (Exception $exception) {
-            $this->failedExceptionResponse($exception);
+            return $this->failedExceptionResponse($exception);
         }
 
-        return response()->json([
-            'status' => 'success',
-            'data' => $workplaces,
-        ], 200);
+        return $this->successResponse($workplaces);
     }
 
     public function store(Request $request)
@@ -50,7 +47,7 @@ class WorkplaceController extends Controller
         ]);
 
         if ($validator->fails()) {
-            $this->failedValidationResponse($validator);
+            return $this->failedValidationResponse($validator);
         }
 
         try {
@@ -59,13 +56,10 @@ class WorkplaceController extends Controller
                 'address_id',
             ]));
         } catch (Exception $exception) {
-            $this->failedExceptionResponse($exception);
+            return $this->failedExceptionResponse($exception);
         }
 
-        return response()->json([
-            'status' => 'success',
-            'data' => $workplace,
-        ], 201);
+        return $this->successResponse($workplace);
     }
 
     public function update(Request $request, Workplace $workplace)
@@ -76,7 +70,7 @@ class WorkplaceController extends Controller
         ]);
 
         if ($validator->fails()) {
-            $this->failedValidationResponse($validator);
+            return $this->failedValidationResponse($validator);
         }
 
         try {
@@ -85,13 +79,10 @@ class WorkplaceController extends Controller
                 'address_id',
             ]), $workplace);
         } catch (Exception $exception) {
-            $this->failedExceptionResponse($exception);
+            return $this->failedExceptionResponse($exception);
         }
 
-        return response()->json([
-            'status' => 'success',
-            'data' => $workplace,
-        ], 200);
+       return $this->successResponse($workplace);
     }
 
     public function destroy(Workplace $workplace)
@@ -99,12 +90,9 @@ class WorkplaceController extends Controller
         try {
             $this->workplaceService->delete($workplace);
         } catch (Exception $exception) {
-            $this->failedExceptionResponse($exception);
+            return $this->failedExceptionResponse($exception);
         }
 
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Workplace removed successfully',
-        ], 200);
+        return $this->messageResponse('Workplace removed successfully');
     }
 }

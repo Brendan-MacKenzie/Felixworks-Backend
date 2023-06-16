@@ -19,12 +19,12 @@ class BranchController extends Controller
 
     public function index(Request $request)
     {
-        $validator = Validator::make(request()->all(), [
+        $validator = Validator::make($request->all(), [
             'search' => 'string',
         ]);
 
         if ($validator->fails()) {
-            $this->failedValidationResponse($validator);
+            return $this->failedValidationResponse($validator);
         }
 
         $perPage = $request->input('per_page', 25);
@@ -33,10 +33,10 @@ class BranchController extends Controller
         try {
             $branches = $this->branchService->list($perPage, $search);
         } catch (Exception $exception) {
-            $this->failedExceptionResponse($exception);
+            return  $this->failedExceptionResponse($exception);
         }
 
-        $this->successResponse($branches);
+        return $this->successResponse($branches);
     }
 
     public function show(Branch $branch)
@@ -44,10 +44,10 @@ class BranchController extends Controller
         try {
             $branch = $this->branchService->get($branch);
         } catch (Exception $exception) {
-            $this->failedExceptionResponse($exception);
+            return $this->failedExceptionResponse($exception);
         }
 
-        $this->successResponse($branch);
+        return $this->successResponse($branch);
     }
 
     public function store(Request $request)
@@ -63,7 +63,7 @@ class BranchController extends Controller
         ]);
 
         if ($validator->fails()) {
-            $this->failedValidationResponse($validator);
+            return $this->failedValidationResponse($validator);
         }
 
         try {
@@ -76,10 +76,10 @@ class BranchController extends Controller
                 'regions',
             ]));
         } catch (Exception $exception) {
-            $this->failedExceptionResponse($exception);
+            return $this->failedExceptionResponse($exception);
         }
 
-        $this->successResponse($branch);
+        return $this->successResponse($branch);
     }
 
     public function update(Request $request, Branch $branch)
@@ -95,7 +95,7 @@ class BranchController extends Controller
         ]);
 
         if ($validator->fails()) {
-            $this->failedValidationResponse($validator);
+            return $this->failedValidationResponse($validator);
         }
 
         try {
@@ -108,9 +108,9 @@ class BranchController extends Controller
                 'regions',
             ]), $branch);
         } catch (Exception $exception) {
-            $this->failedExceptionResponse($exception);
+            return $this->failedExceptionResponse($exception);
         }
 
-        $this->successResponse($branch);
+        return $this->successResponse($branch);
     }
 }

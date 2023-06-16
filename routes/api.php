@@ -7,6 +7,7 @@ use App\Http\Controllers\BranchController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\OfficeController;
 use App\Http\Controllers\RegionController;
+use App\Http\Controllers\AddressController;
 use App\Http\Controllers\WorkplaceController;
 
 /*
@@ -80,5 +81,9 @@ Route::group(['middleware' => ['api', 'authserver']], function () {
         Route::get('/{branch}', [BranchController::class, 'show']);
         Route::post('/', [BranchController::class, 'store']);
         Route::patch('/{branch}', [BranchController::class, 'update']);
+    });
+
+    Route::group(['prefix' => '/addresses'], function () {
+        Route::post('/', [AddressController::class, 'store']);
     });
 });

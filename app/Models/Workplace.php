@@ -25,4 +25,9 @@ class Workplace extends Model
     {
         return $this->hasMany(Placement::class, 'workplace_id');
     }
+
+    public function address()
+    {
+        return $this->belongsTo(Address::class, 'address_id');
+    }
 }

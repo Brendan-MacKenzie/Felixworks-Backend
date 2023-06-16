@@ -19,12 +19,12 @@ class AgencyController extends Controller
 
     public function index(Request $request)
     {
-        $validator = Validator::make(request()->all(), [
+        $validator = Validator::make($request->all(), [
             'search' => 'string',
         ]);
 
         if ($validator->fails()) {
-            $this->failedValidationResponse($validator);
+            return $this->failedValidationResponse($validator);
         }
 
         $perPage = $request->input('per_page', 25);
@@ -33,13 +33,10 @@ class AgencyController extends Controller
         try {
             $agencies = $this->agencyService->list($perPage, $search);
         } catch (Exception $exception) {
-            return response()->json([
-                'status' => 'fail',
-                'message' => $exception->getMessage(),
-            ], 500);
+            return $this->failedExceptionResponse($exception);
         }
 
-        $this->successResponse($agencies);
+        return $this->successResponse($agencies);
     }
 
     public function store(Request $request)
@@ -55,7 +52,7 @@ class AgencyController extends Controller
         ]);
 
         if ($validator->fails()) {
-            $this->failedValidationResponse($validator);
+            return $this->failedValidationResponse($validator);
         }
 
         try {
@@ -67,10 +64,10 @@ class AgencyController extends Controller
                 'regions',
             ]));
         } catch (Exception $exception) {
-            $this->failedExceptionResponse($exception);
+            return $this->failedExceptionResponse($exception);
         }
 
-        $this->successResponse($agency);
+        return $this->successResponse($agency);
     }
 
     public function update(Request $request, Agency $agency)
@@ -86,7 +83,7 @@ class AgencyController extends Controller
         ]);
 
         if ($validator->fails()) {
-            $this->failedValidationResponse($validator);
+            return $this->failedValidationResponse($validator);
         }
 
         try {
@@ -98,10 +95,10 @@ class AgencyController extends Controller
                 'regions',
             ]), $agency);
         } catch (Exception $exception) {
-            $this->failedExceptionResponse($exception);
+            return $this->failedExceptionResponse($exception);
         }
 
-        $this->successResponse($agency);
+        return $this->successResponse($agency);
     }
 
     public function show(Agency $agency)
@@ -111,9 +108,9 @@ class AgencyController extends Controller
 
             $agency->load('regions');
         } catch (Exception $exception) {
-            $this->failedExceptionResponse($exception);
+            return $this->failedExceptionResponse($exception);
         }
 
-        $this->successResponse($agency);
+        return $this->successResponse($agency);
     }
 }

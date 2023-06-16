@@ -18,12 +18,12 @@ class RegionController extends Controller
 
     public function index(Request $request)
     {
-        $validator = Validator::make(request()->all(), [
+        $validator = Validator::make($request->all(), [
             'search' => 'string',
         ]);
 
         if ($validator->fails()) {
-            $this->failedValidationResponse($validator);
+            return $this->failedValidationResponse($validator);
         }
 
         $perPage = $request->input('per_page', 25);
@@ -32,12 +32,9 @@ class RegionController extends Controller
         try {
             $regions = $this->regionService->list($perPage, $search);
         } catch (Exception $exception) {
-            $this->failedExceptionResponse($exception);
+            return $this->failedExceptionResponse($exception);
         }
 
-        return response()->json([
-            'status' => 'success',
-            'data' => $regions,
-        ], 200);
+        return $this->successResponse($regions);
     }
 }
