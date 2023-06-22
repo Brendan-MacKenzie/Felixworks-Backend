@@ -22,6 +22,7 @@ class PlacementTypeService extends Service
 
     public function delete(mixed $placementType)
     {
+        $placementType->delete();
     }
 
     public function get(mixed $placementType)

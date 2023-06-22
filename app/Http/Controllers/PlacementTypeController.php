@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Exception;
 use Illuminate\Http\Request;
+use App\Models\PlacementType;
 use App\Services\PlacementTypeService;
 use Illuminate\Support\Facades\Validator;
 
@@ -37,5 +38,16 @@ class PlacementTypeController extends Controller
         }
 
         return $this->successResponse($placementType);
+    }
+
+    public function destroy(PlacementType $placementType)
+    {
+        try {
+            $this->placementTypeService->delete($placementType);
+        } catch (Exception $exception) {
+            return $this->failedExceptionResponse($exception);
+        }
+
+        return $this->messageResponse('Placement Type removed successfully');
     }
 }

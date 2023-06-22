@@ -99,5 +99,6 @@ Route::group(['middleware' => ['api', 'authserver']], function () {
 
     Route::group(['prefix' => '/placement-types'], function () {
         Route::post('/', [PlacementTypeController::class, 'store']);
+        Route::delete('/{placement_type}', [PlacementTypeController::class, 'destroy']);
     });
 });
