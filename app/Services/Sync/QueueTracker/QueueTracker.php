@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Sync\QueueTracker;
+namespace App\Services\Sync\QueueTracker;
 
 use Illuminate\Support\Facades\Queue;
 
