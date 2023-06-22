@@ -35,5 +35,11 @@ class EmployeeService extends Service
 
     public function list(int $perPage = 25, string $query = null)
     {
+        return Employee::when(!is_null($query), function ($q) use ($query) {
+            $q->where('first_name', 'like', "%{$query}%")
+                ->orWhere('last_name', 'like', "%{$query}%");
+        })
+        ->withCount('placements')
+        ->paginate($perPage);
     }
 }

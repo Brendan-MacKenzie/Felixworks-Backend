@@ -17,6 +17,28 @@ class EmployeeController extends Controller
         $this->employeeService = $employeeService;
     }
 
+    public function index(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'search' => 'string',
+        ]);
+
+        if ($validator->fails()) {
+            return $this->failedValidationResponse($validator);
+        }
+
+        $search = $request->input('search', null);
+        $perPage = $request->input('per_page', 25);
+
+        try {
+            $employees = $this->employeeService->list($perPage, $search);
+        } catch (Exception $exception) {
+            return $this->failedExceptionResponse($exception);
+        }
+
+        return $this->successResponse($employees);
+    }
+
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
