@@ -1,0 +1,36 @@
+<?php
+
+namespace App\Services;
+
+use App\Models\Pool;
+
+class PoolService extends Service
+{
+    public function store(array $data)
+    {
+        $data['created_by'] = auth()->user()->id;
+
+        $pool = Pool::create($data);
+        $pool->employees()->sync($data['employees']);
+
+        $pool->load('employees');
+
+        return $pool;
+    }
+
+    public function update(array $data, mixed $pool)
+    {
+    }
+
+    public function delete(mixed $pool)
+    {
+    }
+
+    public function get(mixed $pool)
+    {
+    }
+
+    public function list(int $perPage = 25, string $query = null)
+    {
+    }
+}

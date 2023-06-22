@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\PoolController;
 use App\Http\Controllers\MediaController;
 use App\Http\Controllers\AgencyController;
 use App\Http\Controllers\BranchController;
@@ -101,5 +102,9 @@ Route::group(['middleware' => ['api', 'authserver']], function () {
         Route::post('/', [PlacementTypeController::class, 'store']);
         Route::delete('/{placement_type}', [PlacementTypeController::class, 'destroy']);
         Route::get('/{branch}', [PlacementTypeController::class, 'getPlacementTypesByBranch']);
+    });
+
+    Route::group(['prefix' => '/pools'], function () {
+        Route::post('/', [PoolController::class, 'store']);
     });
 });

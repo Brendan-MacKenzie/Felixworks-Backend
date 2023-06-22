@@ -46,7 +46,6 @@ class AgencyController extends Controller
             'full_name' => 'required|string|max:255',
             'brand_color' => 'required|string|max:255',
             'logo_id' => 'nullable|integer',
-
             'regions' => 'required|array|min:1',
             'regions.*' => 'integer',
         ]);
