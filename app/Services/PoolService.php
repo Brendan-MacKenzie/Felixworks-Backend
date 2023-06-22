@@ -11,7 +11,9 @@ class PoolService extends Service
         $data['created_by'] = auth()->user()->id;
 
         $pool = Pool::create($data);
-        $pool->employees()->sync($data['employees']);
+        if (isset($data['employees']) && is_array($data['employees'])) {
+            $pool->employees()->sync($data['employees']);
+        }
 
         $pool->load('employees');
 
@@ -20,6 +22,16 @@ class PoolService extends Service
 
     public function update(array $data, mixed $pool)
     {
+        $pool->update($data);
+
+        if (isset($data['employees']) && is_array($data['employees'])) {
+            $pool->employees()->sync($data['employees']);
+        }
+
+        $pool->refresh();
+        $pool->load('employees');
+
+        return $pool;
     }
 
     public function delete(mixed $pool)

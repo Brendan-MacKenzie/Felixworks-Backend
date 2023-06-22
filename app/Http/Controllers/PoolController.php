@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Exception;
+use App\Models\Pool;
 use Illuminate\Http\Request;
 use App\Services\PoolService;
 use Illuminate\Support\Facades\Validator;
@@ -35,6 +36,32 @@ class PoolController extends Controller
                 'branch_id',
                 'employees',
             ]));
+        } catch (Exception $exception) {
+            return $this->failedExceptionResponse($exception);
+        }
+
+        return $this->successResponse($pool);
+    }
+
+    public function update(Request $request, Pool $pool)
+    {
+        $validator = Validator::make($request->all(), [
+            'name' => 'string|max:255',
+            'branch_id' => 'integer|exists:branches,id',
+            'employees' => 'array',
+            'employees.*' => 'integer',
+        ]);
+
+        if ($validator->fails()) {
+            return $this->failedValidationResponse($validator);
+        }
+
+        try {
+            $pool = $this->poolService->update($request->only([
+                'name',
+                'branch_id',
+                'employees',
+            ]), $pool);
         } catch (Exception $exception) {
             return $this->failedExceptionResponse($exception);
         }
