@@ -10,6 +10,7 @@ use App\Http\Controllers\RegionController;
 use App\Http\Controllers\AddressController;
 use App\Http\Controllers\PlacementController;
 use App\Http\Controllers\WorkplaceController;
+use App\Http\Controllers\PlacementTypeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -94,5 +95,9 @@ Route::group(['middleware' => ['api', 'authserver']], function () {
     Route::group(['prefix' => '/placements'], function () {
         Route::post('/', [PlacementController::class, 'store']);
         Route::patch('/{placement}', [PlacementController::class, 'update']);
+    });
+
+    Route::group(['prefix' => '/placement-types'], function () {
+        Route::post('/', [PlacementTypeController::class, 'store']);
     });
 });
