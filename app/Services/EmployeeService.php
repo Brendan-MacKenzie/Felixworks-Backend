@@ -27,6 +27,7 @@ class EmployeeService extends Service
 
     public function delete(mixed $employee)
     {
+        $employee->delete();
     }
 
     public function get(mixed $employee)

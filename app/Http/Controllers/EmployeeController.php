@@ -119,4 +119,15 @@ class EmployeeController extends Controller
 
         return $this->successResponse($employee);
     }
+
+    public function destroy(Employee $employee)
+    {
+        try {
+            $this->employeeService->delete($employee);
+        } catch (Exception $exception) {
+            return $this->failedExceptionResponse($exception);
+        }
+
+        return $this->messageResponse('Employee removed successfully');
+    }
 }
