@@ -39,6 +39,17 @@ class EmployeeController extends Controller
         return $this->successResponse($employees);
     }
 
+    public function show(Employee $employee)
+    {
+        try {
+            $employee = $this->employeeService->get($employee);
+        } catch (Exception $exception) {
+            return $this->failedExceptionResponse($exception);
+        }
+
+        return $this->successResponse($employee);
+    }
+
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [

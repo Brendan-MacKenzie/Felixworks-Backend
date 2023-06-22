@@ -31,6 +31,10 @@ class EmployeeService extends Service
 
     public function get(mixed $employee)
     {
+        $employee->load('branches', 'agency', 'pools')
+        ->loadCount('placements');
+
+        return $employee;
     }
 
     public function list(int $perPage = 25, string $query = null)
