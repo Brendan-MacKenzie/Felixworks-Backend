@@ -107,5 +107,6 @@ Route::group(['middleware' => ['api', 'authserver']], function () {
     Route::group(['prefix' => '/pools'], function () {
         Route::post('/', [PoolController::class, 'store']);
         Route::patch('/{pool}', [PoolController::class, 'update']);
+        Route::get('/{pool}', [PoolController::class, 'show']);
     });
 });

@@ -17,6 +17,17 @@ class PoolController extends Controller
         $this->poolService = $poolService;
     }
 
+    public function show(Pool $pool)
+    {
+        try {
+            $pool = $this->poolService->get($pool);
+        } catch (Exception $exception) {
+            return $this->failedExceptionResponse($exception);
+        }
+
+        return $this->successResponse($pool);
+    }
+
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [

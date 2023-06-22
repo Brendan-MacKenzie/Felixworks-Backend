@@ -40,6 +40,9 @@ class PoolService extends Service
 
     public function get(mixed $pool)
     {
+        $pool->load('employees', 'branch');
+
+        return $pool;
     }
 
     public function list(int $perPage = 25, string $query = null)
