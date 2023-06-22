@@ -32,4 +32,15 @@ class PlacementTypeService extends Service
     public function list(int $perPage = 25, string $query = null)
     {
     }
+
+    public function listByBranch(int $branch, int $perPage = 25, string $query = null)
+    {
+        $placementTypes = PlacementType::where('branch_id', $branch);
+
+        if ($query) {
+            $placementTypes->where('name', 'like', '%'.$query.'%');
+        }
+
+        return $placementTypes->get();
+    }
 }

@@ -17,6 +17,28 @@ class PlacementTypeController extends Controller
         $this->placementTypeService = $placementTypeService;
     }
 
+    public function getPlacementTypesByBranch(Request $request, $branch)
+    {
+        $validator = Validator::make($request->all(), [
+            'search' => 'string',
+        ]);
+
+        if ($validator->fails()) {
+            return $this->failedValidationResponse($validator);
+        }
+
+        $perPage = $request->input('per_page', 25);
+        $search = $request->input('search', null);
+
+        try {
+            $placementTypes = $this->placementTypeService->listByBranch($branch, $perPage, $search);
+        } catch (Exception $exception) {
+            return $this->failedExceptionResponse($exception);
+        }
+
+        return $this->successResponse($placementTypes);
+    }
+
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
