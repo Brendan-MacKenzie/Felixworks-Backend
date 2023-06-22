@@ -20,19 +20,20 @@ return new class extends Migration {
             $table->foreign('client_id')->references('id')->on('clients')
                 ->onDelete('cascade')
                 ->onUpdate('restrict');
-            $table->unsignedBigInteger('address_id')->nullable();
-            $table->foreign('address_id')->references('id')->on('addresses')
-                ->onDelete('set null')
-                ->onUpdate('restrict');
             $table->unsignedBigInteger('created_by')->nullable();
             $table->foreign('created_by')->references('id')->on('users')
                 ->onDelete('set null')
                 ->onUpdate('restrict');
         });
 
-        Schema::table('users', function (Blueprint $table) {
+        Schema::create('user_branches', function (Blueprint $table) {
+            $table->unsignedBigInteger('user_id');
+            $table->foreign('user_id')->references('id')->on('users')
+                ->onDelete('cascade')
+                ->onUpdate('restrict');
+            $table->unsignedBigInteger('branch_id');
             $table->foreign('branch_id')->references('id')->on('branches')
-                ->onDelete('set null')
+                ->onDelete('cascade')
                 ->onUpdate('restrict');
         });
     }
@@ -45,13 +46,14 @@ return new class extends Migration {
         Schema::table('branches', function (Blueprint $table) {
             $table->dropForeign('branches_client_id_foreign');
             $table->dropForeign('branches_created_by_foreign');
-            $table->dropForeign('branches_address_id_foreign');
         });
 
-        Schema::table('users', function (Blueprint $table) {
-            $table->dropForeign('users_branch_id_foreign');
+        Schema::table('user_branches', function (Blueprint $table) {
+            $table->dropForeign('user_branches_user_id_foreign');
+            $table->dropForeign('user_branches_branch_id_foreign');
         });
 
+        Schema::dropIfExists('user_branches');
         Schema::dropIfExists('branches');
     }
 };

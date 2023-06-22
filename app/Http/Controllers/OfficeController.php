@@ -6,15 +6,18 @@ use Exception;
 use App\Models\Office;
 use Illuminate\Http\Request;
 use App\Services\OfficeService;
+use App\Services\AddressService;
 use Illuminate\Support\Facades\Validator;
 
 class OfficeController extends Controller
 {
     private $officeService;
+    private $addressService;
 
-    public function __construct(OfficeService $officeService)
+    public function __construct(OfficeService $officeService, AddressService $addressService)
     {
         $this->officeService = $officeService;
+        $this->addressService = $addressService;
     }
 
     //store office
@@ -41,8 +44,11 @@ class OfficeController extends Controller
                 'description',
                 'website',
                 'phone',
-                'address_id',
             ]));
+
+            $this->addressService->linkModel($request->input('address_id'), $office);
+
+            $office = $this->officeService->get($office);
         } catch (Exception $exception) {
             return $this->failedExceptionResponse($exception);
         }
@@ -54,12 +60,10 @@ class OfficeController extends Controller
     {
         // Validate input
         $validator = Validator::make($request->all(), [
-            'agency_id' => 'integer|exists:agencies,id',
             'name' => 'string|max:255',
             'description' => 'nullable|string',
             'website' => 'nullable|url',
             'phone' => 'nullable|string|max:20',
-            'address_id' => 'integer|exists:addresses,id',
         ]);
 
         if ($validator->fails()) {
@@ -68,13 +72,13 @@ class OfficeController extends Controller
 
         try {
             $office = $this->officeService->update($request->only([
-                'agency_id',
                 'name',
                 'description',
                 'website',
                 'phone',
-                'address_id',
             ]), $office);
+
+            $office = $this->officeService->get($office);
         } catch (Exception $exception) {
             return $this->failedExceptionResponse($exception);
         }
@@ -85,6 +89,7 @@ class OfficeController extends Controller
     public function destroy(Office $office)
     {
         try {
+            $this->addressService->unlinkModel($office->address);
             $this->officeService->delete($office);
         } catch (Exception $exception) {
             return $this->failedExceptionResponse($exception);

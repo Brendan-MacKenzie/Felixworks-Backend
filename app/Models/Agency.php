@@ -14,10 +14,13 @@ class Agency extends Model
     protected $fillable = [
         'name',
         'full_name',
+        'email',
+        'base_rate',
         'brand_color',
         'api_key',
         'ip_address',
         'webhook',
+        'webhook_key',
         'logo_id',
         'created_by',
     ];
@@ -26,12 +29,14 @@ class Agency extends Model
         'api_key',
         'ip_address',
         'webhook',
+        'webhook_key',
     ];
 
     protected $hidden = [
         'api_key',
         'ip_address',
         'webhook',
+        'webhook_key',
     ];
 
     public function toArray()

@@ -23,9 +23,12 @@ class AgencySeeder extends Seeder
             'name' => 'Felix Uitzendbureau',
             'full_name' => 'Felix Uitzendbureau BV',
             'brand_color' => '#ffff',
+            'email' => 'info@felixworks.test',
+            'base_rate' => 2500,
             'api_key' => Str::random(32),
             'ip_address' => '172.19.0.1',
             'webhook' => 'https://planworks.test/felix',
+            'webhook_key' => Str::random(32),
         ]);
 
         $agency->regions()->attach($regions);
@@ -46,9 +49,9 @@ class AgencySeeder extends Seeder
             'description' => 'Dit is een kantoor',
             'website' => 'https://felixworks.nl',
             'phone' => '06123456789',
-            'address_id' => $address->id,
         ]);
 
+        $office->address()->save($address);
         $office->regions()->attach($regions);
     }
 }

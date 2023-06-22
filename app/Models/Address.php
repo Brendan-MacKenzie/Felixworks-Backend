@@ -19,17 +19,14 @@ class Address extends Model
         'zip_code',
         'city',
         'country',
+        'model_type',
+        'model_id',
         'created_by',
     ];
 
     public function branch()
     {
         return $this->hasOne(Branch::class, 'address_id');
-    }
-
-    public function branches()
-    {
-        return $this->belongsToMany(Branch::class, 'branch_addresses');
     }
 
     public function createdBy()
@@ -44,7 +41,12 @@ class Address extends Model
 
     public function office()
     {
-        return $this->hasOne(Office::class, 'address_id');
+        return $this->morphTo(Office::class, 'address_id');
+    }
+
+    public function model()
+    {
+        return $this->morphTo();
     }
 
     public function workplaces()

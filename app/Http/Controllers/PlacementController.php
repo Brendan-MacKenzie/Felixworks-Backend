@@ -20,14 +20,13 @@ class PlacementController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'status' => 'required|integer|min:0|max:255',
-            'posting_id' => 'required|integer|exists:postings,id',
-            'workplace_id' => 'required|integer|exists:workplaces,id',
-            'placement_type_id' => 'required|integer|exists:placement_types,id',
-            'employee_id' => 'integer|exists:employees,id',
-            'report_at' => 'required|date',
+            'posting_id' => 'required|integer',
+            'workplace_id' => 'nullable|integer',
+            'placement_type_id' => 'required|integer',
+            'employee_id' => 'nullable|integer',
+            'report_at' => 'required|date|before_or_equal:start_at',
             'start_at' => 'required|date',
-            'end_at' => 'required|date',
+            'end_at' => 'required|date|after:start_at',
         ]);
 
         if ($validator->fails()) {
@@ -36,7 +35,6 @@ class PlacementController extends Controller
 
         try {
             $placement = $this->placementService->store($request->only([
-                'status',
                 'posting_id',
                 'workplace_id',
                 'placement_type_id',
@@ -45,6 +43,8 @@ class PlacementController extends Controller
                 'start_at',
                 'end_at',
             ]));
+
+            $placement = $this->placementService->get($placement);
         } catch (Exception $exception) {
             return $this->failedExceptionResponse($exception);
         }
@@ -55,14 +55,12 @@ class PlacementController extends Controller
     public function update(Request $request, Placement $placement)
     {
         $validator = Validator::make($request->all(), [
-            'status' => 'integer|min:0|max:255',
-            'posting_id' => 'integer|exists:postings,id',
-            'workplace_id' => 'integer|exists:workplaces,id',
-            'placement_type_id' => 'integer|exists:placement_types,id',
-            'employee_id' => 'integer|exists:employees,id',
-            'report_at' => 'date',
+            'workplace_id' => 'nullable|integer',
+            'placement_type_id' => 'integer',
+            'employee_id' => 'nullable|integer',
+            'report_at' => 'date|before_or_equal:start_at',
             'start_at' => 'date',
-            'end_at' => 'date',
+            'end_at' => 'date|after:start_at',
         ]);
 
         if ($validator->fails()) {
@@ -71,8 +69,6 @@ class PlacementController extends Controller
 
         try {
             $placement = $this->placementService->update($request->only([
-                'status',
-                'posting_id',
                 'workplace_id',
                 'placement_type_id',
                 'employee_id',
@@ -80,6 +76,8 @@ class PlacementController extends Controller
                 'start_at',
                 'end_at',
             ]), $placement);
+
+            $placement = $this->placementService->get($placement);
         } catch (Exception $exception) {
             return $this->failedExceptionResponse($exception);
         }

@@ -53,7 +53,7 @@ class UserSeeder extends Seeder
             'first_name' => 'Client',
             'last_name' => 'Role',
             'email' => 'client@felix.nl',
-            'branch_id' => 1,
+            'client_id' => 1,
         ]);
         $user->assignRole('client');
 

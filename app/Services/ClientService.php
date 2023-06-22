@@ -3,18 +3,22 @@
 namespace App\Services;
 
 use App\Models\Client;
+use Illuminate\Support\Facades\Auth;
 
 class ClientService extends Service
 {
     public function store(array $data)
     {
-        $data['created_by'] = auth()->user()->id;
+        $data['created_by'] = Auth::user()->id;
 
         return Client::create($data);
     }
 
     public function update(array $data, mixed $client)
     {
+        $client->update($data);
+
+        return $client;
     }
 
     public function delete(mixed $client)
@@ -23,7 +27,13 @@ class ClientService extends Service
 
     public function get(mixed $client)
     {
-        $client->load(['branches', 'branches.addresses', 'branches.pools', 'branches.users', 'branches.regions']);
+        $client->load([
+            'branches',
+            'branches.address',
+            'branches.coordinators',
+            'branches.pools',
+            'branches.regions',
+        ]);
 
         return $client;
     }

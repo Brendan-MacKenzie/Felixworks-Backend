@@ -19,6 +19,12 @@ return new class extends Migration {
                 ->onDelete('set null')
                 ->onUpdate('restrict');
         });
+
+        Schema::table('users', function (Blueprint $table) {
+            $table->foreign('client_id')->references('id')->on('clients')
+                ->onDelete('set null')
+                ->onUpdate('restrict');
+        });
     }
 
     /**
@@ -28,6 +34,10 @@ return new class extends Migration {
     {
         Schema::table('clients', function (Blueprint $table) {
             $table->dropForeign('clients_created_by_foreign');
+        });
+
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropForeign('users_client_id_foreign');
         });
 
         Schema::dropIfExists('clients');

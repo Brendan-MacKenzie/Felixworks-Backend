@@ -18,7 +18,7 @@ return new class extends Migration {
             $table->rememberToken();
             $table->bigInteger('profile_id')->nullable();
             $table->unsignedBigInteger('agency_id')->nullable();
-            $table->unsignedBigInteger('branch_id')->nullable();
+            $table->unsignedBigInteger('client_id')->nullable();
             $table->timestamps();
             $table->softDeletes();
             $table->unsignedBigInteger('created_by')->nullable();

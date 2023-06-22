@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\AddressType;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -25,17 +26,17 @@ class Branch extends Model
 
     public function coordinators()
     {
-        return $this->hasMany(User::class, 'branch_id');
+        return $this->belongsToMany(User::class, 'user_branches');
     }
 
     public function address()
     {
-        return $this->belongsTo(Address::class, 'address_id');
+        return $this->morphOne(Address::class, 'model')->where('type', AddressType::Branch);
     }
 
-    public function addresses()
+    public function workAddresses()
     {
-        return $this->belongsToMany(Address::class, 'branch_addresses');
+        return $this->morphMany(Address::class, 'model')->where('type', AddressType::Default);
     }
 
     public function regions()
@@ -56,10 +57,5 @@ class Branch extends Model
     public function pools()
     {
         return $this->hasMany(Pool::class, 'branch_id');
-    }
-
-    public function users()
-    {
-        return $this->hasMany(User::class, 'branch_id');
     }
 }

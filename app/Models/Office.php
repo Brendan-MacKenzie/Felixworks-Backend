@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\AddressType;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -15,7 +16,6 @@ class Office extends Model
         'description',
         'website',
         'phone',
-        'address_id',
         'created_by',
     ];
 
@@ -26,7 +26,7 @@ class Office extends Model
 
     public function address()
     {
-        return $this->belongsTo(Address::class, 'address_id');
+        return $this->morphOne(Address::class, 'model')->where('type', AddressType::Office);
     }
 
     public function createdBy()

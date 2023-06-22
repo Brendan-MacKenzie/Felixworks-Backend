@@ -54,7 +54,7 @@ class PoolController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
-            'branch_id' => 'required|integer|exists:branches,id',
+            'branch_id' => 'required|integer',
             'employees' => 'array',
             'employees.*' => 'integer',
         ]);
@@ -69,6 +69,8 @@ class PoolController extends Controller
                 'branch_id',
                 'employees',
             ]));
+
+            $pool = $this->poolService->get($pool);
         } catch (Exception $exception) {
             return $this->failedExceptionResponse($exception);
         }
@@ -80,7 +82,6 @@ class PoolController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' => 'string|max:255',
-            'branch_id' => 'integer|exists:branches,id',
             'employees' => 'array',
             'employees.*' => 'integer',
         ]);
@@ -92,9 +93,10 @@ class PoolController extends Controller
         try {
             $pool = $this->poolService->update($request->only([
                 'name',
-                'branch_id',
                 'employees',
             ]), $pool);
+
+            $pool = $this->poolService->get($pool);
         } catch (Exception $exception) {
             return $this->failedExceptionResponse($exception);
         }

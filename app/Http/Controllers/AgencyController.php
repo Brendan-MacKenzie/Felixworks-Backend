@@ -44,6 +44,8 @@ class AgencyController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'full_name' => 'required|string|max:255',
+            'email' => 'requirded|email|string|max:255',
+            'base_rate' => 'required|integer',
             'brand_color' => 'required|string|max:255',
             'ip_address' => 'required_with:webhook|string',
             'webhook' => 'required_with:ip_address|string',
@@ -60,6 +62,8 @@ class AgencyController extends Controller
             $agency = $this->agencyService->store($request->only([
                 'name',
                 'full_name',
+                'email',
+                'base_rate',
                 'brand_color',
                 'ip_address',
                 'webhook',
@@ -78,6 +82,8 @@ class AgencyController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'string|max:255',
             'full_name' => 'string|max:255',
+            'email' => 'email|string|max:255',
+            'base_rate' => 'integer',
             'brand_color' => 'string|max:255',
             'ip_address' => 'string',
             'webhook' => 'string',
@@ -95,6 +101,8 @@ class AgencyController extends Controller
             $agency = $this->agencyService->update($request->only([
                 'name',
                 'full_name',
+                'email',
+                'base_rate',
                 'brand_color',
                 'ip_address',
                 'webhook',

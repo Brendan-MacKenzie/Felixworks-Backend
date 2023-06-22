@@ -60,15 +60,21 @@ class AgencyService extends Service
     public function update(array $data, mixed $agency)
     {
         if (
-            key_exists('logo_id', $data) &&
-            !is_null($data['logo_id'])
+            key_exists('logo_id', $data)
         ) {
-            $media = Media::findOrFail($data['logo_id']);
-            if ($media->type !== MediaType::Logo) {
-                throw new Exception('Image is not a logo.', 403);
+            $toDelete = (is_null($data['logo_id'])) ? true : false;
+            if (!is_null($data['logo_id'])) {
+                $media = Media::findOrFail($data['logo_id']);
+                if ($media->type !== MediaType::Logo) {
+                    throw new Exception('Image is not a logo.', 403);
+                }
+
+                if ($agency->logo_id && $agency->logo_id !== $media->id) {
+                    $toDelete = true;
+                }
             }
 
-            if ($agency->logo_id && $agency->logo_id !== $media->id) {
+            if ($toDelete) {
                 $this->mediaService->delete($agency->logo);
             }
         }
