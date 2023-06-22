@@ -47,5 +47,10 @@ class PoolService extends Service
 
     public function list(int $perPage = 25, string $query = null)
     {
+        return Pool::when(!is_null($query), function ($q) use ($query) {
+            $q->where('name', 'like', "%{$query}%");
+        })
+        ->with('branch')
+        ->get();
     }
 }

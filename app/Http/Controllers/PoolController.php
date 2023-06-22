@@ -17,6 +17,28 @@ class PoolController extends Controller
         $this->poolService = $poolService;
     }
 
+    public function index(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'search' => 'string',
+        ]);
+
+        if ($validator->fails()) {
+            return $this->failedValidationResponse($validator);
+        }
+
+        $perPage = $request->input('per_page', 25);
+        $search = $request->input('search', null);
+
+        try {
+            $pools = $this->poolService->list($perPage, $search);
+        } catch (Exception $exception) {
+            return $this->failedExceptionResponse($exception);
+        }
+
+        return $this->successResponse($pools);
+    }
+
     public function show(Pool $pool)
     {
         try {
