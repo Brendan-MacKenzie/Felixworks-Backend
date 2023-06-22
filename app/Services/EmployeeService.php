@@ -15,6 +15,14 @@ class EmployeeService extends Service
 
     public function update(array $data, mixed $employee)
     {
+        // Update employee attributes
+        $employee->update($data);
+
+        // Load the pools
+        $employee->load('pools');
+
+        // Return the updated employee with the pools
+        return $employee;
     }
 
     public function delete(mixed $employee)
