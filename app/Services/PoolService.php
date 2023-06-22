@@ -36,6 +36,8 @@ class PoolService extends Service
 
     public function delete(mixed $pool)
     {
+        $pool->employees()->detach();
+        $pool->delete();
     }
 
     public function get(mixed $pool)

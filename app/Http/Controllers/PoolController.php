@@ -101,4 +101,15 @@ class PoolController extends Controller
 
         return $this->successResponse($pool);
     }
+
+    public function destroy(Pool $pool)
+    {
+        try {
+            $this->poolService->delete($pool);
+        } catch (Exception $exception) {
+            return $this->failedExceptionResponse($exception);
+        }
+
+        return $this->messageResponse('Pool removed successfully');
+    }
 }

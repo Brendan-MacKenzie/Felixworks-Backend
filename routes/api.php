@@ -109,5 +109,6 @@ Route::group(['middleware' => ['api', 'authserver']], function () {
         Route::patch('/{pool}', [PoolController::class, 'update']);
         Route::get('/{pool}', [PoolController::class, 'show']);
         Route::get('/', [PoolController::class, 'index']);
+        Route::delete('/{pool}', [PoolController::class, 'destroy']);
     });
 });
