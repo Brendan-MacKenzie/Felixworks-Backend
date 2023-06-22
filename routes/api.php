@@ -93,5 +93,6 @@ Route::group(['middleware' => ['api', 'authserver']], function () {
 
     Route::group(['prefix' => '/placements'], function () {
         Route::post('/', [PlacementController::class, 'store']);
+        Route::patch('/{placement}', [PlacementController::class, 'update']);
     });
 });

@@ -22,10 +22,6 @@ class OfficeService extends Service
 
     public function update(array $data, mixed $office)
     {
-        if (key_exists('address_id', $data)) {
-            $this->checkAddress($data['address_id']);
-        }
-
         $office->update($data);
 
         return $office;

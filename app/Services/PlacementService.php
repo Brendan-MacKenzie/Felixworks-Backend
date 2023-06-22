@@ -18,11 +18,20 @@ class PlacementService extends Service
             'posting',
         ])->findOrFail($placement->id);
 
-        return $placement;  
+        return $placement;
     }
 
     public function update(array $data, mixed $placement)
     {
+        $placement->update($data);
+        $placement = Placement::with([
+            'placementType',
+            'employee',
+            'workplace',
+            'posting',
+        ])->findOrFail($placement->id);
+
+        return $placement;
     }
 
     public function delete(mixed $placement)
