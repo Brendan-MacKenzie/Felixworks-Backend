@@ -24,7 +24,7 @@ class SyncService
     {
         // Execute call on configured webhooks only.
         if (!$agency->webhook || !$agency->webhook_key) {
-            throw new SyncException('Webhook is not configured rigsht.', $agency->id, $type, $data);
+            throw new SyncException('Webhook is not configured right.', $agency->id, $type, $data);
         }
 
         // Execute call only on agencies with API keys.

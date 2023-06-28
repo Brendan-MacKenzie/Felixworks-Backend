@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Facade;
 use Illuminate\Support\ServiceProvider;
+use FlexFlux\LaravelElasticEmail\LaravelElasticEmailServiceProvider;
 
 return [
 
@@ -159,6 +160,7 @@ return [
         /*
          * Package Service Providers...
          */
+        LaravelElasticEmailServiceProvider::class,
 
         /*
          * Application Service Providers...
