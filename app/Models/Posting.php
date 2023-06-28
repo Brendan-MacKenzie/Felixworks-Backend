@@ -51,7 +51,7 @@ class Posting extends Model
 
     public function commitments()
     {
-        return $this->belongsToMany(Agency::class, 'commitments')->withPivot(['amount', 'created_by']);
+        return $this->hasMany(Commitment::class, 'posting_id');
     }
 
     public function agencies()
