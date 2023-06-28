@@ -57,10 +57,10 @@ class EmployeeController extends Controller
             'external_id' => 'string|max:255',
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
-            'date_of_birth' => 'date',
-            'avatar_id' => 'integer|exists:media,id',
-            'drivers_license' => 'boolean',
-            'car' => 'boolean',
+            'date_of_birth' => 'required|date',
+            'avatar_id' => 'integer',
+            'drivers_license' => 'required|boolean',
+            'car' => 'required|boolean',
         ]);
 
         if ($validator->fails()) {
@@ -78,6 +78,8 @@ class EmployeeController extends Controller
                 'drivers_license',
                 'car',
             ]));
+
+            $employee = $this->employeeService->get($employee);
         } catch (Exception $exception) {
             return $this->failedExceptionResponse($exception);
         }
@@ -88,12 +90,11 @@ class EmployeeController extends Controller
     public function update(Request $request, Employee $employee)
     {
         $validator = Validator::make($request->all(), [
-            'agency_id' => 'integer|exists:agencies,id',
             'external_id' => 'string|max:255',
             'first_name' => 'string|max:255',
             'last_name' => 'string|max:255',
             'date_of_birth' => 'date',
-            'avatar_id' => 'integer|exists:media,id',
+            'avatar_id' => 'integer',
             'drivers_license' => 'boolean',
             'car' => 'boolean',
         ]);
@@ -104,7 +105,6 @@ class EmployeeController extends Controller
 
         try {
             $employee = $this->employeeService->update($request->only([
-                'agency_id',
                 'external_id',
                 'first_name',
                 'last_name',
@@ -113,6 +113,8 @@ class EmployeeController extends Controller
                 'drivers_license',
                 'car',
             ]), $employee);
+
+            $employee = $this->employeeService->get($employee);
         } catch (Exception $exception) {
             return $this->failedExceptionResponse($exception);
         }

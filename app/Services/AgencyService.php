@@ -74,7 +74,7 @@ class AgencyService extends Service
                 }
             }
 
-            if ($toDelete) {
+            if ($toDelete && $agency->logo) {
                 $this->mediaService->delete($agency->logo);
             }
         }
