@@ -125,6 +125,20 @@ class PostingService extends Service
 
     public function update(array $data, mixed $posting)
     {
+        $posting->update($data);
+
+        if (isset($data['agencies'])) {
+            $posting->agencies()->sync($data['agencies']);
+        }
+
+        if (isset($data['regions'])) {
+            $posting->regions()->sync($data['regions']);
+        }
+        $posting->refresh();
+
+        $posting->load('placements.placementType', 'placements.workplace', 'regions', 'agencies', 'address');
+
+        return $posting;
     }
 
     public function delete(mixed $posting)
