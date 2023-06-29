@@ -51,7 +51,7 @@ class AgencyController extends Controller
             'webhook' => 'required_with:ip_address|string',
             'logo_uuid' => 'nullable|uuid',
             'regions' => 'required|array|min:1',
-            'regions.*' => 'integer',
+            'regions.*' => 'integer|exists:regions,id',
         ]);
 
         if ($validator->fails()) {

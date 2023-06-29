@@ -9,6 +9,7 @@ use App\Http\Controllers\ClientController;
 use App\Http\Controllers\OfficeController;
 use App\Http\Controllers\RegionController;
 use App\Http\Controllers\AddressController;
+use App\Http\Controllers\PostingController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\PlacementController;
 use App\Http\Controllers\WorkplaceController;
@@ -120,5 +121,13 @@ Route::group(['middleware' => ['api', 'authserver']], function () {
         Route::get('/{employee}', [EmployeeController::class, 'show']);
         Route::get('/', [EmployeeController::class, 'index']);
         Route::delete('/{employee}', [EmployeeController::class, 'destroy']);
+    });
+
+    Route::group(['prefix' => '/postings'], function () {
+        Route::post('/', [PostingController::class, 'store']);
+        Route::patch('/{posting}', [PostingController::class, 'update']);
+        Route::get('/{posting}', [PostingController::class, 'show']);
+        Route::get('/', [PostingController::class, 'index']);
+        Route::delete('/{posting}', [PostingController::class, 'destroy']);
     });
 });
