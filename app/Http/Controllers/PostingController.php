@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Exception;
+use App\Models\Posting;
 use App\Enums\RepeatType;
 use Illuminate\Http\Request;
 use App\Services\PostingService;
@@ -32,7 +33,7 @@ class PostingController extends Controller
            'regions.*' => 'integer|exists:regions,id',
            'repeat_type' => 'integer|in:'.implode(',', RepeatType::getValues()),
            'posting_start_date' => 'required|date',
-           'posting_end_date' => 'nullable|date',
+           'posting_end_date' => 'nullable|date|after_or_equal:posting_start_date',
            'placements' => 'required|array|min:1',
         ]);
 
@@ -55,6 +56,43 @@ class PostingController extends Controller
                 'posting_end_date',
                 'placements',
             ]));
+        } catch (Exception $exception) {
+            return $this->failedExceptionResponse($exception);
+        }
+
+        return $this->successResponse($posting);
+    }
+
+    public function update(Request $request, Posting $posting)
+    {
+        $validator = Validator::make($request->all(), [
+           'name' => 'string|max:255',
+           'address_id' => 'integer|exists:addresses,id',
+           'dresscode' => 'string|max:255',
+           'briefing' => 'string|max:255',
+           'information' => 'string|max:255',
+           'cancelled_at' => 'date',
+           'agencies' => 'array|min:1',
+           'agencies.*' => 'integer|exists:agencies,id',
+           'regions' => 'array|min:1',
+           'regions.*' => 'integer|exists:regions,id',
+        ]);
+
+        if ($validator->fails()) {
+            return $this->failedValidationResponse($validator);
+        }
+
+        try {
+            $posting = $this->postingService->update($request->only([
+                'name',
+                'address_id',
+                'dresscode',
+                'briefing',
+                'information',
+                'cancelled_at',
+                'agencies',
+                'regions',
+            ]), $posting);
         } catch (Exception $exception) {
             return $this->failedExceptionResponse($exception);
         }
