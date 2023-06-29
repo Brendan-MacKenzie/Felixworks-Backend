@@ -47,7 +47,7 @@ class AgencyController extends Controller
             'brand_color' => 'required|string|max:255',
             'logo_id' => 'nullable|integer',
             'regions' => 'required|array|min:1',
-            'regions.*' => 'integer',
+            'regions.*' => 'integer|exists:regions,id',
         ]);
 
         if ($validator->fails()) {

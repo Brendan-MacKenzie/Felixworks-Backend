@@ -20,7 +20,6 @@ class PlacementController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'status' => 'required|integer|min:0|max:255',
             'posting_id' => 'required|integer|exists:postings,id',
             'workplace_id' => 'required|integer|exists:workplaces,id',
             'placement_type_id' => 'required|integer|exists:placement_types,id',
@@ -36,7 +35,6 @@ class PlacementController extends Controller
 
         try {
             $placement = $this->placementService->store($request->only([
-                'status',
                 'posting_id',
                 'workplace_id',
                 'placement_type_id',
