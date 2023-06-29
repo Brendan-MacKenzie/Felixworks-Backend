@@ -5,6 +5,7 @@ namespace App\Services;
 use Carbon\Carbon;
 use App\Models\Posting;
 use App\Models\Placement;
+use App\Models\Scopes\ActiveScope;
 
 class PostingService extends Service
 {
@@ -158,7 +159,18 @@ class PostingService extends Service
 
     public function list(int $perPage = 25, string $query = null)
     {
-        return Posting::with('placements.placementType', 'placements.workplace', 'regions', 'agencies', 'address')
+        return Posting::with('placements.placementType', 'placements.workplace', 'regions', 'agencies', 'address', 'placements.employee')
+            ->when($query, function ($query) {
+                $query->where('name', 'like', '%'.$query.'%');
+            })
+            ->paginate($perPage);
+    }
+
+    public function listCancelled(int $perPage = 25, string $query = null)
+    {
+        return Posting::with('placements.placementType', 'placements.workplace', 'regions', 'agencies', 'address', 'placements.employee')
+            ->withoutGlobalScope(ActiveScope::class)
+            ->cancelled()
             ->when($query, function ($query) {
                 $query->where('name', 'like', '%'.$query.'%');
             })

@@ -34,6 +34,11 @@ class Posting extends Model
         static::addGlobalScope(new ActiveScope);
     }
 
+    public function scopeCancelled($query)
+    {
+        return $query->whereNotNull('cancelled_at');
+    }
+
     public function address()
     {
         return $this->belongsTo(Address::class, 'address_id');
