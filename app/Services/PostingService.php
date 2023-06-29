@@ -143,6 +143,17 @@ class PostingService extends Service
 
     public function get(mixed $posting)
     {
+        $posting->load(
+            'placements.placementType',
+            'placements.workplace',
+            'placements.employee',
+            'regions',
+            'agencies',
+            'address',
+            'commitments'
+        );
+
+        return $posting;
     }
 
     public function list(int $perPage = 25, string $query = null)
