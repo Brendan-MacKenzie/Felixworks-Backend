@@ -189,4 +189,6 @@ return [
 
     'REDIS_POSTING_EXPIRATION' => env('REDIS_POSTING_EXPIRATION', 300),
     'PLAN_HOURS' => env('PLAN_HOURS', 0),
+    'CANCEL_HOURS' => env('CANCEL_HOURS', 24),
+
 ];
