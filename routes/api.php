@@ -128,6 +128,7 @@ Route::group(['middleware' => ['api', 'authserver']], function () {
         Route::patch('/{posting}', [PostingController::class, 'update']);
         Route::get('/{posting}', [PostingController::class, 'show']);
         Route::get('/', [PostingController::class, 'index']);
-        Route::delete('/{posting}', [PostingController::class, 'destroy']);
     });
+
+    Route::get('/cancelled-postings', [PostingController::class, 'indexCancelled']);
 });

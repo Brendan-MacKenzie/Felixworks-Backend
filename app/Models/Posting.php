@@ -48,6 +48,11 @@ class Posting extends Model
         });
     }
 
+    public function scopeCancelled($query)
+    {
+        return $query->whereNotNull('cancelled_at');
+    }
+
     public function workAddress()
     {
         return $this->belongsTo(Address::class, 'address_id');

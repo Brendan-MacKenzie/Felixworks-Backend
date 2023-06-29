@@ -40,6 +40,28 @@ class PostingController extends Controller
         return $this->successResponse($postings);
     }
 
+    public function indexCancelled(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'search' => 'string',
+        ]);
+
+        if ($validator->fails()) {
+            return $this->failedValidationResponse($validator);
+        }
+
+        $perPage = $request->input('per_page', 25);
+        $search = $request->input('search', null);
+
+        try {
+            $postings = $this->postingService->listCancelled($perPage, $search);
+        } catch (Exception $exception) {
+            return $this->failedExceptionResponse($exception);
+        }
+
+        return $this->successResponse($postings);
+    }
+
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
