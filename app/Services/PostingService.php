@@ -151,6 +151,11 @@ class PostingService extends Service
 
     public function list(int $perPage = 25, string $query = null)
     {
+        return Posting::with('placements.placementType', 'placements.workplace', 'regions', 'agencies', 'address')
+            ->when($query, function ($query) {
+                $query->where('name', 'like', '%'.$query.'%');
+            })
+            ->paginate($perPage);
     }
 
     public function syncAgency(Agency $agency, Posting $posting)
