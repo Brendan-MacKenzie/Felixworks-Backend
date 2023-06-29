@@ -185,4 +185,6 @@ return [
         // 'Example' => App\Facades\Example::class,
     ])->toArray(),
 
+    'CANCEL_HOURS' => env('CANCEL_HOURS', 24),
+
 ];

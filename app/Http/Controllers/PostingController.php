@@ -115,7 +115,6 @@ class PostingController extends Controller
            'dresscode' => 'string|max:255',
            'briefing' => 'string|max:255',
            'information' => 'string|max:255',
-           'cancelled_at' => 'date',
            'agencies' => 'array|min:1',
            'agencies.*' => 'integer|exists:agencies,id',
            'regions' => 'array|min:1',
@@ -133,7 +132,6 @@ class PostingController extends Controller
                 'dresscode',
                 'briefing',
                 'information',
-                'cancelled_at',
                 'agencies',
                 'regions',
             ]), $posting);
@@ -148,6 +146,17 @@ class PostingController extends Controller
     {
         try {
             $posting = $this->postingService->get($posting);
+        } catch (Exception $exception) {
+            return $this->failedExceptionResponse($exception);
+        }
+
+        return $this->successResponse($posting);
+    }
+
+    public function cancel(Posting $posting)
+    {
+        try {
+            $posting = $this->postingService->cancel($posting);
         } catch (Exception $exception) {
             return $this->failedExceptionResponse($exception);
         }

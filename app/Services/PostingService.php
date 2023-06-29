@@ -176,4 +176,28 @@ class PostingService extends Service
             })
             ->paginate($perPage);
     }
+
+    public function cancel(Posting $posting)
+    {
+        // Check if any related placements have associated employees
+        if (!$posting->placements()->has('employee')->exists()) {
+            // Cancel the posting if none of the placements have associated employees
+            $posting->cancelled_at = Carbon::now();
+            $posting->save();
+        } else {
+            // Calculate the difference in hours
+            $diffInHours = $posting->start_at->diffInHours(Carbon::now());
+
+            if ($diffInHours <= config('app.CANCEL_HOURS')) {
+                // Throw an exception if the difference is less or equal than CANCEL_HOURS
+                throw new \Exception('The posting cannot be cancelled because it starts within the next '.config('app.CANCEL_HOURS').' hours.');
+            } else {
+                // cancel the posting if the difference is more than CANCEL_HOURS
+                $posting->cancelled_at = Carbon::now();
+                $posting->save();
+            }
+        }
+
+        return $posting;
+    }
 }
