@@ -2,10 +2,10 @@
 
 namespace App\Providers;
 
-use App\Sync\QueueTracker\QueueTracker;
 use Illuminate\Support\ServiceProvider;
-use App\Sync\QueueTracker\AgencyQueueTracker;
-use App\Sync\QueueTracker\QueueTrackerInterface;
+use App\Services\Sync\QueueTracker\QueueTracker;
+use App\Services\Sync\QueueTracker\AgencyQueueTracker;
+use App\Services\Sync\QueueTracker\QueueTrackerInterface;
 
 class AppServiceProvider extends ServiceProvider
 {

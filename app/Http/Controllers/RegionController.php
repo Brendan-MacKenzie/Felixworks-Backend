@@ -26,11 +26,10 @@ class RegionController extends Controller
             return $this->failedValidationResponse($validator);
         }
 
-        $perPage = $request->input('per_page', 25);
         $search = $request->input('search', null);
 
         try {
-            $regions = $this->regionService->list($perPage, $search);
+            $regions = $this->regionService->list(25, $search);
         } catch (Exception $exception) {
             return $this->failedExceptionResponse($exception);
         }

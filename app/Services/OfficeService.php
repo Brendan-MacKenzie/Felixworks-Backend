@@ -4,18 +4,12 @@ namespace App\Services;
 
 use Exception;
 use App\Models\Office;
-use App\Models\Address;
-use App\Enums\AddressType;
 
 class OfficeService extends Service
 {
     public function store(array $data)
     {
         $data['created_by'] = auth()->user()->id;
-
-        if (key_exists('address_id', $data)) {
-            $this->checkAddress($data['address_id']);
-        }
 
         return Office::create($data);
     }
@@ -29,24 +23,26 @@ class OfficeService extends Service
 
     public function delete(mixed $office)
     {
+        if ($office->address) {
+            throw new Exception("You can't delete an office with a linked address.");
+        }
+
         $office->delete();
     }
 
     public function get(mixed $office)
     {
+        $office->load([
+            'address',
+            'agency',
+            'regions',
+            'createdBy',
+        ]);
+
         return $office;
     }
 
     public function list(int $perPage = 25, string $query = null)
     {
-    }
-
-    private function checkAddress(int $addressId)
-    {
-        $address = Address::findOrFail($addressId);
-
-        if ($address->type !== AddressType::Office) {
-            throw new Exception('This address is not an office address.', 403);
-        }
     }
 }

@@ -3,17 +3,17 @@
 namespace App\Services;
 
 use App\Models\Branch;
+use Illuminate\Support\Facades\Auth;
 
 class BranchService extends Service
 {
     public function store(array $data)
     {
         $data['created_by'] = auth()->user()->id;
+        $data['client_id'] = Auth::user()->client_id;
 
         $branch = Branch::create($data);
         $branch->regions()->sync($data['regions']);
-        $branch->refresh();
-        $branch->load('regions');
 
         return $branch;
     }
@@ -23,7 +23,6 @@ class BranchService extends Service
         $branch->update($data);
         $branch->regions()->sync($data['regions']);
         $branch->refresh();
-        $branch->load(['regions']);
 
         return $branch;
     }
@@ -35,7 +34,7 @@ class BranchService extends Service
     public function get(mixed $branch)
     {
         $branch->load([
-            'addresses',
+            'address',
             'regions',
             'createdBy',
             'coordinators',

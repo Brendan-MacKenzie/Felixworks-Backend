@@ -27,11 +27,10 @@ class PlacementTypeController extends Controller
             return $this->failedValidationResponse($validator);
         }
 
-        $perPage = $request->input('per_page', 25);
         $search = $request->input('search', null);
 
         try {
-            $placementTypes = $this->placementTypeService->listByBranch($branch, $perPage, $search);
+            $placementTypes = $this->placementTypeService->listByBranch($branch, $search);
         } catch (Exception $exception) {
             return $this->failedExceptionResponse($exception);
         }

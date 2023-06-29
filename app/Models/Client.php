@@ -23,4 +23,9 @@ class Client extends Model
     {
         return $this->hasMany(Branch::class, 'client_id');
     }
+
+    public function coordinators()
+    {
+        return $this->hasMany(User::class, 'client_id');
+    }
 }

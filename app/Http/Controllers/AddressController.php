@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Exception;
 use App\Models\Address;
+use App\Enums\AddressType;
 use Illuminate\Http\Request;
 use App\Services\AddressService;
 use Illuminate\Support\Facades\Validator;
@@ -33,13 +34,16 @@ class AddressController extends Controller
         // Validate input
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
+            'type' => 'required|integer|in:'.implode(',', AddressType::getValues()),
             'street_name' => 'required|string|max:255',
             'number' => 'required|string|max:255',
             'zip_code' => 'required|string|max:255',
             'city' => 'required|string|max:255',
             'country' => 'required|string|max:255',
-            'workplaces' => 'required|array',
-            'workplaces.*.name' => 'required|string|max:255',
+            'model_type' => 'nullable|string|max:255',
+            'model_id' => 'nullable|integer',
+            'workplaces' => 'array',
+            'workplaces.*.name' => 'string|max:255',
         ]);
 
         if ($validator->fails()) {
@@ -49,13 +53,18 @@ class AddressController extends Controller
         try {
             $address = $this->addressService->store($request->only([
                 'name',
+                'type',
                 'street_name',
                 'number',
                 'zip_code',
                 'city',
                 'country',
+                'model_type',
+                'model_id',
                 'workplaces',
             ]));
+
+            $address = $this->addressService->get($address);
         } catch (Exception $exception) {
             return $this->failedExceptionResponse($exception);
         }
@@ -88,6 +97,8 @@ class AddressController extends Controller
                 'city',
                 'country',
             ]), $address);
+
+            $address = $this->addressService->get($address);
         } catch (Exception $exception) {
             return $this->failedExceptionResponse($exception);
         }

@@ -24,7 +24,7 @@ class RegionService extends Service
 
     public function list(int $perPage = 25, string $query = null)
     {
-        return Region::when(!is_null($query), function ($q) use ($query) {
+        return Region::when($query, function ($q) use ($query) {
             $q->where('name', 'like', "%{$query}%");
         })->get();
     }

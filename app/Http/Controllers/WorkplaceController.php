@@ -27,11 +27,10 @@ class WorkplaceController extends Controller
             return $this->failedValidationResponse($validator);
         }
 
-        $perPage = $request->input('per_page', 25);
         $search = $request->input('search', null);
 
         try {
-            $workplaces = $this->workplaceService->list($perPage, $search);
+            $workplaces = $this->workplaceService->list(25, $search);
         } catch (Exception $exception) {
             return $this->failedExceptionResponse($exception);
         }
@@ -43,7 +42,7 @@ class WorkplaceController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
-            'address_id' => 'required|integer|exists:addresses,id',
+            'address_id' => 'required|integer',
         ]);
 
         if ($validator->fails()) {
@@ -55,6 +54,8 @@ class WorkplaceController extends Controller
                 'name',
                 'address_id',
             ]));
+
+            $workplace = $this->workplaceService->get($workplace);
         } catch (Exception $exception) {
             return $this->failedExceptionResponse($exception);
         }
@@ -66,7 +67,6 @@ class WorkplaceController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' => 'string|max:255',
-            'address_id' => 'integer|exists:addresses,id',
         ]);
 
         if ($validator->fails()) {
@@ -76,13 +76,14 @@ class WorkplaceController extends Controller
         try {
             $workplace = $this->workplaceService->update($request->only([
                 'name',
-                'address_id',
             ]), $workplace);
+
+            $workplace = $this->workplaceService->get($workplace);
         } catch (Exception $exception) {
             return $this->failedExceptionResponse($exception);
         }
 
-       return $this->successResponse($workplace);
+        return $this->successResponse($workplace);
     }
 
     public function destroy(Workplace $workplace)

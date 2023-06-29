@@ -39,8 +39,10 @@ class ClientSeeder extends Seeder
         $branch = Branch::updateOrCreate([
             'name' => 'Vestiging 1',
             'client_id' => $client->id,
-            'address_id' => $address->id,
         ]);
+
+        $branch->regions()->attach($regions);
+        $branch->address($address);
 
         $address = Address::updateOrCreate([
             'name' => 'Werkadres 1',
@@ -52,8 +54,7 @@ class ClientSeeder extends Seeder
             'country' => 'Nederland',
         ]);
 
-        $branch->regions()->attach($regions);
-        $branch->addresses()->attach($address);
+        $branch->workAddresses()->save($address);
 
         $workplace = Workplace::updateOrCreate([
             'name' => 'Restaurant',

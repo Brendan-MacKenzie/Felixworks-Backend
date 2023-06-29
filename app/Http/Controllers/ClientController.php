@@ -64,8 +64,33 @@ class ClientController extends Controller
             $client = $this->clientService->store($request->only([
                 'name',
             ]));
+
+            $client = $this->clientService->get($client);
         } catch (Exception $exception) {
-            return  $this->failedExceptionResponse($exception);
+            return $this->failedExceptionResponse($exception);
+        }
+
+        return $this->successResponse($client);
+    }
+
+    public function update(Request $request, Client $client)
+    {
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255',
+        ]);
+
+        if ($validator->fails()) {
+            return $this->failedValidationResponse($validator);
+        }
+
+        try {
+            $client = $this->clientService->update($request->only([
+                'name',
+            ]), $client);
+
+            $client = $this->clientService->get($client);
+        } catch (Exception $exception) {
+            return $this->failedExceptionResponse($exception);
         }
 
         return $this->successResponse($client);

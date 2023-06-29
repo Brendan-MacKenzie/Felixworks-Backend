@@ -6,15 +6,18 @@ use Exception;
 use App\Models\Branch;
 use Illuminate\Http\Request;
 use App\Services\BranchService;
+use App\Services\AddressService;
 use Illuminate\Support\Facades\Validator;
 
 class BranchController extends Controller
 {
     private $branchService;
+    private $addressService;
 
-    public function __construct(BranchService $branchService)
+    public function __construct(BranchService $branchService, AddressService $addressService)
     {
         $this->branchService = $branchService;
+        $this->addressService = $addressService;
     }
 
     public function index(Request $request)
@@ -33,7 +36,7 @@ class BranchController extends Controller
         try {
             $branches = $this->branchService->list($perPage, $search);
         } catch (Exception $exception) {
-            return  $this->failedExceptionResponse($exception);
+            return $this->failedExceptionResponse($exception);
         }
 
         return $this->successResponse($branches);
@@ -56,7 +59,6 @@ class BranchController extends Controller
             'name' => 'required|string|max:255',
             'dresscode' => 'required|string|max:255',
             'briefing' => 'required|string|max:255',
-            'client_id' => 'required|integer|exists:clients,id',
             'address_id' => 'required|integer|exists:addresses,id',
             'regions' => 'required|array|min:1',
             'regions.*' => 'integer|exists:regions,id',
@@ -71,10 +73,12 @@ class BranchController extends Controller
                 'name',
                 'dresscode',
                 'briefing',
-                'client_id',
-                'address_id',
                 'regions',
             ]));
+
+            $this->addressService->linkModel($request->input('address_id'), $branch);
+
+            $branch = $this->branchService->get($branch);
         } catch (Exception $exception) {
             return $this->failedExceptionResponse($exception);
         }
@@ -88,8 +92,6 @@ class BranchController extends Controller
             'name' => 'string|max:255',
             'dresscode' => 'string|max:255',
             'briefing' => 'string|max:255',
-            'client_id' => 'integer|exists:clients,id',
-            'address_id' => 'integer|exists:addresses,id',
             'regions' => 'required|array|min:1',
             'regions.*' => 'integer|exists:regions,id',
         ]);
@@ -103,10 +105,10 @@ class BranchController extends Controller
                 'name',
                 'dresscode',
                 'briefing',
-                'client_id',
-                'address_id',
                 'regions',
             ]), $branch);
+
+            $branch = $this->branchService->get($branch);
         } catch (Exception $exception) {
             return $this->failedExceptionResponse($exception);
         }
