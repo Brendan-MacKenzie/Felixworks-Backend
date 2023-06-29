@@ -121,4 +121,15 @@ class PostingController extends Controller
 
         return $this->successResponse($posting);
     }
+
+    public function show(Posting $posting)
+    {
+        try {
+            $posting = $this->postingService->get($posting);
+        } catch (Exception $exception) {
+            return $this->failedExceptionResponse($exception);
+        }
+
+        return $this->successResponse($posting);
+    }
 }
