@@ -22,10 +22,10 @@ class AgencyService extends Service
         $data['created_by'] = auth()->user()->id;
 
         if (
-            key_exists('logo_id', $data) &&
-            !is_null($data['logo_id'])
+            key_exists('logo_uuid', $data) &&
+            !is_null($data['logo_uuid'])
         ) {
-            $media = Media::findOrFail($data['logo_id']);
+            $media = Media::findOrFail($data['logo_uuid']);
             if ($media->type !== MediaType::Logo) {
                 throw new Exception('Image is not a logo.', 403);
             }
@@ -64,16 +64,16 @@ class AgencyService extends Service
     public function update(array $data, mixed $agency)
     {
         if (
-            key_exists('logo_id', $data)
+            key_exists('logo_uuid', $data)
         ) {
-            $toDelete = (is_null($data['logo_id'])) ? true : false;
-            if (!is_null($data['logo_id'])) {
-                $media = Media::findOrFail($data['logo_id']);
+            $toDelete = (is_null($data['logo_uuid'])) ? true : false;
+            if (!is_null($data['logo_uuid'])) {
+                $media = Media::findOrFail($data['logo_uuid']);
                 if ($media->type !== MediaType::Logo) {
                     throw new Exception('Image is not a logo.', 403);
                 }
 
-                if ($agency->logo_id && $agency->logo_id !== $media->id) {
+                if ($agency->logo_uuid && $agency->logo_uuid !== $media->id) {
                     $toDelete = true;
                 }
             }

@@ -21,7 +21,7 @@ class Agency extends Model
         'ip_address',
         'webhook',
         'webhook_key',
-        'logo_id',
+        'logo_uuid',
         'created_by',
     ];
 
@@ -58,7 +58,7 @@ class Agency extends Model
 
     public function logo()
     {
-        return $this->belongsTo(Media::class, 'logo_id');
+        return $this->belongsTo(Media::class, 'logo_uuid');
     }
 
     public function createdBy()

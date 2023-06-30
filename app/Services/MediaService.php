@@ -59,7 +59,6 @@ class MediaService extends Service
 
     public function getMediaFile(Media $media, bool $base64 = false)
     {
-        $media = $this->get($id);
         $fullpath = $this->getFullPath($media->type, $media->name, false);
 
         if (!Storage::disk('media')->exists($fullpath)) {

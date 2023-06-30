@@ -22,7 +22,7 @@ return new class extends Migration {
             $table->text('ip_address')->nullable();
             $table->text('webhook')->nullable();
             $table->text('webhook_key')->nullable();
-            $table->unsignedBigInteger('logo_id')->nullable();
+            $table->uuid('logo_uuid')->nullable();
             $table->unsignedBigInteger('created_by')->nullable();
             $table->foreign('created_by')->references('id')->on('users')
                 ->onDelete('set null')

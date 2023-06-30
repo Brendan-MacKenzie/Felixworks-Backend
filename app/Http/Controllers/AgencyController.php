@@ -49,7 +49,7 @@ class AgencyController extends Controller
             'brand_color' => 'required|string|max:255',
             'ip_address' => 'required_with:webhook|string',
             'webhook' => 'required_with:ip_address|string',
-            'logo_id' => 'nullable|integer',
+            'logo_uuid' => 'nullable|uuid',
             'regions' => 'required|array|min:1',
             'regions.*' => 'integer',
         ]);
@@ -67,7 +67,7 @@ class AgencyController extends Controller
                 'brand_color',
                 'ip_address',
                 'webhook',
-                'logo_id',
+                'logo_uuid',
                 'regions',
             ]));
         } catch (Exception $exception) {
@@ -87,7 +87,7 @@ class AgencyController extends Controller
             'brand_color' => 'string|max:255',
             'ip_address' => 'string',
             'webhook' => 'string',
-            'logo_id' => 'nullable|integer',
+            'logo_uuid' => 'nullable|uuid',
 
             'regions' => 'array|min:1',
             'regions.*' => 'integer',
@@ -106,7 +106,7 @@ class AgencyController extends Controller
                 'brand_color',
                 'ip_address',
                 'webhook',
-                'logo_id',
+                'logo_uuid',
                 'regions',
             ]), $agency);
         } catch (Exception $exception) {

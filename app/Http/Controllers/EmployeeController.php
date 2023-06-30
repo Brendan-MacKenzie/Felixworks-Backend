@@ -58,7 +58,7 @@ class EmployeeController extends Controller
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
             'date_of_birth' => 'required|date',
-            'avatar_id' => 'integer',
+            'avatar_uuid' => 'uuid',
             'drivers_license' => 'required|boolean',
             'car' => 'required|boolean',
         ]);
@@ -74,7 +74,7 @@ class EmployeeController extends Controller
                 'first_name',
                 'last_name',
                 'date_of_birth',
-                'avatar_id',
+                'avatar_uuid',
                 'drivers_license',
                 'car',
             ]));
@@ -94,7 +94,7 @@ class EmployeeController extends Controller
             'first_name' => 'string|max:255',
             'last_name' => 'string|max:255',
             'date_of_birth' => 'date',
-            'avatar_id' => 'integer',
+            'avatar_uuid' => 'uuid',
             'drivers_license' => 'boolean',
             'car' => 'boolean',
         ]);
@@ -109,7 +109,7 @@ class EmployeeController extends Controller
                 'first_name',
                 'last_name',
                 'date_of_birth',
-                'avatar_id',
+                'avatar_uuid',
                 'drivers_license',
                 'car',
             ]), $employee);

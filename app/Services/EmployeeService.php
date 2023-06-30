@@ -21,10 +21,10 @@ class EmployeeService extends Service
         $data['created_by'] = auth()->user()->id;
 
         if (
-            key_exists('avatar_id', $data) &&
-            !is_null($data['avatar_id'])
+            key_exists('avatar_uuid', $data) &&
+            !is_null($data['avatar_uuid'])
         ) {
-            $media = Media::findOrFail($data['avatar_id']);
+            $media = Media::findOrFail($data['avatar_uuid']);
             if ($media->type !== MediaType::Avatar) {
                 throw new Exception('Image is not an avatar.', 403);
             }
@@ -36,16 +36,16 @@ class EmployeeService extends Service
     public function update(array $data, mixed $employee)
     {
         if (
-            key_exists('avatar_id', $data)
+            key_exists('avatar_uuid', $data)
         ) {
-            $toDelete = (is_null($data['avatar_id'])) ? true : false;
-            if (!is_null($data['avatar_id'])) {
-                $media = Media::findOrFail($data['avatar_id']);
+            $toDelete = (is_null($data['avatar_uuid'])) ? true : false;
+            if (!is_null($data['avatar_uuid'])) {
+                $media = Media::findOrFail($data['avatar_uuid']);
                 if ($media->type !== MediaType::Avatar) {
                     throw new Exception('Image is not a logo.', 403);
                 }
 
-                if ($employee->avatar_id && $employee->avatar_id !== $media->id) {
+                if ($employee->avatar_uuid && $employee->avatar_uuid !== $media->id) {
                     $toDelete = true;
                 }
             }
