@@ -102,4 +102,9 @@ class Placement extends Model
     {
         return $this->hasOneThrough(Agency::class, Employee::class);
     }
+
+    public function declarations()
+    {
+        return $this->hasMany(Declaration::class, 'placement_id');
+    }
 }

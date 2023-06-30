@@ -43,10 +43,16 @@ Route::group(['middleware' => 'authclient'], function () {
     });
 
     /*
-     * Hours endpoints
-     */
-
-    /*
      * Declaration endpoints
      */
+    Route::group(['prefix' => '/declarations'], function () {
+        // Create Declaration
+        Route::post('/', [ApiController::class, 'storeDeclaration']);
+
+        // Update Declaration
+        Route::patch('/{declaration}', [ApiController::class, 'updateDeclaration']);
+
+        // Delete Declaration
+        Route::delete('/{declaration}', [ApiController::class, 'destroyDeclaration']);
+    });
 });

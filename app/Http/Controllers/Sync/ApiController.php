@@ -8,6 +8,7 @@ use App\Models\Posting;
 use App\Enums\MediaType;
 use App\Models\Employee;
 use App\Models\Placement;
+use App\Models\Declaration;
 use Illuminate\Http\Request;
 use App\Jobs\AgencyActionJob;
 use App\Services\MediaService;
@@ -16,6 +17,7 @@ use App\Services\PostingService;
 use App\Services\EmployeeService;
 use App\Services\PlacementService;
 use App\Http\Controllers\Controller;
+use App\Services\DeclarationService;
 use Illuminate\Support\Facades\Validator;
 use App\Services\Sync\QueueTracker\AgencyQueueTracker;
 
@@ -25,25 +27,29 @@ class ApiController extends Controller
     private $placementService;
     private $mediaService;
     private $employeeService;
+    private $declarationService;
+    private $agency;
 
     public function __construct(
         PostingService $postingService,
         PlacementService $placementService,
         MediaService $mediaService,
-        EmployeeService $employeeService
+        EmployeeService $employeeService,
+        DeclarationService $declarationService
     ) {
         $this->postingService = $postingService;
         $this->placementService = $placementService;
         $this->mediaService = $mediaService;
         $this->employeeService = $employeeService;
+        $this->declarationService = $declarationService;
+        $this->agency = $this->getAuth(request()->cookie('client_id', request()->header('X-Client-Id')));
     }
 
-    public function sync(Request $request, Posting $posting)
+    public function sync(Posting $posting)
     {
         try {
-            $agency = $this->getAuth($request->cookie('client_id', $request->header('X-Client-Id')));
-            $this->hasAgencyAccess($agency, $posting);
-            $posting = $this->postingService->syncAgency($agency, $posting);
+            $this->hasAgencyAccess($this->agency, $posting);
+            $posting = $this->postingService->syncAgency($this->agency, $posting);
         } catch (Exception $exception) {
             return $this->failedExceptionResponse($exception);
         }
@@ -53,9 +59,7 @@ class ApiController extends Controller
 
     public function managePlacement(Request $request, Placement $placement, string $type)
     {
-        $agency = $this->getAuth($request->cookie('client_id', $request->header('X-Client-Id')));
-
-        $this->hasAgencyAccess($agency, $placement);
+        $this->hasAgencyAccess($this->agency, $placement);
 
         switch($type) {
             case 'fill':
@@ -74,7 +78,7 @@ class ApiController extends Controller
                 }
 
                 try {
-                    $request->merge(['agency_id' => $agency->id]);
+                    $request->merge(['agency_id' => $this->agency->id]);
                     $employee = $this->employeeService->store($request->only([
                         'agency_id',
                         'external_id',
@@ -89,7 +93,7 @@ class ApiController extends Controller
 
                     // If employee has no avatar, send avatar job to agency.
                     if (!$employee->avatar_uuid) {
-                        $job = new AgencyActionJob($agency, AgencyActionType::SendAvatar, $employee->id);
+                        $job = new AgencyActionJob($this->agency, AgencyActionType::SendAvatar, $employee->id);
                         AgencyQueueTracker::setJob($job);
                     }
                 } catch (Exception $exception) {
@@ -109,7 +113,7 @@ class ApiController extends Controller
         }
 
         // Notify agencies from change except the agency in call.
-        foreach ($placement->posting->agencies->except($agency->id) as $agency) {
+        foreach ($placement->posting->agencies->except($this->agency->id) as $agency) {
             $job = new AgencyActionJob($agency, AgencyActionType::PostingUpdate, $placement->posting_id);
             AgencyQueueTracker::setJob($job);
         }
@@ -128,11 +132,10 @@ class ApiController extends Controller
             return $this->failedValidationResponse($validator);
         }
 
-        $agency = $this->getAuth($request->cookie('client_id', $request->header('X-Client-Id')));
         $request->merge(['type' => MediaType::Avatar]);
 
         try {
-            $this->hasAgencyAccess($agency, $employee);
+            $this->hasAgencyAccess($this->agency, $employee);
             $media = $this->mediaService->store($request->only([
                 'media',
                 'type',
@@ -169,7 +172,7 @@ class ApiController extends Controller
         }
 
         try {
-            $request->merge(['agency_id' => $request->cookie('client_id', $request->header('X-Client-Id'))]);
+            $request->merge(['agency_id' => $this->agency->id]);
             $employee = $this->employeeService->store($request->only([
                 'agency_id',
                 'external_id',
@@ -188,8 +191,6 @@ class ApiController extends Controller
 
     public function registerHours(Request $request, Placement $placement)
     {
-        $agency = $this->getAuth($request->cookie('client_id', $request->header('X-Client-Id')));
-
         // Validate input
         $validator = Validator::make($request->all(), [
             'hours' => 'required|integer',
@@ -200,7 +201,7 @@ class ApiController extends Controller
         }
 
         try {
-            $this->hasAgencyAccess($agency, $placement);
+            $this->hasAgencyAccess($this->agency, $placement);
             $placement = $this->placementService->update($request->only([
                 'hours',
             ]), $placement);
@@ -209,6 +210,78 @@ class ApiController extends Controller
         }
 
         return $this->successResponse($placement);
+    }
+
+    public function storeDeclaration(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'title' => 'required|string|max:255',
+            'total' => 'required|integer',
+            'placement_id' => 'required|integer',
+        ]);
+
+        if ($validator->fails()) {
+            return $this->failedValidationResponse($validator);
+        }
+
+        try {
+            $placement = Placement::find($request->input('placement_id'));
+
+            if (!$placement) {
+                throw new Exception('Placement not found.', 404);
+            }
+
+            $this->hasAgencyAccess($this->agency, $placement);
+            $declaration = $this->declarationService->store($request->only([
+                'title',
+                'total',
+                'placement_id',
+            ]));
+
+            $declaration = $this->declarationService->get($declaration);
+        } catch (Exception $exception) {
+            return $this->failedExceptionResponse($exception);
+        }
+
+        return $this->successResponse($declaration);
+    }
+
+    public function updateDeclaration(Request $request, Declaration $declaration)
+    {
+        $validator = Validator::make($request->all(), [
+            'title' => 'string|max:255',
+            'total' => 'integer',
+        ]);
+
+        if ($validator->fails()) {
+            return $this->failedValidationResponse($validator);
+        }
+
+        try {
+            $this->hasAgencyAccess($this->agency, $declaration);
+            $declaration = $this->declarationService->update($request->only([
+                'title',
+                'total',
+            ]), $declaration);
+
+            $declaration = $this->declarationService->get($declaration);
+        } catch (Exception $exception) {
+            return $this->failedExceptionResponse($exception);
+        }
+
+        return $this->successResponse($declaration);
+    }
+
+    public function destroyDeclaration(Declaration $declaration)
+    {
+        try {
+            $this->hasAgencyAccess($this->agency, $declaration);
+            $declaration = $this->declarationService->delete($declaration);
+        } catch (Exception $exception) {
+            return $this->failedExceptionResponse($exception);
+        }
+
+        return $this->messageResponse('Declaration removed successfully.');
     }
 
     private function getAuth($clientId)
@@ -228,6 +301,10 @@ class ApiController extends Controller
 
         if ($model instanceof Employee && $model->agency_id !== $agency->id) {
             throw new Exception('Agency does not have access to this employee.', 403);
+        }
+
+        if ($model instanceof Declaration && $model->placement->employee && !$agency->employees()->where('id', $model->placement->employee_id)->exists()) {
+            throw new Exception('This declaration is not from your agency.', 403);
         }
     }
 }
