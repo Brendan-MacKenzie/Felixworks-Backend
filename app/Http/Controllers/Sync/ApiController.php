@@ -186,6 +186,31 @@ class ApiController extends Controller
         return $this->successResponse($employee);
     }
 
+    public function registerHours(Request $request, Placement $placement)
+    {
+        $agency = $this->getAuth($request->cookie('client_id', $request->header('X-Client-Id')));
+
+        // Validate input
+        $validator = Validator::make($request->all(), [
+            'hours' => 'required|integer',
+        ]);
+
+        if ($validator->fails()) {
+            return $this->failedValidationResponse($validator);
+        }
+
+        try {
+            $this->hasAgencyAccess($agency, $placement);
+            $placement = $this->placementService->update($request->only([
+                'hours',
+            ]), $placement);
+        } catch (Exception $exception) {
+            return $this->failedExceptionResponse($exception);
+        }
+
+        return $this->successResponse($placement);
+    }
+
     private function getAuth($clientId)
     {
         return Agency::findOrFail($clientId);

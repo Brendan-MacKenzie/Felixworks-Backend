@@ -23,7 +23,13 @@ Route::group(['middleware' => 'authclient'], function () {
     /*
      * Placement endpoints
      */
-    Route::patch('/placements/{placement}/{type}', [ApiController::class, 'managePlacement'])->where(['type' => 'fill|empty']);
+    Route::group(['prefix' => '/placements'], function () {
+        // Fill|Empty Placement
+        Route::patch('/{placement}/{type}', [ApiController::class, 'managePlacement'])->where(['type' => 'fill|empty']);
+
+        // Finalize Placement
+        Route::patch('/{placement}/register', [ApiController::class, 'registerHours']);
+    });
 
     /*
      * Employee endpoints

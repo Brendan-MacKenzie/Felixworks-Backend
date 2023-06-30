@@ -44,21 +44,33 @@ class PlacementService extends Service
 
     public function update(array $data, mixed $placement)
     {
+        if ($placement->status == PlacementStatus::Registered || $placement->hours || $placement->registered_at) {
+            throw new Exception('Placement is already registered.', 403);
+        }
+
         $posting = $placement->posting;
 
-        $placementType = (key_exists('placement_type_id', $data['placement_type_id'])) ?
+        $placementType = (key_exists('placement_type_id', $data)) ?
         PlacementType::findOrFail($data['placement_type_id']) :
         $placement->placementType;
 
-        $workplace = (key_exists('workplace_id', $data['workplace_id'])) ?
+        $workplace = (key_exists('workplace_id', $data)) ?
         Workplace::findOrFail($data['workplace_id']) :
         $placement->workplace;
 
-        $employee = (key_exists('employee_id', $data['employee_id'])) ?
+        $employee = (key_exists('employee_id', $data)) ?
             Employee::findOrFail($data['employee_id']) :
             $placement->employee;
 
         $this->validatePlacement($posting, $placementType, $workplace, $employee);
+
+        if (key_exists('hours', $data) && !is_null($data['hours'])) {
+            if (!$employee) {
+                throw new Exception("You can't register an empty placement.", 500);
+            }
+
+            $data['registered_at'] = Carbon::now();
+        }
 
         $data = $this->checkStatus($data, $employee);
 
@@ -127,6 +139,10 @@ class PlacementService extends Service
             throw new Exception('Placement cannot be cancelled within '.config('app.CANCEL_HOURS').' hours.', 403);
         }
 
+        if ($placement->status == PlacementStatus::Registered || $placement->hours || $placement->registered_at) {
+            throw new Exception('Placement is already registered.', 403);
+        }
+
         if (!$placement->employee) {
             throw new Exception('Placement is already empty.', 500);
         }
@@ -159,7 +175,7 @@ class PlacementService extends Service
         mixed $workplace = null,
         mixed $employee
     ) {
-        $address = $posting->address;
+        $address = $posting->workAddress;
 
         // Check if placement_type is from same branch
         if ($placementType && $placementType->branch_id !== $address->model->id) {
@@ -179,7 +195,12 @@ class PlacementService extends Service
 
     private function checkStatus(array &$data, mixed $employee = null)
     {
-        $data['status'] = ($employee) ? PlacementStatus::Confirmed : PlacementStatus::Open;
+        $status = PlacementStatus::Open;
+        if ($employee) {
+            $status = (key_exists('hours', $data) && !is_null($data['hours'])) ? PlacementStatus::Registered : PlacementStatus::Confirmed;
+        }
+
+        $data['status'] = $status;
 
         return $data;
     }

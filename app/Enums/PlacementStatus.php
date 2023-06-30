@@ -10,4 +10,5 @@ class PlacementStatus extends Enum
     public const Open = 1;
     public const Confirmed = 2;
     public const Cancelled = 3;
+    public const Registered = 4;
 }
