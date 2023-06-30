@@ -20,7 +20,7 @@ class PlacementService extends Service
 
     public function store(array $data)
     {
-        $data['created_by'] = Auth::user()->id;
+        $data['created_by'] = (Auth::check()) ? Auth::user()->id : null;
 
         $posting = Posting::findOrFail($data['posting_id']);
         $placementType = PlacementType::findOrFail($data['placement_type_id']);

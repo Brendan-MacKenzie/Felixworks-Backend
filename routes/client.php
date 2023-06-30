@@ -28,6 +28,13 @@ Route::group(['middleware' => 'authclient'], function () {
     /*
      * Employee endpoints
      */
+    Route::group(['prefix' => '/employees'], function () {
+        // Create or Update employee
+        Route::post('/', [ApiController::class, 'createOrUpdateEmployee']);
+
+        // Upload avatar
+        Route::post('/{employee}/avatar', [ApiController::class, 'uploadAvatar']);
+    });
 
     /*
      * Hours endpoints

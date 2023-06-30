@@ -41,7 +41,7 @@ class PostingSeeder extends Seeder
         // Employees
         $employee = Employee::updateOrCreate([
             'agency_id' => 1,
-            'external_id' => 1,
+            'external_id' => '1',
             'first_name' => 'Employee',
             'last_name' => 'One',
             'date_of_birth' => '1997-12-24',
@@ -53,7 +53,7 @@ class PostingSeeder extends Seeder
 
         $employee = Employee::updateOrCreate([
             'agency_id' => 1,
-            'external_id' => 1,
+            'external_id' => '2',
             'first_name' => 'Employee',
             'last_name' => 'Two',
             'date_of_birth' => '2000-11-19',

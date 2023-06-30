@@ -7,6 +7,7 @@ use App\Models\Media;
 use App\Models\Agency;
 use App\Enums\MediaType;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Auth;
 
 class AgencyService extends Service
 {
@@ -19,7 +20,7 @@ class AgencyService extends Service
 
     public function store(array $data)
     {
-        $data['created_by'] = auth()->user()->id;
+        $data['created_by'] = (Auth::check()) ? Auth::user()->id : null;
 
         if (
             key_exists('logo_uuid', $data) &&

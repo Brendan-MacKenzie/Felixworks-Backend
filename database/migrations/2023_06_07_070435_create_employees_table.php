@@ -18,7 +18,7 @@ return new class extends Migration {
             $table->foreign('agency_id')->references('id')->on('agencies')
                 ->onDelete('set null')
                 ->onUpdate('restrict');
-            $table->integer('external_id')->nullable();
+            $table->string('external_id')->nullable();
             $table->string('first_name');
             $table->string('last_name');
             $table->date('date_of_birth')->nullable();

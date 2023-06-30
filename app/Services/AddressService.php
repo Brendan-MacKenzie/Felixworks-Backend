@@ -8,12 +8,13 @@ use App\Models\Office;
 use App\Models\Address;
 use App\Models\Workplace;
 use App\Enums\AddressType;
+use Illuminate\Support\Facades\Auth;
 
 class AddressService extends Service
 {
     public function store(array $data)
     {
-        $data['created_by'] = auth()->user()->id;
+        $data['created_by'] = (Auth::check()) ? Auth::user()->id : null;
 
         $workplacesData = $data['workplaces'] ?? [];
         unset($data['workplaces']);

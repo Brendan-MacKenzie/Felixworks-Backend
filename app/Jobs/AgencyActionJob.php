@@ -27,10 +27,11 @@ class AgencyActionJob implements ShouldQueue
     /**
      * Create a new job instance.
      */
-    public function __construct(Agency $agency, string $type, mixed $data)
+    public function __construct(Agency $agency, string $type, mixed $data, int $uniqueId = null)
     {
         $this->agency = $agency;
-        $this->key = str_replace(':', '-', str_replace(' ', '-', 'AgencyActionJob'.'-'.$type.''.'-'.$agency->id.'-'.now()));
+        $id = $uniqueId ?? $data;
+        $this->key = str_replace(':', '-', str_replace(' ', '-', 'AgencyActionJob'.'-'.$type.''.'-'.$agency->id.'-'.$id));
         $this->onQueue('agencies');
         $this->type = $type;
         $this->data = $data;

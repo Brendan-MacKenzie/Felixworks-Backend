@@ -61,7 +61,7 @@ class ApiController extends Controller
             case 'fill':
                 // Validate input
                 $validator = Validator::make($request->all(), [
-                    'external_id' => 'required|integer',
+                    'external_id' => 'required|string|max:255',
                     'first_name' => 'required|string|max:255',
                     'last_name' => 'required|string|max:255',
                     'date_of_birth' => 'required|date',
@@ -114,7 +114,76 @@ class ApiController extends Controller
             AgencyQueueTracker::setJob($job);
         }
 
-        return $this->successResponse($posting);
+        return $this->successResponse($placement->only('posting_id', 'employee_id', 'id'));
+    }
+
+    public function uploadAvatar(Request $request, Employee $employee)
+    {
+        // Validate input
+        $validator = Validator::make($request->all(), [
+            'media' => 'required|image|max:5000',
+        ]);
+
+        if ($validator->fails()) {
+            return $this->failedValidationResponse($validator);
+        }
+
+        $agency = $this->getAuth($request->cookie('client_id', $request->header('X-Client-Id')));
+        $request->merge(['type' => MediaType::Avatar]);
+
+        try {
+            $this->hasAgencyAccess($agency, $employee);
+            $media = $this->mediaService->store($request->only([
+                'media',
+                'type',
+            ]));
+
+            $employee = $this->employeeService->update([
+                'avatar_uuid' => $media->id,
+            ], $employee);
+        } catch (Exception $exception) {
+            if ($media) {
+                $this->mediaService->delete($media);
+            }
+
+            return $this->failedExceptionResponse($exception);
+        }
+
+        return $this->messageResponse('Image received');
+    }
+
+    public function createOrUpdateEmployee(Request $request)
+    {
+        // Validate input
+        $validator = Validator::make($request->all(), [
+            'external_id' => 'required|string|max:255',
+            'first_name' => 'string|max:255',
+            'last_name' => 'string|max:255',
+            'date_of_birth' => 'date',
+            'drivers_license' => 'boolean',
+            'car' => 'boolean',
+        ]);
+
+        if ($validator->fails()) {
+            return $this->failedValidationResponse($validator);
+        }
+
+        try {
+            $request->merge(['agency_id' => $request->cookie('client_id', $request->header('X-Client-Id'))]);
+            $employee = $this->employeeService->store($request->only([
+                'agency_id',
+                'external_id',
+                'first_name',
+                'last_name',
+                'date_of_birth',
+                'drivers_license',
+                'car',
+            ]));
+        } catch (Exception $exception) {
+            return $this->failedExceptionResponse($exception);
+        }
+
+        return $this->successResponse($employee);
     }
 
     private function getAuth($clientId)

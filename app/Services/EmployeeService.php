@@ -4,8 +4,10 @@ namespace App\Services;
 
 use Exception;
 use App\Models\Media;
+use App\Models\Agency;
 use App\Enums\MediaType;
 use App\Models\Employee;
+use Illuminate\Support\Facades\Auth;
 
 class EmployeeService extends Service
 {
@@ -18,7 +20,7 @@ class EmployeeService extends Service
 
     public function store(array $data)
     {
-        $data['created_by'] = auth()->user()->id;
+        $data['created_by'] = (Auth::check()) ? Auth::user()->id : null;
 
         if (
             key_exists('avatar_uuid', $data) &&
@@ -27,6 +29,15 @@ class EmployeeService extends Service
             $media = Media::findOrFail($data['avatar_uuid']);
             if ($media->type !== MediaType::Avatar) {
                 throw new Exception('Image is not an avatar.', 403);
+            }
+        }
+
+        if (key_exists('external_id', $data)) {
+            $agency = Agency::findOrFail($data['agency_id']);
+            $employee = $agency->employees()->where('external_id', $data['external_id'])->first();
+
+            if ($employee) {
+                return $this->update($data, $employee);
             }
         }
 
