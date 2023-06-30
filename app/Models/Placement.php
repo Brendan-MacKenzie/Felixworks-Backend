@@ -2,12 +2,14 @@
 
 namespace App\Models;
 
+use App\Helpers\RedisHelper;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Placement extends Model
 {
     use HasFactory;
+    use RedisHelper;
 
     protected $fillable = [
         'status',
@@ -26,6 +28,21 @@ class Placement extends Model
         'start_at' => 'datetime',
         'end_at' => 'datetime',
     ];
+
+    protected static function booted(): void
+    {
+        self::created(function ($model) {
+            self::staticSyncRedisPosting($model->posting, 'created');
+        });
+
+        self::updated(function ($model) {
+            self::staticSyncRedisPosting($model->posting, 'updated');
+        });
+
+        self::deleted(function ($model) {
+            self::staticSyncRedisPosting($model->posting, 'deleted');
+        });
+    }
 
     public function posting()
     {

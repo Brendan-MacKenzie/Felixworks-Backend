@@ -35,8 +35,10 @@ class AgencyService extends Service
             key_exists('ip_address', $data) &&
             key_exists('webhook', $data)
         ) {
-            $data['api_key'] = Str::random(32);
-            $data['webhook_key'] = Str::random(32);
+            $apiKey = Str::random(32);
+            $webhookKey = Str::random(32);
+            $data['api_key'] = password_hash($apiKey, PASSWORD_BCRYPT);
+            $data['webhook_key'] = password_hash($webhookKey, PASSWORD_BCRYPT);
         }
 
         $agency = Agency::create($data);
@@ -49,6 +51,8 @@ class AgencyService extends Service
             key_exists('ip_address', $data) &&
             key_exists('webhook', $data)
         ) {
+            $agency->api_key = $apiKey;
+            $agency->webhook_key = $webhookKey;
             $agency->makeVisible(['api_key', 'webhook_key']);
         }
 

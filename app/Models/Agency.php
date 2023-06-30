@@ -26,10 +26,7 @@ class Agency extends Model
     ];
 
     protected $encryptable = [
-        'api_key',
-        'ip_address',
         'webhook',
-        'webhook_key',
     ];
 
     protected $hidden = [

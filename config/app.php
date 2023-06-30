@@ -187,4 +187,6 @@ return [
         // 'Example' => App\Facades\Example::class,
     ])->toArray(),
 
+    'REDIS_POSTING_EXPIRATION' => env('REDIS_POSTING_EXPIRATION', 300),
+    'PLAN_HOURS' => env('PLAN_HOURS', 0),
 ];

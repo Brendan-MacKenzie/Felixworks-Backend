@@ -44,7 +44,7 @@ class AgencyController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'full_name' => 'required|string|max:255',
-            'email' => 'requirded|email|string|max:255',
+            'email' => 'required|email|string|max:255',
             'base_rate' => 'required|integer',
             'brand_color' => 'required|string|max:255',
             'ip_address' => 'required_with:webhook|string',

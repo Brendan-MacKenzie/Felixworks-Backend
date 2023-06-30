@@ -10,6 +10,7 @@ use App\Models\Posting;
 use App\Models\Employee;
 use App\Models\Placement;
 use App\Models\Workplace;
+use App\Models\Commitment;
 use App\Models\PlacementType;
 use Illuminate\Database\Seeder;
 
@@ -29,7 +30,7 @@ class PostingSeeder extends Seeder
         // Posting
         $posting = Posting::updateOrCreate([
             'name' => 'Posting 1',
-            'address_id' => 1,
+            'address_id' => 2,
             'start_at' => $startAt,
             'dresscode' => 'Dit is de dresscode',
             'briefing' => 'Dit is de briefing',
@@ -89,6 +90,14 @@ class PostingSeeder extends Seeder
 
         // Commitments
         $agencies = Agency::all()->pluck('id')->all();
-        $posting->commitments()->sync($agencies, ['amount' => 1]);
+        $commitments = [];
+        foreach ($agencies as $agencyId) {
+            $commitments[] = new Commitment([
+                'posting_id' => $posting->id,
+                'agency_id' => $agencyId,
+                'amount' => 1,
+            ]);
+        }
+        $posting->commitments()->saveMany($commitments);
     }
 }

@@ -3,16 +3,21 @@
 namespace App\Services;
 
 use Exception;
+use Carbon\Carbon;
 use App\Models\Posting;
 use App\Models\Employee;
 use App\Models\Placement;
 use App\Models\Workplace;
+use App\Helpers\RedisHelper;
 use App\Models\PlacementType;
 use App\Enums\PlacementStatus;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 
 class PlacementService extends Service
 {
+    use RedisHelper;
+
     public function store(array $data)
     {
         $data['created_by'] = Auth::user()->id;
@@ -82,10 +87,76 @@ class PlacementService extends Service
     {
     }
 
+    public function fill(Placement $placement, Employee $employee)
+    {
+        DB::beginTransaction();
+        $posting = $placement->posting;
+        $branch = $posting->workAddress->model;
+
+        if (config('app.PLAN_HOURS') > 0 && $placement->start_at->diffInHours(Carbon::now()) <= config('app.PLAN_HOURS')) {
+            throw new Exception('The time limit of '.config('app.PLAN_HOURS').' hours to plan someone on this placement is exceeded.', 403);
+        }
+
+        if ($placement->employee_id && $placement->employee_id !== $employee->id) {
+            throw new Exception('Placement is occupied.', 403);
+        }
+
+        $this->validatePlacement($posting, null, null, $employee);
+
+        $placement->employee_id = $employee->id;
+        $placement->status = PlacementStatus::Confirmed;
+        $placement->save();
+
+        if ($branch) {
+            $branch->employees()->syncWithoutDetaching($employee);
+        }
+
+        DB::commit();
+        $this->syncRedisPosting($posting, 'updated');
+
+        return $placement;
+    }
+
+    public function empty(Placement $placement)
+    {
+        DB::beginTransaction();
+        $posting = $placement->posting;
+        $branch = $posting->workAddress->model;
+
+        if ($placement->start_at->diffInHours(Carbon::now()) <= config('app.CANCEL_HOURS')) {
+            throw new Exception('Placement cannot be cancelled within '.config('app.CANCEL_HOURS').' hours.', 403);
+        }
+
+        if (!$placement->employee) {
+            throw new Exception('Placement is already empty.', 500);
+        }
+
+        $employee = $placement->employee;
+        $placement->employee_id = null;
+        $placement->status = PlacementStatus::Open;
+        $placement->save();
+
+        // Remove employee from branch if it has not worked before.
+        if ($branch) {
+            $branch->employees()->detach($employee);
+        }
+
+        // Remove employee if not used on other placements.
+        if ($employee->placements()->where('id', '!=', $placement->id)->count() <= 0) {
+            $employee->delete();
+        }
+
+        DB::commit();
+
+        $this->syncRedisPosting($posting, 'updated');
+
+        return $placement;
+    }
+
     private function validatePlacement(
         mixed $posting,
-        mixed $placementType,
-        mixed $workplace,
+        mixed $placementType = null,
+        mixed $workplace = null,
         mixed $employee
     ) {
         $address = $posting->address;
