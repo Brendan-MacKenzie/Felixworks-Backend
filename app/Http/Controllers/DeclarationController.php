@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Exception;
+use App\Models\Declaration;
 use Illuminate\Http\Request;
 use App\Services\DeclarationService;
 use Illuminate\Support\Facades\Validator;
@@ -41,5 +42,16 @@ class DeclarationController extends Controller
         }
 
         return $this->successResponse($declaration);
+    }
+
+    public function destroy(Declaration $declaration)
+    {
+        try {
+            $this->declarationService->delete($declaration);
+        } catch (Exception $exception) {
+            return $this->failedExceptionResponse($exception);
+        }
+
+        return $this->messageResponse('Declaration removed successfully.');
     }
 }
