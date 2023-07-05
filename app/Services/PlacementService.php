@@ -23,23 +23,38 @@ class PlacementService extends Service
         $data['created_by'] = (Auth::check()) ? Auth::user()->id : null;
 
         $posting = Posting::findOrFail($data['posting_id']);
+
         $placementType = PlacementType::findOrFail($data['placement_type_id']);
 
-        $workplace = (key_exists('workplace_id', $data['workplace_id'])) ?
+        $workplace = (key_exists('workplace_id', $data)) ?
         Workplace::findOrFail($data['workplace_id']) :
         null;
 
-        $employee = (key_exists('employee_id', $data['employee_id'])) ?
+        $employee = (key_exists('employee_id', $data)) ?
             Employee::findOrFail($data['employee_id']) :
             null;
 
         $this->validatePlacement($posting, $placementType, $workplace, $employee);
+
+        $data = $this->checkDates($data, $posting);
 
         $data = $this->checkStatus($data, $employee);
 
         $placement = Placement::create($data);
 
         return $placement;
+    }
+
+    public function storeBulk(Posting $posting, array $placements)
+    {
+        $data = collect($placements);
+        foreach ($placements as $placement) {
+            $placement['posting_id'] = $posting->id;
+            $placement = $this->store($placement);
+            $data->push($placement);
+        }
+
+        return $data;
     }
 
     public function update(array $data, mixed $placement)
@@ -64,6 +79,10 @@ class PlacementService extends Service
 
         $this->validatePlacement($posting, $placementType, $workplace, $employee);
 
+        $data = $this->checkStatus($data, $employee);
+
+        $data = $this->checkDates($data, $posting);
+
         if (key_exists('hours', $data) && !is_null($data['hours'])) {
             if (!$employee) {
                 throw new Exception("You can't register an empty placement.", 500);
@@ -71,8 +90,6 @@ class PlacementService extends Service
 
             $data['registered_at'] = Carbon::now();
         }
-
-        $data = $this->checkStatus($data, $employee);
 
         $placement->update($data);
         $placement->refresh();
@@ -175,15 +192,15 @@ class PlacementService extends Service
         mixed $workplace = null,
         mixed $employee
     ) {
-        $address = $posting->workAddress;
+        $workAddress = $posting->workAddress;
 
         // Check if placement_type is from same branch
-        if ($placementType && $placementType->branch_id !== $address->model->id) {
+        if ($placementType && $placementType->branch_id !== $workAddress->model->id) {
             throw new Exception('Placement type does not exist in this branch.', 500);
         }
 
         // Check if posting address_id = workplace address_id
-        if ($workplace && $workplace->address_id !== $address->id) {
+        if ($workplace && $workplace->address_id !== $workAddress->id) {
             throw new Exception('Workplace does not exist on this workaddress.', 500);
         }
 
@@ -201,6 +218,27 @@ class PlacementService extends Service
         }
 
         $data['status'] = $status;
+
+        return $data;
+    }
+
+    private function checkDates(array &$data, Posting $posting)
+    {
+        $reportAt = Carbon::parse($posting->start_at->toDateString().' '.Carbon::parse($data['report_at'])->format('H:i:s'));
+        $startAt = Carbon::parse($posting->start_at->toDateString().' '.Carbon::parse($data['start_at'])->format('H:i:s'));
+        $endAt = Carbon::parse($posting->start_at->toDateString().' '.Carbon::parse($data['end_at'])->format('H:i:s'));
+
+        if ($reportAt->gt($startAt)) {
+            throw new Exception('Report at has to before the start at.', 500);
+        }
+
+        if ($endAt->lt($startAt)) {
+            $endAt->addDay();
+        }
+
+        $data['report_at'] = $reportAt;
+        $data['start_at'] = $startAt;
+        $data['end_at'] = $endAt;
 
         return $data;
     }

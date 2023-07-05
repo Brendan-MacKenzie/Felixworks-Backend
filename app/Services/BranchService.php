@@ -46,7 +46,7 @@ class BranchService extends Service
 
     public function list(int $perPage = 25, string $query = null)
     {
-        return Branch::when(!is_null($query), function ($q) use ($query) {
+        return Branch::when($query, function ($q) use ($query) {
             $q->where('name', 'like', "%{$query}%");
         })->paginate($perPage);
     }

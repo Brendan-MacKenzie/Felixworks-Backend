@@ -80,15 +80,15 @@ Route::group(['middleware' => ['api', 'authserver']], function () {
 
     Route::group(['prefix' => '/clients'], function () {
         Route::get('/', [ClientController::class, 'index']);
-        Route::get('/{client}', [ClientController::class, 'show']);
         Route::post('/', [ClientController::class, 'store']);
+        Route::get('/{client}', [ClientController::class, 'show']);
         Route::patch('/{client}', [ClientController::class, 'update']);
     });
 
     Route::group(['prefix' => '/branches'], function () {
         Route::get('/', [BranchController::class, 'index']);
-        Route::get('/{branch}', [BranchController::class, 'show']);
         Route::post('/', [BranchController::class, 'store']);
+        Route::get('/{branch}', [BranchController::class, 'show']);
         Route::patch('/{branch}', [BranchController::class, 'update']);
     });
 
@@ -111,28 +111,27 @@ Route::group(['middleware' => ['api', 'authserver']], function () {
     });
 
     Route::group(['prefix' => '/pools'], function () {
+        Route::get('/', [PoolController::class, 'index']);
         Route::post('/', [PoolController::class, 'store']);
         Route::patch('/{pool}', [PoolController::class, 'update']);
         Route::get('/{pool}', [PoolController::class, 'show']);
-        Route::get('/', [PoolController::class, 'index']);
         Route::delete('/{pool}', [PoolController::class, 'destroy']);
     });
 
     Route::group(['prefix' => '/employees'], function () {
+        Route::get('/', [EmployeeController::class, 'index']);
         Route::post('/', [EmployeeController::class, 'store']);
         Route::patch('/{employee}', [EmployeeController::class, 'update']);
         Route::get('/{employee}', [EmployeeController::class, 'show']);
-        Route::get('/', [EmployeeController::class, 'index']);
         Route::delete('/{employee}', [EmployeeController::class, 'destroy']);
     });
 
     Route::group(['prefix' => '/postings'], function () {
-        Route::post('/', [PostingController::class, 'store']);
-        Route::patch('/{posting}', [PostingController::class, 'update']);
-        Route::get('/{posting}', [PostingController::class, 'show']);
         Route::get('/', [PostingController::class, 'index']);
-        Route::get('/cancelled/all', [PostingController::class, 'indexCancelled']);
-        Route::patch('/cancel/{posting}', [PostingController::class, 'cancel']);
+        Route::post('/', [PostingController::class, 'store']);
+        Route::get('/{posting}', [PostingController::class, 'show']);
+        Route::patch('/{posting}', [PostingController::class, 'update']);
+        Route::patch('/{posting}/cancel', [PostingController::class, 'cancel']);
     });
 
     Route::group(['prefix' => '/commitments'], function () {

@@ -7,15 +7,21 @@ use App\Models\Posting;
 use App\Enums\RepeatType;
 use Illuminate\Http\Request;
 use App\Services\PostingService;
+use App\Services\PlacementService;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class PostingController extends Controller
 {
     private $postingService;
+    private $placementService;
 
-    public function __construct(PostingService $postingService)
-    {
+    public function __construct(
+        PostingService $postingService,
+        PlacementService $placementService
+    ) {
         $this->postingService = $postingService;
+        $this->placementService = $placementService;
     }
 
     public function index(Request $request)
@@ -30,31 +36,10 @@ class PostingController extends Controller
 
         $perPage = $request->input('per_page', 25);
         $search = $request->input('search', null);
+        $cancelled = boolval($request->input('cancelled', false));
 
         try {
-            $postings = $this->postingService->list($perPage, $search);
-        } catch (Exception $exception) {
-            return $this->failedExceptionResponse($exception);
-        }
-
-        return $this->successResponse($postings);
-    }
-
-    public function indexCancelled(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'search' => 'string',
-        ]);
-
-        if ($validator->fails()) {
-            return $this->failedValidationResponse($validator);
-        }
-
-        $perPage = $request->input('per_page', 25);
-        $search = $request->input('search', null);
-
-        try {
-            $postings = $this->postingService->listCancelled($perPage, $search);
+            $postings = $this->postingService->list($perPage, $search, $cancelled);
         } catch (Exception $exception) {
             return $this->failedExceptionResponse($exception);
         }
@@ -70,7 +55,6 @@ class PostingController extends Controller
            'dresscode' => 'string|max:255',
            'briefing' => 'string|max:255',
            'information' => 'string|max:255',
-           'cancelled_at' => 'date',
            'agencies' => 'required|array|min:1',
            'agencies.*' => 'integer|exists:agencies,id',
            'regions' => 'required|array|min:1',
@@ -79,6 +63,12 @@ class PostingController extends Controller
            'posting_start_date' => 'required|date',
            'posting_end_date' => 'nullable|date|after_or_equal:posting_start_date',
            'placements' => 'required|array|min:1',
+           'placements.*.workplace_id' => 'nullable|integer',
+           'placements.*.placement_type_id' => 'required|integer',
+           'placements.*.employee_id' => 'nullable|integer',
+           'placements.*.report_at' => 'required|date',
+           'placements.*.start_at' => 'required|date',
+           'placements.*.end_at' => 'required|date',
         ]);
 
         if ($validator->fails()) {
@@ -86,25 +76,31 @@ class PostingController extends Controller
         }
 
         try {
-            $posting = $this->postingService->store($request->only([
+            DB::beginTransaction();
+            $postings = $this->postingService->store($request->only([
                 'name',
                 'address_id',
                 'dresscode',
                 'briefing',
                 'information',
-                'cancelled_at',
                 'agencies',
                 'regions',
                 'repeat_type',
                 'posting_start_date',
                 'posting_end_date',
-                'placements',
             ]));
+
+            foreach ($postings as $posting) {
+                $placements = $this->placementService->storeBulk($posting, $request->input('placements'));
+            }
+
+            $postings = $this->postingService->getBulk($postings->pluck('id')->all());
+            DB::commit();
         } catch (Exception $exception) {
             return $this->failedExceptionResponse($exception);
         }
 
-        return $this->successResponse($posting);
+        return $this->successResponse($postings);
     }
 
     public function update(Request $request, Posting $posting)
@@ -135,6 +131,8 @@ class PostingController extends Controller
                 'agencies',
                 'regions',
             ]), $posting);
+
+            $posting = $this->postingService->get($posting);
         } catch (Exception $exception) {
             return $this->failedExceptionResponse($exception);
         }

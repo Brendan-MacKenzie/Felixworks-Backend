@@ -40,7 +40,7 @@ class ClientService extends Service
 
     public function list(int $perPage = 25, string $query = null)
     {
-        return Client::when(!is_null($query), function ($q) use ($query) {
+        return Client::when($query, function ($q) use ($query) {
             $q->where('name', 'like', "%{$query}%");
         })->paginate($perPage);
     }

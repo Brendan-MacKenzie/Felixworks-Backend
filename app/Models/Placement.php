@@ -98,11 +98,6 @@ class Placement extends Model
         return $this->belongsTo(User::class, 'created_by');
     }
 
-    public function agency()
-    {
-        return $this->hasOneThrough(Agency::class, Employee::class);
-    }
-
     public function declarations()
     {
         return $this->hasMany(Declaration::class, 'placement_id');
