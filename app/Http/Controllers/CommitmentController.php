@@ -39,6 +39,17 @@ class CommitmentController extends Controller
         return $this->successResponse($commitments);
     }
 
+    public function show(Commitment $commitment)
+    {
+        try {
+            $commitment = $this->commitmentService->get($commitment);
+        } catch (Exception $exception) {
+            return $this->failedExceptionResponse($exception);
+        }
+
+        return $this->successResponse($commitment);
+    }
+
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [

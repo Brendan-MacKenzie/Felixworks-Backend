@@ -97,6 +97,16 @@ class CommitmentService extends Service
 
     public function get(mixed $commitment)
     {
+        $commitment->load(
+            'posting',
+            'posting.placements',
+            'posting.placements.placementType',
+            'posting.placements.workplace',
+            'posting.placements.employee',
+            'agency'
+        );
+
+        return $commitment;
     }
 
     public function list(int $perPage = 25, string $query = null)
