@@ -44,6 +44,31 @@ class DeclarationController extends Controller
         return $this->successResponse($declaration);
     }
 
+    public function update(Request $request, Declaration $declaration)
+    {
+        $validator = Validator::make($request->all(), [
+            'title' => 'string|max:255',
+            'total' => 'numeric',
+        ]);
+
+        if ($validator->fails()) {
+            return $this->failedValidationResponse($validator);
+        }
+
+        try {
+            $declaration = $this->declarationService->update($request->only([
+                'title',
+                'total',
+            ]), $declaration);
+
+            $declaration = $this->declarationService->get($declaration);
+        } catch (Exception $exception) {
+            return $this->failedExceptionResponse($exception);
+        }
+
+        return $this->successResponse($declaration);
+    }
+
     public function destroy(Declaration $declaration)
     {
         try {
