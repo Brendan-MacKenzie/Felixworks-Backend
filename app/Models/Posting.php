@@ -53,7 +53,7 @@ class Posting extends Model
         return $query->whereNotNull('cancelled_at');
     }
 
-   public function workAddress()
+    public function workAddress()
     {
         return $this->belongsTo(Address::class, 'address_id');
     }

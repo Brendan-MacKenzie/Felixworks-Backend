@@ -3,7 +3,6 @@
 namespace App\Services;
 
 use Carbon\Carbon;
-use App\Models\Agency;
 use App\Models\Posting;
 use App\Models\Placement;
 use App\Helpers\RedisHelper;
