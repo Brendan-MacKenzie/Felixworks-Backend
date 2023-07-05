@@ -62,4 +62,15 @@ class CommitmentController extends Controller
 
         return $this->successResponse($commitment);
     }
+
+    public function destroy(Commitment $commitment)
+    {
+        try {
+            $this->commitmentService->delete($commitment);
+        } catch (Exception $exception) {
+            return $this->failedExceptionResponse($exception);
+        }
+
+        return $this->messageResponse('Commitment deleted successfully.');
+    }
 }

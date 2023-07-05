@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use Carbon\Carbon;
 use App\Models\Posting;
 use App\Models\Commitment;
 use Illuminate\Support\Facades\Auth;
@@ -78,6 +79,20 @@ class CommitmentService extends Service
 
     public function delete(mixed $commitment)
     {
+        $posting = $commitment->posting;
+
+        // Check if the posting has already started
+        if ($posting->start_at->isPast()) {
+            throw new \Exception('Commitments on postings that have already started cannot be deleted.');
+        }
+
+        // Check if the posting starts within the next 24 hours
+        if ($posting->start_at->diffInHours(Carbon::now()) <= 24) {
+            throw new \Exception('Commitments on postings that are starting within the next 24 hours cannot be deleted.');
+        }
+
+        // If none of the conditions are met, delete the commitment
+        $commitment->delete();
     }
 
     public function get(mixed $commitment)
