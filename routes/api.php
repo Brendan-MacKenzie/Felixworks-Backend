@@ -13,6 +13,7 @@ use App\Http\Controllers\PostingController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\PlacementController;
 use App\Http\Controllers\WorkplaceController;
+use App\Http\Controllers\CommitmentController;
 use App\Http\Controllers\PlacementTypeController;
 
 /*
@@ -130,5 +131,9 @@ Route::group(['middleware' => ['api', 'authserver']], function () {
         Route::get('/', [PostingController::class, 'index']);
         Route::get('/cancelled/all', [PostingController::class, 'indexCancelled']);
         Route::patch('/cancel/{posting}', [PostingController::class, 'cancel']);
+    });
+
+    Route::group(['prefix' => '/commitments'], function () {
+        Route::post('/', [CommitmentController::class, 'store']);
     });
 });
