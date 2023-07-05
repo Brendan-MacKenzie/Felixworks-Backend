@@ -101,5 +101,14 @@ class CommitmentService extends Service
 
     public function list(int $perPage = 25, string $query = null)
     {
+        // If a query is provided, search for the query in the posting and agency names
+        return Commitment::with('posting', 'agency')
+        ->when($query, function ($queryBuilder) use ($query) {
+            $queryBuilder->whereHas('posting', function ($queryBuilder) use ($query) {
+                $queryBuilder->where('name', 'like', '%'.$query.'%');
+            })->orWhereHas('agency', function ($queryBuilder) use ($query) {
+                $queryBuilder->where('name', 'like', '%'.$query.'%');
+            });
+        })->paginate($perPage);
     }
 }

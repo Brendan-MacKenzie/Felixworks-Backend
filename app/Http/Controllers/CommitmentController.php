@@ -17,6 +17,28 @@ class CommitmentController extends Controller
         $this->commitmentService = $commitmentService;
     }
 
+    public function index(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'search' => 'string',
+        ]);
+
+        if ($validator->fails()) {
+            return $this->failedValidationResponse($validator);
+        }
+
+        $search = $request->input('search', null);
+        $perPage = $request->input('per_page', 25);
+
+        try {
+            $commitments = $this->commitmentService->list($perPage, $search);
+        } catch (Exception $exception) {
+            return $this->failedExceptionResponse($exception);
+        }
+
+        return $this->successResponse($commitments);
+    }
+
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
