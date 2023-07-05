@@ -2,18 +2,18 @@
 
 namespace App\Services;
 
-use App\Models\Agency;
 use Carbon\Carbon;
+use App\Models\Agency;
 use App\Models\Posting;
 use App\Models\Placement;
-use App\Models\Scopes\ActiveScope;
 use App\Helpers\RedisHelper;
+use App\Models\Scopes\ActiveScope;
 use Illuminate\Support\Facades\Redis;
 
 class PostingService extends Service
 {
     use RedisHelper;
-  
+
     public function store(array $data)
     {
         $repeatType = $data['repeat_type'] ?? null;
@@ -205,8 +205,8 @@ class PostingService extends Service
 
         return $posting;
     }
-  
-  public function syncAgency(Agency $agency, Posting $posting)
+
+    public function syncAgency(Agency $agency, Posting $posting)
     {
         $redisPosting = Redis::get('posting-'.$posting->id);
 
@@ -237,4 +237,7 @@ class PostingService extends Service
         $posting->commitments = $posting->commitments->filter(function ($commitment) use ($agency) {
             return $commitment->agency_id == $agency->id;
         });
+
+        return $posting;
+    }
 }
