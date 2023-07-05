@@ -6,15 +6,19 @@ use Exception;
 use App\Models\Agency;
 use Illuminate\Http\Request;
 use App\Services\AgencyService;
+use App\Services\DeclarationService;
 use Illuminate\Support\Facades\Validator;
 
 class AgencyController extends Controller
 {
     private $agencyService;
 
-    public function __construct(AgencyService $agencyService)
+    private $declarationService;
+
+    public function __construct(AgencyService $agencyService, DeclarationService $declarationService)
     {
         $this->agencyService = $agencyService;
+        $this->declarationService = $declarationService;
     }
 
     public function index(Request $request)
@@ -127,5 +131,27 @@ class AgencyController extends Controller
         }
 
         return $this->successResponse($agency);
+    }
+
+    public function listDeclarations(Request $request, Agency $agency)
+    {
+        $validator = Validator::make($request->all(), [
+            'search' => 'string',
+        ]);
+
+        if ($validator->fails()) {
+            return $this->failedValidationResponse($validator);
+        }
+
+        $perPage = $request->input('per_page', 25);
+        $search = $request->input('search', null);
+
+        try {
+            $declarations = $this->declarationService->listAgencyDeclarations($perPage, $search, $agency);
+        } catch (Exception $exception) {
+            return $this->failedExceptionResponse($exception);
+        }
+
+        return $this->successResponse($declarations);
     }
 }

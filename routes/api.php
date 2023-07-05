@@ -51,6 +51,7 @@ Route::group(['middleware' => ['api', 'authserver']], function () {
         Route::post('/', [AgencyController::class, 'store']);
         Route::patch('/{agency}', [AgencyController::class, 'update']);
         Route::get('/{agency}', [AgencyController::class, 'show']);
+        Route::get('/{agency}/declarations', [AgencyController::class, 'listDeclarations']);
     });
 
     Route::group(['prefix' => '/media'], function () {
@@ -145,7 +146,6 @@ Route::group(['middleware' => ['api', 'authserver']], function () {
     Route::group(['prefix' => '/declarations'], function () {
         Route::post('/', [DeclarationController::class, 'store']);
         Route::patch('/{declaration}', [DeclarationController::class, 'update']);
-        Route::get('/', [DeclarationController::class, 'index']);
         Route::delete('/{declaration}', [DeclarationController::class, 'destroy']);
     });
 });

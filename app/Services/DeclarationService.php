@@ -46,6 +46,28 @@ class DeclarationService extends Service
     {
     }
 
+    public function listAgencyDeclarations(int $perPage = 25, string $searchQuery = null, mixed $agency)
+    {
+        $agency_id = $agency->id;
+
+        $query = Declaration::with('placement', 'createdBy')
+            ->join('placements', 'declarations.placement_id', '=', 'placements.id')
+            ->whereHas('placement.employee', function ($query) use ($agency_id) {
+                $query->where('agency_id', $agency_id);
+            })
+            ->orderBy('placements.start_at', 'DESC')
+            ->select('declarations.*');  // avoid getting columns from joined table
+
+        if (!is_null($searchQuery)) {
+            // apply search query if needed
+            $query->where(function ($query) use ($searchQuery) {
+                $query->where('title', 'like', '%'.$searchQuery.'%');
+            });
+        }
+
+        return $query->paginate($perPage);
+    }
+
     private function parseTotal(int $total)
     {
         if ($total > 0) {
