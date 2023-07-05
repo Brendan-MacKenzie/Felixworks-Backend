@@ -11,20 +11,20 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::create('media', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary();
             $table->timestamps();
             $table->string('name');
             $table->tinyInteger('type');
         });
 
         Schema::table('agencies', function (Blueprint $table) {
-            $table->foreign('logo_id')->references('id')->on('media')
+            $table->foreign('logo_uuid')->references('id')->on('media')
                 ->onDelete('set null')
                 ->onUpdate('restrict');
         });
 
         Schema::table('employees', function (Blueprint $table) {
-            $table->foreign('avatar_id')->references('id')->on('media')
+            $table->foreign('avatar_uuid')->references('id')->on('media')
                 ->onDelete('set null')
                 ->onUpdate('restrict');
         });
@@ -36,11 +36,11 @@ return new class extends Migration {
     public function down(): void
     {
         Schema::table('agencies', function (Blueprint $table) {
-            $table->dropForeign('agencies_logo_id_foreign');
+            $table->dropForeign('agencies_logo_uuid_foreign');
         });
 
         Schema::table('employees', function (Blueprint $table) {
-            $table->dropForeign('employees_avatar_id_foreign');
+            $table->dropForeign('employees_avatar_uuid_foreign');
         });
 
         Schema::dropIfExists('media');

@@ -4,12 +4,13 @@ namespace App\Services;
 
 use Exception;
 use App\Models\Office;
+use Illuminate\Support\Facades\Auth;
 
 class OfficeService extends Service
 {
     public function store(array $data)
     {
-        $data['created_by'] = auth()->user()->id;
+        $data['created_by'] = (Auth::check()) ? Auth::user()->id : null;
 
         return Office::create($data);
     }

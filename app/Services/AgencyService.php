@@ -7,6 +7,7 @@ use App\Models\Media;
 use App\Models\Agency;
 use App\Enums\MediaType;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Auth;
 
 class AgencyService extends Service
 {
@@ -19,13 +20,13 @@ class AgencyService extends Service
 
     public function store(array $data)
     {
-        $data['created_by'] = auth()->user()->id;
+        $data['created_by'] = (Auth::check()) ? Auth::user()->id : null;
 
         if (
-            key_exists('logo_id', $data) &&
-            !is_null($data['logo_id'])
+            key_exists('logo_uuid', $data) &&
+            !is_null($data['logo_uuid'])
         ) {
-            $media = Media::findOrFail($data['logo_id']);
+            $media = Media::findOrFail($data['logo_uuid']);
             if ($media->type !== MediaType::Logo) {
                 throw new Exception('Image is not a logo.', 403);
             }
@@ -35,8 +36,10 @@ class AgencyService extends Service
             key_exists('ip_address', $data) &&
             key_exists('webhook', $data)
         ) {
-            $data['api_key'] = Str::random(32);
-            $data['webhook_key'] = Str::random(32);
+            $apiKey = Str::random(32);
+            $webhookKey = Str::random(32);
+            $data['api_key'] = password_hash($apiKey, PASSWORD_BCRYPT);
+            $data['webhook_key'] = password_hash($webhookKey, PASSWORD_BCRYPT);
         }
 
         $agency = Agency::create($data);
@@ -49,6 +52,8 @@ class AgencyService extends Service
             key_exists('ip_address', $data) &&
             key_exists('webhook', $data)
         ) {
+            $agency->api_key = $apiKey;
+            $agency->webhook_key = $webhookKey;
             $agency->makeVisible(['api_key', 'webhook_key']);
         }
 
@@ -60,16 +65,16 @@ class AgencyService extends Service
     public function update(array $data, mixed $agency)
     {
         if (
-            key_exists('logo_id', $data)
+            key_exists('logo_uuid', $data)
         ) {
-            $toDelete = (is_null($data['logo_id'])) ? true : false;
-            if (!is_null($data['logo_id'])) {
-                $media = Media::findOrFail($data['logo_id']);
+            $toDelete = (is_null($data['logo_uuid'])) ? true : false;
+            if (!is_null($data['logo_uuid'])) {
+                $media = Media::findOrFail($data['logo_uuid']);
                 if ($media->type !== MediaType::Logo) {
                     throw new Exception('Image is not a logo.', 403);
                 }
 
-                if ($agency->logo_id && $agency->logo_id !== $media->id) {
+                if ($agency->logo_uuid && $agency->logo_uuid !== $media->id) {
                     $toDelete = true;
                 }
             }

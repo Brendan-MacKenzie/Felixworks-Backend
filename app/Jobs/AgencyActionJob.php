@@ -2,11 +2,14 @@
 
 namespace App\Jobs;
 
+use Throwable;
 use App\Models\Agency;
+use App\Mail\FailureMail;
 use Illuminate\Bus\Queueable;
 use App\Exceptions\SyncException;
 use App\Services\Sync\SyncService;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -24,10 +27,11 @@ class AgencyActionJob implements ShouldQueue
     /**
      * Create a new job instance.
      */
-    public function __construct(Agency $agency, string $type, mixed $data)
+    public function __construct(Agency $agency, string $type, mixed $data, int $uniqueId = null)
     {
         $this->agency = $agency;
-        $this->key = str_replace(':', '-', str_replace(' ', '-', 'AgencyActionJob'.'-'.$type.''.'-'.$agency->id.'-'.now()));
+        $id = $uniqueId ?? $data;
+        $this->key = str_replace(':', '-', str_replace(' ', '-', 'AgencyActionJob'.'-'.$type.''.'-'.$agency->id.'-'.$id));
         $this->onQueue('agencies');
         $this->type = $type;
         $this->data = $data;
@@ -49,5 +53,14 @@ class AgencyActionJob implements ShouldQueue
         } catch (SyncException $syncException) {
             throw $syncException;
         }
+    }
+
+    /**
+     * Handle a job failure.
+     */
+    public function failed(Throwable $exception): void
+    {
+        $email = (new FailureMail('AgencyActionJob', $this->agency, $this->type, $this->data, $exception))->onQueue('emails');
+        Mail::to('support@brendan-mackenzie.com')->queue($email);
     }
 }

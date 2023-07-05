@@ -35,6 +35,10 @@ class MediaController extends Controller
                 'type',
             ]));
         } catch (Exception $exception) {
+            if ($media) {
+                $this->mediaService->delete($media);
+            }
+
             return $this->failedExceptionResponse($exception);
         }
 

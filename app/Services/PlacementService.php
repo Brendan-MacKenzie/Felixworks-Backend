@@ -3,19 +3,24 @@
 namespace App\Services;
 
 use Exception;
+use Carbon\Carbon;
 use App\Models\Posting;
 use App\Models\Employee;
 use App\Models\Placement;
 use App\Models\Workplace;
+use App\Helpers\RedisHelper;
 use App\Models\PlacementType;
 use App\Enums\PlacementStatus;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 
 class PlacementService extends Service
 {
+    use RedisHelper;
+
     public function store(array $data)
     {
-        $data['created_by'] = Auth::user()->id;
+        $data['created_by'] = (Auth::check()) ? Auth::user()->id : null;
 
         $posting = Posting::findOrFail($data['posting_id']);
         $placementType = PlacementType::findOrFail($data['placement_type_id']);
@@ -39,21 +44,33 @@ class PlacementService extends Service
 
     public function update(array $data, mixed $placement)
     {
+        if ($placement->status == PlacementStatus::Registered || $placement->hours || $placement->registered_at) {
+            throw new Exception('Placement is already registered.', 403);
+        }
+
         $posting = $placement->posting;
 
-        $placementType = (key_exists('placement_type_id', $data['placement_type_id'])) ?
+        $placementType = (key_exists('placement_type_id', $data)) ?
         PlacementType::findOrFail($data['placement_type_id']) :
         $placement->placementType;
 
-        $workplace = (key_exists('workplace_id', $data['workplace_id'])) ?
+        $workplace = (key_exists('workplace_id', $data)) ?
         Workplace::findOrFail($data['workplace_id']) :
         $placement->workplace;
 
-        $employee = (key_exists('employee_id', $data['employee_id'])) ?
+        $employee = (key_exists('employee_id', $data)) ?
             Employee::findOrFail($data['employee_id']) :
             $placement->employee;
 
         $this->validatePlacement($posting, $placementType, $workplace, $employee);
+
+        if (key_exists('hours', $data) && !is_null($data['hours'])) {
+            if (!$employee) {
+                throw new Exception("You can't register an empty placement.", 500);
+            }
+
+            $data['registered_at'] = Carbon::now();
+        }
 
         $data = $this->checkStatus($data, $employee);
 
@@ -82,13 +99,83 @@ class PlacementService extends Service
     {
     }
 
+    public function fill(Placement $placement, Employee $employee)
+    {
+        DB::beginTransaction();
+        $posting = $placement->posting;
+        $branch = $posting->workAddress->model;
+
+        if (config('app.PLAN_HOURS') > 0 && $placement->start_at->diffInHours(Carbon::now()) <= config('app.PLAN_HOURS')) {
+            throw new Exception('The time limit of '.config('app.PLAN_HOURS').' hours to plan someone on this placement is exceeded.', 403);
+        }
+
+        if ($placement->employee_id && $placement->employee_id !== $employee->id) {
+            throw new Exception('Placement is occupied.', 403);
+        }
+
+        $this->validatePlacement($posting, null, null, $employee);
+
+        $placement->employee_id = $employee->id;
+        $placement->status = PlacementStatus::Confirmed;
+        $placement->save();
+
+        if ($branch) {
+            $branch->employees()->syncWithoutDetaching($employee);
+        }
+
+        DB::commit();
+        $this->syncRedisPosting($posting, 'updated');
+
+        return $placement;
+    }
+
+    public function empty(Placement $placement)
+    {
+        DB::beginTransaction();
+        $posting = $placement->posting;
+        $branch = $posting->workAddress->model;
+
+        if ($placement->start_at->diffInHours(Carbon::now()) <= config('app.CANCEL_HOURS')) {
+            throw new Exception('Placement cannot be cancelled within '.config('app.CANCEL_HOURS').' hours.', 403);
+        }
+
+        if ($placement->status == PlacementStatus::Registered || $placement->hours || $placement->registered_at) {
+            throw new Exception('Placement is already registered.', 403);
+        }
+
+        if (!$placement->employee) {
+            throw new Exception('Placement is already empty.', 500);
+        }
+
+        $employee = $placement->employee;
+        $placement->employee_id = null;
+        $placement->status = PlacementStatus::Open;
+        $placement->save();
+
+        // Remove employee from branch if it has not worked before.
+        if ($branch) {
+            $branch->employees()->detach($employee);
+        }
+
+        // Remove employee if not used on other placements.
+        if ($employee->placements()->where('id', '!=', $placement->id)->count() <= 0) {
+            $employee->delete();
+        }
+
+        DB::commit();
+
+        $this->syncRedisPosting($posting, 'updated');
+
+        return $placement;
+    }
+
     private function validatePlacement(
         mixed $posting,
-        mixed $placementType,
-        mixed $workplace,
+        mixed $placementType = null,
+        mixed $workplace = null,
         mixed $employee
     ) {
-        $address = $posting->address;
+        $address = $posting->workAddress;
 
         // Check if placement_type is from same branch
         if ($placementType && $placementType->branch_id !== $address->model->id) {
@@ -108,7 +195,12 @@ class PlacementService extends Service
 
     private function checkStatus(array &$data, mixed $employee = null)
     {
-        $data['status'] = ($employee) ? PlacementStatus::Confirmed : PlacementStatus::Open;
+        $status = PlacementStatus::Open;
+        if ($employee) {
+            $status = (key_exists('hours', $data) && !is_null($data['hours'])) ? PlacementStatus::Registered : PlacementStatus::Confirmed;
+        }
+
+        $data['status'] = $status;
 
         return $data;
     }

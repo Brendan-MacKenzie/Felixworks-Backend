@@ -7,7 +7,6 @@ use App\Models\Office;
 use App\Models\Region;
 use App\Models\Address;
 use App\Enums\AddressType;
-use Illuminate\Support\Str;
 use Illuminate\Database\Seeder;
 
 class AgencySeeder extends Seeder
@@ -25,10 +24,10 @@ class AgencySeeder extends Seeder
             'brand_color' => '#ffff',
             'email' => 'info@felixworks.test',
             'base_rate' => 2500,
-            'api_key' => Str::random(32),
+            'api_key' => password_hash('this_is_a_test_api_key', PASSWORD_BCRYPT),
             'ip_address' => '172.19.0.1',
             'webhook' => 'https://planworks.test/felix',
-            'webhook_key' => Str::random(32),
+            'webhook_key' => password_hash('this_is_a_test_webhook_key', PASSWORD_BCRYPT),
         ]);
 
         $agency->regions()->attach($regions);

@@ -44,12 +44,12 @@ class AgencyController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'full_name' => 'required|string|max:255',
-            'email' => 'requirded|email|string|max:255',
+            'email' => 'required|email|string|max:255',
             'base_rate' => 'required|integer',
             'brand_color' => 'required|string|max:255',
             'ip_address' => 'required_with:webhook|string',
             'webhook' => 'required_with:ip_address|string',
-            'logo_id' => 'nullable|integer',
+            'logo_uuid' => 'nullable|uuid',
             'regions' => 'required|array|min:1',
             'regions.*' => 'integer|exists:regions,id',
         ]);
@@ -67,7 +67,7 @@ class AgencyController extends Controller
                 'brand_color',
                 'ip_address',
                 'webhook',
-                'logo_id',
+                'logo_uuid',
                 'regions',
             ]));
         } catch (Exception $exception) {
@@ -87,7 +87,7 @@ class AgencyController extends Controller
             'brand_color' => 'string|max:255',
             'ip_address' => 'string',
             'webhook' => 'string',
-            'logo_id' => 'nullable|integer',
+            'logo_uuid' => 'nullable|uuid',
 
             'regions' => 'array|min:1',
             'regions.*' => 'integer',
@@ -106,7 +106,7 @@ class AgencyController extends Controller
                 'brand_color',
                 'ip_address',
                 'webhook',
-                'logo_id',
+                'logo_uuid',
                 'regions',
             ]), $agency);
         } catch (Exception $exception) {

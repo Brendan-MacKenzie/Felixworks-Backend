@@ -24,6 +24,11 @@ class Branch extends Model
         return $this->belongsTo(User::class, 'created_by');
     }
 
+    public function client()
+    {
+        return $this->belongsTo(Client::class, 'client_id');
+    }
+
     public function coordinators()
     {
         return $this->belongsToMany(User::class, 'user_branches');

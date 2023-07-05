@@ -37,6 +37,8 @@ return new class extends Migration {
             $table->dateTime('report_at');
             $table->dateTime('start_at');
             $table->dateTime('end_at');
+            $table->integer('hours')->nullable();
+            $table->dateTime('registered_at')->nullable();
         });
     }
 

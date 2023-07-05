@@ -6,7 +6,7 @@ use Closure;
 use Exception;
 use App\Models\Agency;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\Hash;
 
 class AuthenticateClient
 {
@@ -38,12 +38,13 @@ class AuthenticateClient
 
     public function validate($clientId, $apiKey, $ipAddress)
     {
-        $agency = Agency::where('id', $clientId)
-            ->where('api_key', Crypt::encrypt($apiKey))
-            ->where('ip_address', Crypt::encrypt($ipAddress))
-            ->first();
+        $agency = Agency::where('id', $clientId)->where('ip_address', $ipAddress)->first();
 
         if (!$agency) {
+            throw new Exception('Agency credentials are not correct.', 403);
+        }
+
+        if (!Hash::check($apiKey, $agency->api_key)) {
             throw new Exception('Agency credentials are not correct.', 403);
         }
 

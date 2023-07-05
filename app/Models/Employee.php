@@ -17,7 +17,7 @@ class Employee extends Model
         'first_name',
         'last_name',
         'date_of_birth',
-        'avatar_id',
+        'avatar_uuid',
         'drivers_license',
         'car',
         'created_by',
@@ -34,7 +34,7 @@ class Employee extends Model
 
     public function avatar()
     {
-        return $this->belongsTo(Media::class, 'avatar_id');
+        return $this->belongsTo(Media::class, 'avatar_uuid');
     }
 
     public function createdBy()
