@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Exception;
+use App\Models\Commitment;
 use Illuminate\Http\Request;
 use App\Services\CommitmentService;
 use Illuminate\Support\Facades\Validator;
@@ -34,6 +35,27 @@ class CommitmentController extends Controller
                 'agency_id',
                 'amount',
             ]));
+        } catch (Exception $exception) {
+            return $this->failedExceptionResponse($exception);
+        }
+
+        return $this->successResponse($commitment);
+    }
+
+    public function update(Request $request, Commitment $commitment)
+    {
+        $validator = Validator::make($request->all(), [
+            'amount' => 'required|integer',
+        ]);
+
+        if ($validator->fails()) {
+            return $this->failedValidationResponse($validator);
+        }
+
+        try {
+            $commitment = $this->commitmentService->update($request->only([
+                'amount',
+            ]), $commitment, );
         } catch (Exception $exception) {
             return $this->failedExceptionResponse($exception);
         }

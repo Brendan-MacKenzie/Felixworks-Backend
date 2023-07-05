@@ -135,5 +135,6 @@ Route::group(['middleware' => ['api', 'authserver']], function () {
 
     Route::group(['prefix' => '/commitments'], function () {
         Route::post('/', [CommitmentController::class, 'store']);
+        Route::patch('/{commitment}', [CommitmentController::class, 'update']);
     });
 });

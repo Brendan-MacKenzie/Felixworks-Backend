@@ -18,8 +18,16 @@ class CommitmentService extends Service
         // Calculate the total number of placements
         $totalPlacements = $posting->placements()->count();
 
-        // Calculate the total existing commitments
-        $totalCommitments = $posting->commitments()->sum('amount');
+        // Check if a commitment for the given agency and posting already exists
+        $existingCommitment = $posting->commitments()->where('agency_id', $data['agency_id'])->first();
+
+        if ($existingCommitment) {
+            // If a commitment already exists, calculate the total existing commitments excluding the existing commitment
+            $totalCommitments = $posting->commitments()->where('id', '!=', $existingCommitment->id)->sum('amount');
+        } else {
+            // If no commitment exists, calculate the total existing commitments
+            $totalCommitments = $posting->commitments()->sum('amount');
+        }
 
         // Calculate the remaining placements
         $remainingPlacements = $totalPlacements - $totalCommitments;
@@ -29,7 +37,15 @@ class CommitmentService extends Service
             throw new \Exception('The commitment amount cannot be higher than the remaining placements.');
         }
 
-        // If validation passes, create the new commitment
+        // If a commitment already exists, update it
+        if ($existingCommitment) {
+            unset($data['created_by']);
+            $existingCommitment->update($data);
+
+            return $existingCommitment->load('posting', 'posting.placements', 'agency');
+        }
+
+        // If no commitment exists, create a new one
         $commitment = Commitment::create($data);
 
         return $commitment->load('posting', 'posting.placements', 'agency');
@@ -37,6 +53,27 @@ class CommitmentService extends Service
 
     public function update(array $data, mixed $commitment)
     {
+        // Get posting
+        $posting = $commitment->posting;
+
+        // Calculate the total number of placements
+        $totalPlacements = $posting->placements()->count();
+
+        // Calculate the total existing commitments excluding the current commitment
+        $totalCommitments = $posting->commitments()->where('id', '!=', $commitment->id)->sum('amount');
+
+        // Calculate the remaining placements
+        $remainingPlacements = $totalPlacements - $totalCommitments;
+
+        // Validate the commitment amount
+        if ($data['amount'] > $remainingPlacements) {
+            throw new \Exception('The commitment amount cannot be higher than the remaining placements.');
+        }
+
+        // If validation passes, update the commitment
+        $commitment->update($data);
+
+        return $commitment->load('posting', 'posting.placements', 'agency');
     }
 
     public function delete(mixed $commitment)
