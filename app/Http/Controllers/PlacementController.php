@@ -20,10 +20,10 @@ class PlacementController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'posting_id' => 'required|integer',
-            'workplace_id' => 'nullable|integer',
-            'placement_type_id' => 'required|integer',
-            'employee_id' => 'nullable|integer',
+            'posting_id' => 'required|integer|exists:postings,id',
+            'workplace_id' => 'required|integer|exists:workplaces,id',
+            'placement_type_id' => 'required|integer|exists:placement_types,id',
+            'employee_id' => 'integer|exists:employees,id',
             'report_at' => 'required|date|before_or_equal:start_at',
             'start_at' => 'required|date',
             'end_at' => 'required|date|after:start_at',
