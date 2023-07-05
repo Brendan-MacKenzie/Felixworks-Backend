@@ -14,6 +14,7 @@ use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\PlacementController;
 use App\Http\Controllers\WorkplaceController;
 use App\Http\Controllers\CommitmentController;
+use App\Http\Controllers\DeclarationController;
 use App\Http\Controllers\PlacementTypeController;
 
 /*
@@ -139,5 +140,12 @@ Route::group(['middleware' => ['api', 'authserver']], function () {
         Route::get('/{commitment}', [CommitmentController::class, 'show']);
         Route::get('/', [CommitmentController::class, 'index']);
         Route::delete('/{commitment}', [CommitmentController::class, 'destroy']);
+    });
+
+    Route::group(['prefix' => '/declarations'], function () {
+        Route::post('/', [DeclarationController::class, 'store']);
+        Route::patch('/{declaration}', [DeclarationController::class, 'update']);
+        Route::get('/', [DeclarationController::class, 'index']);
+        Route::delete('/{declaration}', [DeclarationController::class, 'destroy']);
     });
 });
