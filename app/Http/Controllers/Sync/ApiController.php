@@ -10,16 +10,13 @@ use App\Models\Employee;
 use App\Models\Placement;
 use App\Models\Declaration;
 use Illuminate\Http\Request;
-use App\Jobs\AgencyActionJob;
 use App\Services\MediaService;
-use App\Enums\AgencyActionType;
 use App\Services\PostingService;
 use App\Services\EmployeeService;
 use App\Services\PlacementService;
 use App\Http\Controllers\Controller;
 use App\Services\DeclarationService;
 use Illuminate\Support\Facades\Validator;
-use App\Services\Sync\QueueTracker\AgencyQueueTracker;
 
 class ApiController extends Controller
 {
@@ -90,12 +87,6 @@ class ApiController extends Controller
                     ]));
 
                     $placement = $this->placementService->fill($placement, $employee);
-
-                    // If employee has no avatar, send avatar job to agency.
-                    if (!$employee->avatar_uuid) {
-                        $job = new AgencyActionJob($this->agency, AgencyActionType::SendAvatar, $employee->id);
-                        AgencyQueueTracker::setJob($job);
-                    }
                 } catch (Exception $exception) {
                     return $this->failedExceptionResponse($exception);
                 }
@@ -110,12 +101,6 @@ class ApiController extends Controller
             default:
                 return $this->internalErrorResponse('Route not found.');
                 break;
-        }
-
-        // Notify agencies from change except the agency in call.
-        foreach ($placement->posting->agencies->except($this->agency->id) as $agency) {
-            $job = new AgencyActionJob($agency, AgencyActionType::PostingUpdate, $placement->posting_id);
-            AgencyQueueTracker::setJob($job);
         }
 
         return $this->successResponse($placement->only('posting_id', 'employee_id', 'id'));

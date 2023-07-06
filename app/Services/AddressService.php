@@ -8,6 +8,8 @@ use App\Models\Office;
 use App\Models\Address;
 use App\Models\Workplace;
 use App\Enums\AddressType;
+use App\Enums\AgencyActionType;
+use App\Services\Sync\SyncHelper;
 use Illuminate\Support\Facades\Auth;
 
 class AddressService extends Service
@@ -64,6 +66,12 @@ class AddressService extends Service
 
         $address->refresh();
 
+        // if address is default and linked to future postings, call sync.
+        SyncHelper::syncPostings(
+            $this->checkFuturePostings($address),
+            AgencyActionType::PostingUpdate
+        );
+
         return $address;
     }
 
@@ -72,6 +80,11 @@ class AddressService extends Service
         $model = $address->model;
         if ($model && $model->address_id == $address->id) {
             throw new Exception('This address is still linked.', 403);
+        }
+
+        // if address is default and linked to future postings, block.
+        if ($this->checkFuturePostings($address)->count() > 0) {
+            throw new Exception("This workaddress can't be deleted, because it still has future postings.", 403);
         }
 
         $address->workplaces()->delete();
@@ -116,5 +129,14 @@ class AddressService extends Service
     {
         $address->model()->save();
         $this->delete($address);
+    }
+
+    private function checkFuturePostings(Address $address)
+    {
+        if ($address->type !== AddressType::Default) {
+            return collect();
+        }
+
+        return $address->postings()->future()->get();
     }
 }

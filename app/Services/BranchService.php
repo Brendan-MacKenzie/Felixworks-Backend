@@ -3,6 +3,8 @@
 namespace App\Services;
 
 use App\Models\Branch;
+use App\Enums\AgencyActionType;
+use App\Services\Sync\SyncHelper;
 use Illuminate\Support\Facades\Auth;
 
 class BranchService extends Service
@@ -23,6 +25,12 @@ class BranchService extends Service
         $branch->update($data);
         $branch->regions()->sync($data['regions']);
         $branch->refresh();
+
+        // if branch is linked to future postings, call sync.
+        SyncHelper::syncPostings(
+            $this->checkFuturePostings($branch),
+            AgencyActionType::PostingUpdate
+        );
 
         return $branch;
     }
@@ -49,5 +57,21 @@ class BranchService extends Service
         return Branch::when($query, function ($q) use ($query) {
             $q->where('name', 'like', "%{$query}%");
         })->paginate($perPage);
+    }
+
+    private function checkFuturePostings(Branch $branch)
+    {
+        return $branch
+            ->workAddresses()
+            ->with([
+                'postings' => function ($q) {
+                    $q->future()->select('id', 'address_id');
+                },
+                'postings.agencies',
+            ])
+            ->get()
+            ->flatMap(function ($address) {
+                return $address->postings;
+            });
     }
 }

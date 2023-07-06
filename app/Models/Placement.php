@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Helpers\RedisHelper;
+use Carbon\Carbon;
 use App\Enums\PlacementStatus;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -10,7 +10,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class Placement extends Model
 {
     use HasFactory;
-    use RedisHelper;
 
     protected $fillable = [
         'status',
@@ -32,21 +31,6 @@ class Placement extends Model
         'end_at' => 'datetime',
         'registered_at' => 'datetime',
     ];
-
-    protected static function booted(): void
-    {
-        self::created(function ($model) {
-            self::staticSyncRedisPosting($model->posting, 'created');
-        });
-
-        self::updated(function ($model) {
-            self::staticSyncRedisPosting($model->posting, 'updated');
-        });
-
-        self::deleted(function ($model) {
-            self::staticSyncRedisPosting($model->posting, 'deleted');
-        });
-    }
 
     public function scopeOpen($query)
     {
@@ -73,6 +57,11 @@ class Placement extends Model
         return $query->whereIn('status', [PlacementStatus::Confirmed, PlacementStatus::Registered]);
     }
 
+    public function scopeFuture($query)
+    {
+        return $query->where('start_at', '>=', Carbon::now());
+    }
+
     public function posting()
     {
         return $this->belongsTo(Posting::class, 'posting_id');
@@ -80,17 +69,17 @@ class Placement extends Model
 
     public function workplace()
     {
-        return $this->belongsTo(Workplace::class, 'workplace_id');
+        return $this->belongsTo(Workplace::class, 'workplace_id')->withTrashed();
     }
 
     public function placementType()
     {
-        return $this->belongsTo(PlacementType::class, 'placement_type_id');
+        return $this->belongsTo(PlacementType::class, 'placement_type_id')->withTrashed();
     }
 
     public function employee()
     {
-        return $this->belongsTo(Employee::class, 'employee_id');
+        return $this->belongsTo(Employee::class, 'employee_id')->withTrashed();
     }
 
     public function createdBy()

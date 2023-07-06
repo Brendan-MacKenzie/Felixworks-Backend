@@ -3,6 +3,8 @@
 namespace App\Services;
 
 use App\Models\Client;
+use App\Enums\AgencyActionType;
+use App\Services\Sync\SyncHelper;
 use Illuminate\Support\Facades\Auth;
 
 class ClientService extends Service
@@ -17,6 +19,12 @@ class ClientService extends Service
     public function update(array $data, mixed $client)
     {
         $client->update($data);
+
+        // if branch is linked to future postings, call sync.
+        SyncHelper::syncPostings(
+            $this->checkFuturePostings($client),
+            AgencyActionType::PostingUpdate
+        );
 
         return $client;
     }
@@ -43,5 +51,30 @@ class ClientService extends Service
         return Client::when($query, function ($q) use ($query) {
             $q->where('name', 'like', "%{$query}%");
         })->paginate($perPage);
+    }
+
+    private function checkFuturePostings(Client $client)
+    {
+        return $client
+            ->branches()
+            ->whereHas('workAddresses', function ($q) {
+                $q->whereHas('postings', function ($q) {
+                    $q->future()->select('id', 'address_id');
+                });
+            })
+            ->with([
+                'workAddresses:id,model_type,model_id',
+                'workAddresses.postings' => function ($q) {
+                    $q->future()->select('id', 'address_id');
+                },
+                'workAddresses.postings.agencies',
+            ])
+            ->get()
+            ->flatMap(function ($branch) {
+                return $branch->workAddresses;
+            })
+            ->flatMap(function ($workAddress) {
+                return $workAddress->postings;
+            });
     }
 }

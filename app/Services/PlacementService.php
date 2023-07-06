@@ -8,17 +8,16 @@ use App\Models\Posting;
 use App\Models\Employee;
 use App\Models\Placement;
 use App\Models\Workplace;
-use App\Helpers\RedisHelper;
 use App\Models\PlacementType;
 use App\Enums\PlacementStatus;
+use App\Enums\AgencyActionType;
+use App\Services\Sync\SyncHelper;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 
 class PlacementService extends Service
 {
-    use RedisHelper;
-
-    public function store(array $data)
+    public function store(array $data, bool $notifySync = true)
     {
         $data['created_by'] = (Auth::check()) ? Auth::user()->id : null;
 
@@ -42,6 +41,16 @@ class PlacementService extends Service
 
         $placement = Placement::create($data);
 
+        if ($notifySync) {
+            // Make action job for agencies.
+            SyncHelper::syncInBulk(
+                $placement->posting->agencies,
+                $placement->posting,
+                AgencyActionType::PostingUpdate,
+                $posting->id
+            );
+        }
+
         return $placement;
     }
 
@@ -50,9 +59,17 @@ class PlacementService extends Service
         $data = collect($placements);
         foreach ($placements as $placement) {
             $placement['posting_id'] = $posting->id;
-            $placement = $this->store($placement);
+            $placement = $this->store($placement, false);
             $data->push($placement);
         }
+
+        // Make action job for agencies.
+        SyncHelper::syncInBulk(
+            $posting->agencies,
+            $posting,
+            AgencyActionType::PostingUpdate,
+            $posting->id
+        );
 
         return $data;
     }
@@ -93,6 +110,14 @@ class PlacementService extends Service
 
         $placement->update($data);
         $placement->refresh();
+
+        // Make action job for agencies.
+        SyncHelper::syncInBulk(
+            $placement->posting->agencies,
+            $placement->posting,
+            AgencyActionType::PostingUpdate,
+            $posting->id
+        );
 
         return $placement;
     }
@@ -141,7 +166,14 @@ class PlacementService extends Service
         }
 
         DB::commit();
-        $this->syncRedisPosting($posting, 'updated');
+
+        // Notify agencies from change except the agency in call.
+        SyncHelper::syncInBulk(
+            $placement->posting->agencies->except($placement->employee->agency_id),
+            $placement->posting,
+            AgencyActionType::PostingUpdate,
+            $placement->posting_id
+        );
 
         return $placement;
     }
@@ -174,14 +206,20 @@ class PlacementService extends Service
             $branch->employees()->detach($employee);
         }
 
-        // Remove employee if not used on other placements.
-        if ($employee->placements()->where('id', '!=', $placement->id)->count() <= 0) {
-            $employee->delete();
+        // Remove employee if not used on other placements and agency is connected to an external system.
+        if ($employee->agency->webhook && $employee->placements()->where('id', '!=', $placement->id)->count() <= 0) {
+            $employee->forceDelete();
         }
 
         DB::commit();
 
-        $this->syncRedisPosting($posting, 'updated');
+        // Notify agencies from change except the agency in call.
+        SyncHelper::syncInBulk(
+            $placement->posting->agencies->except($placement->employee->agency_id),
+            $placement->posting,
+            AgencyActionType::PostingUpdate,
+            $placement->posting_id
+        );
 
         return $placement;
     }

@@ -7,6 +7,8 @@ use App\Models\Media;
 use App\Models\Agency;
 use App\Enums\MediaType;
 use App\Models\Employee;
+use App\Enums\AgencyActionType;
+use App\Services\Sync\SyncHelper;
 use Illuminate\Support\Facades\Auth;
 
 class EmployeeService extends Service
@@ -41,7 +43,12 @@ class EmployeeService extends Service
             }
         }
 
-        return Employee::create($data);
+        $employee = Employee::create($data);
+
+        // If employee has no avatar, send avatar job to agency.
+        if (!$employee->avatar_uuid && $employee->agency->webhook) {
+            SyncHelper::sync($employee->agency, $employee, AgencyActionType::SendAvatar, $employee->id);
+        }
     }
 
     public function update(array $data, mixed $employee)
@@ -68,6 +75,11 @@ class EmployeeService extends Service
 
         // Update employee attributes
         $employee->update($data);
+
+        // If employee has no avatar, send avatar job to agency.
+        if (!$employee->avatar_uuid && $employee->agency->webhook) {
+            SyncHelper::sync($employee->agency, $employee, AgencyActionType::SendAvatar, $employee->id);
+        }
 
         // Return the updated employee with the pools
         return $employee;

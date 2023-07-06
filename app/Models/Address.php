@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Helpers\RedisHelper;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -11,7 +10,6 @@ class Address extends Model
 {
     use HasFactory;
     use SoftDeletes;
-    use RedisHelper;
 
     protected $fillable = [
         'name',
@@ -25,15 +23,6 @@ class Address extends Model
         'model_id',
         'created_by',
     ];
-
-    protected static function booted(): void
-    {
-        self::updated(function ($model) {
-            foreach ($model->postings as $posting) {
-                self::staticSyncRedisPosting($posting, 'updated');
-            }
-        });
-    }
 
     public function branch()
     {

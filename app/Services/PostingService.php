@@ -8,16 +8,16 @@ use App\Models\Agency;
 use App\Models\Address;
 use App\Models\Posting;
 use App\Enums\AddressType;
-use App\Helpers\RedisHelper;
 use App\Enums\PlacementStatus;
+use App\Enums\AgencyActionType;
+use App\Services\Sync\SyncHelper;
 use App\Models\Scopes\ActiveScope;
+use App\Services\Sync\RedisHelper;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redis;
 
 class PostingService extends Service
 {
-    use RedisHelper;
-
     public function store(array $data)
     {
         $repeatType = $data['repeat_type'] ?? null;
@@ -57,6 +57,9 @@ class PostingService extends Service
                 $posting->regions()->sync($data['regions']);
                 $createdPostings->push($posting);
 
+                // Make action job for agencies.
+                SyncHelper::syncInBulk($posting->agencies, $posting, AgencyActionType::PostingUpdate, $posting->id);
+
                 if ($repeatType === 1) {
                     // Add 1 day for daily repeat
                     $startDate->addDay();
@@ -74,6 +77,9 @@ class PostingService extends Service
             // Sync the list of regions
             $posting->regions()->sync($data['regions']);
             $createdPostings->push($posting);
+
+            // Make action job for agencies.
+            SyncHelper::syncInBulk($posting->agencies, $posting, AgencyActionType::PostingUpdate, $posting->id);
         }
 
         // Return the created posting with the required relationships
@@ -94,6 +100,9 @@ class PostingService extends Service
         $posting->refresh();
 
         $posting->load('placements.placementType', 'placements.workplace', 'regions', 'agencies', 'workAddress');
+
+        // Make action job for agencies.
+        SyncHelper::syncInBulk($posting->agencies, $posting, AgencyActionType::PostingUpdate, $posting->id);
 
         return $posting;
     }
@@ -170,6 +179,9 @@ class PostingService extends Service
         $posting->save();
         $posting->placements()->update(['status' => PlacementStatus::Cancelled]);
 
+        // Make action job for agencies.
+        SyncHelper::syncInBulk($posting->agencies, $posting, AgencyActionType::PostingRemoved, $posting->id);
+
         return $posting;
     }
 
@@ -195,7 +207,7 @@ class PostingService extends Service
             'regions',
         ]);
 
-        $this->syncRedisPosting($posting, 'read', false);
+        RedisHelper::syncPosting($posting, false);
 
         $posting->placements = $posting->placements->filter(function ($placement) use ($agency) {
             return is_null($placement->employee_id) || $placement->employee->agency_id == $agency->id;

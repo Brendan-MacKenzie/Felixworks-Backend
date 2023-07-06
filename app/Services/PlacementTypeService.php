@@ -29,6 +29,11 @@ class PlacementTypeService extends Service
             throw new Exception("You don't have permission to delete this placement type from this branch.", 403);
         }
 
+        // if placementType is linked to future postings, block.
+        if ($this->checkFuturePostings($placementType)->count() > 0) {
+            throw new Exception("This placement type can't be deleted, because it still has future postings.", 403);
+        }
+
         $placementType->delete();
     }
 
@@ -47,5 +52,23 @@ class PlacementTypeService extends Service
                 $q->where('name', 'like', '%'.$query.'%');
             })
             ->get();
+    }
+
+    private function checkFuturePostings(PlacementType $placementType)
+    {
+        return $placementType
+            ->placements()
+            ->future()
+            ->with([
+                'postings' => function ($q) {
+                    $q->future()->select('id');
+                },
+                'postings.agencies',
+            ])
+            ->get()
+            ->flatMap(function ($placement) {
+                return $placement->posting;
+            })
+            ->unique('id');
     }
 }

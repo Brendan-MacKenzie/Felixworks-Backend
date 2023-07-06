@@ -49,11 +49,6 @@ class Branch extends Model
         return $this->morphToMany(Region::class, 'model', 'region_models');
     }
 
-    public function postings()
-    {
-        return $this->hasManyThrough(Posting::class, Address::class);
-    }
-
     public function employees()
     {
         return $this->belongsToMany(Employee::class, 'branch_employees');

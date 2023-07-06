@@ -6,6 +6,8 @@ use Exception;
 use App\Models\Address;
 use App\Models\Workplace;
 use App\Enums\AddressType;
+use App\Enums\AgencyActionType;
+use App\Services\Sync\SyncHelper;
 use Illuminate\Support\Facades\Auth;
 
 class WorkplaceService extends Service
@@ -25,12 +27,24 @@ class WorkplaceService extends Service
 
         $workplace->update($data);
 
+        // if workplace is linked to future postings, call sync.
+        SyncHelper::syncPostings(
+            $this->checkFuturePostings($workplace),
+            AgencyActionType::PostingUpdate
+        );
+
         return $workplace;
     }
 
     public function delete(mixed $workplace)
     {
         $this->checkAddress($workplace->address_id);
+
+        // if workplace is linked to future postings, block.
+        if ($this->checkFuturePostings($workplace)->count() > 0) {
+            throw new Exception("This workplace can't be deleted, because it still has future postings.", 403);
+        }
+
         $workplace->delete();
     }
 
@@ -65,5 +79,23 @@ class WorkplaceService extends Service
         if ($address->model->client_id !== Auth::user()->client_id) {
             throw new Exception("You don't have permission to manage this workplace.", 403);
         }
+    }
+
+    private function checkFuturePostings(Workplace $workplace)
+    {
+        return $workplace
+            ->placements()
+            ->future()
+            ->with([
+                'postings' => function ($q) {
+                    $q->future()->select('id');
+                },
+                'postings.agencies',
+            ])
+            ->get()
+            ->flatMap(function ($placement) {
+                return $placement->posting;
+            })
+            ->unique('id');
     }
 }
