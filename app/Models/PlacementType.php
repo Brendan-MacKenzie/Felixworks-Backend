@@ -26,4 +26,9 @@ class PlacementType extends Model
     {
         return $this->hasMany(Placement::class, 'placement_type_id');
     }
+
+    public function defaultWorkplaces()
+    {
+        return $this->belongsToMany(Workplace::class, 'placement_type_workplaces');
+    }
 }

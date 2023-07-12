@@ -28,4 +28,9 @@ class Workplace extends Model
     {
         return $this->belongsTo(Address::class, 'address_id')->withTrashed();
     }
+
+    public function defaultPlacementTypes()
+    {
+        return $this->belongsToMany(PlacementType::class, 'placement_type_workplaces');
+    }
 }
