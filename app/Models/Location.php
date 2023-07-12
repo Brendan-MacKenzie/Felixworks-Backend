@@ -6,7 +6,7 @@ use App\Enums\AddressType;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class Branch extends Model
+class Location extends Model
 {
     use HasFactory;
 
@@ -31,12 +31,12 @@ class Branch extends Model
 
     public function coordinators()
     {
-        return $this->belongsToMany(User::class, 'user_branches');
+        return $this->belongsToMany(User::class, 'user_locations');
     }
 
     public function address()
     {
-        return $this->morphOne(Address::class, 'model')->where('type', AddressType::Branch);
+        return $this->morphOne(Address::class, 'model')->where('type', AddressType::Location);
     }
 
     public function workAddresses()
@@ -51,11 +51,11 @@ class Branch extends Model
 
     public function employees()
     {
-        return $this->belongsToMany(Employee::class, 'branch_employees');
+        return $this->belongsToMany(Employee::class, 'location_employees');
     }
 
     public function pools()
     {
-        return $this->hasMany(Pool::class, 'branch_id');
+        return $this->hasMany(Pool::class, 'location_id');
     }
 }

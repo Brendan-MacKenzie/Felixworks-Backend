@@ -2,46 +2,46 @@
 
 namespace App\Services;
 
-use App\Models\Branch;
+use App\Models\Location;
 use App\Enums\AgencyActionType;
 use App\Services\Sync\SyncHelper;
 use Illuminate\Support\Facades\Auth;
 
-class BranchService extends Service
+class LocationService extends Service
 {
     public function store(array $data)
     {
         $data['created_by'] = (Auth::check()) ? Auth::user()->id : null;
         $data['client_id'] = Auth::user()->client_id;
 
-        $branch = Branch::create($data);
-        $branch->regions()->sync($data['regions']);
+        $location = Location::create($data);
+        $location->regions()->sync($data['regions']);
 
-        return $branch;
+        return $location;
     }
 
-    public function update(array $data, mixed $branch)
+    public function update(array $data, mixed $location)
     {
-        $branch->update($data);
-        $branch->regions()->sync($data['regions']);
-        $branch->refresh();
+        $location->update($data);
+        $location->regions()->sync($data['regions']);
+        $location->refresh();
 
-        // if branch is linked to future postings, call sync.
+        // if location is linked to future postings, call sync.
         SyncHelper::syncPostings(
-            $this->checkFuturePostings($branch),
+            $this->checkFuturePostings($location),
             AgencyActionType::PostingUpdate
         );
 
-        return $branch;
+        return $location;
     }
 
-    public function delete(mixed $branch)
+    public function delete(mixed $location)
     {
     }
 
-    public function get(mixed $branch)
+    public function get(mixed $location)
     {
-        $branch->load([
+        $location->load([
             'address',
             'regions',
             'createdBy',
@@ -49,19 +49,19 @@ class BranchService extends Service
             'employees',
         ]);
 
-        return $branch;
+        return $location;
     }
 
     public function list(int $perPage = 25, string $query = null)
     {
-        return Branch::when($query, function ($q) use ($query) {
+        return Location::when($query, function ($q) use ($query) {
             $q->where('name', 'like', "%{$query}%");
         })->paginate($perPage);
     }
 
-    private function checkFuturePostings(Branch $branch)
+    private function checkFuturePostings(Location $location)
     {
-        return $branch
+        return $location
             ->workAddresses()
             ->with([
                 'postings' => function ($q) {

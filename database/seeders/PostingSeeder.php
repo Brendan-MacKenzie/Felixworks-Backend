@@ -49,7 +49,7 @@ class PostingSeeder extends Seeder
             'car' => true,
         ]);
         $employee->pools()->attach($pools);
-        $employee->branches()->attach(1);
+        $employee->locations()->attach(1);
 
         $employee = Employee::updateOrCreate([
             'agency_id' => 1,
@@ -60,7 +60,7 @@ class PostingSeeder extends Seeder
             'drivers_license' => true,
             'car' => false,
         ]);
-        $employee->branches()->attach(1);
+        $employee->locations()->attach(1);
 
         // Placements
         foreach (Employee::all() as $employee) {

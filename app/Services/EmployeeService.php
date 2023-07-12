@@ -93,7 +93,7 @@ class EmployeeService extends Service
     public function get(mixed $employee)
     {
         $employee->load([
-            'branches',
+            'locations',
             'agency',
             'pools',
             'avatar',

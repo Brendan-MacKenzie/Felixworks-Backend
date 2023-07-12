@@ -20,7 +20,7 @@ class ClientService extends Service
     {
         $client->update($data);
 
-        // if branch is linked to future postings, call sync.
+        // if location is linked to future postings, call sync.
         SyncHelper::syncPostings(
             $this->checkFuturePostings($client),
             AgencyActionType::PostingUpdate
@@ -36,11 +36,11 @@ class ClientService extends Service
     public function get(mixed $client)
     {
         $client->load([
-            'branches',
-            'branches.address',
-            'branches.coordinators',
-            'branches.pools',
-            'branches.regions',
+            'locations',
+            'locations.address',
+            'locations.coordinators',
+            'locations.pools',
+            'locations.regions',
         ]);
 
         return $client;
@@ -56,7 +56,7 @@ class ClientService extends Service
     private function checkFuturePostings(Client $client)
     {
         return $client
-            ->branches()
+            ->locations()
             ->whereHas('workAddresses', function ($q) {
                 $q->whereHas('postings', function ($q) {
                     $q->future()->select('id', 'address_id');
@@ -70,8 +70,8 @@ class ClientService extends Service
                 'workAddresses.postings.agencies',
             ])
             ->get()
-            ->flatMap(function ($branch) {
-                return $branch->workAddresses;
+            ->flatMap(function ($location) {
+                return $location->workAddresses;
             })
             ->flatMap(function ($workAddress) {
                 return $workAddress->postings;

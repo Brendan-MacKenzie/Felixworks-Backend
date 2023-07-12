@@ -17,7 +17,7 @@ class PlacementTypeController extends Controller
         $this->placementTypeService = $placementTypeService;
     }
 
-    public function getPlacementTypesByBranch(Request $request, $branch)
+    public function getPlacementTypesByLocation(Request $request, $location)
     {
         $validator = Validator::make($request->all(), [
             'search' => 'string',
@@ -30,7 +30,7 @@ class PlacementTypeController extends Controller
         $search = $request->input('search', null);
 
         try {
-            $placementTypes = $this->placementTypeService->listByBranch($branch, $search);
+            $placementTypes = $this->placementTypeService->listByLocation($location, $search);
         } catch (Exception $exception) {
             return $this->failedExceptionResponse($exception);
         }
@@ -42,7 +42,7 @@ class PlacementTypeController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
-            'branch_id' => 'required|integer|exists:branches,id',
+            'location_id' => 'required|integer|exists:locations,id',
         ]);
 
         if ($validator->fails()) {
@@ -52,7 +52,7 @@ class PlacementTypeController extends Controller
         try {
             $placementType = $this->placementTypeService->store($request->only([
                 'name',
-                'branch_id',
+                'location_id',
             ]));
         } catch (Exception $exception) {
             return $this->failedExceptionResponse($exception);

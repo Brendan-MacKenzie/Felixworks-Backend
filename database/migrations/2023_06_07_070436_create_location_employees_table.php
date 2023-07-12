@@ -10,10 +10,10 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('branch_employees', function (Blueprint $table) {
-            $table->unsignedBigInteger('branch_id');
+        Schema::create('location_employees', function (Blueprint $table) {
+            $table->unsignedBigInteger('location_id');
             $table->unsignedBigInteger('employee_id');
-            $table->foreign('branch_id')->references('id')->on('branches')
+            $table->foreign('location_id')->references('id')->on('locations')
                 ->onDelete('cascade')
                 ->onUpdate('restrict');
             $table->foreign('employee_id')->references('id')->on('employees')
@@ -27,11 +27,11 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::table('branch_employees', function (Blueprint $table) {
-            $table->dropForeign('branch_employees_branch_id_foreign');
-            $table->dropForeign('branch_employees_employee_id_foreign');
+        Schema::table('location_employees', function (Blueprint $table) {
+            $table->dropForeign('location_employees_location_id_foreign');
+            $table->dropForeign('location_employees_employee_id_foreign');
         });
 
-        Schema::dropIfExists('branch_employees');
+        Schema::dropIfExists('location_employees');
     }
 };

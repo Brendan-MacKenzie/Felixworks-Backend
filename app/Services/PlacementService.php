@@ -145,7 +145,7 @@ class PlacementService extends Service
     {
         DB::beginTransaction();
         $posting = $placement->posting;
-        $branch = $posting->workAddress->model;
+        $location = $posting->workAddress->model;
 
         if (config('app.PLAN_HOURS') > 0 && $placement->start_at->diffInHours(Carbon::now()) <= config('app.PLAN_HOURS')) {
             throw new Exception('The time limit of '.config('app.PLAN_HOURS').' hours to plan someone on this placement is exceeded.', 403);
@@ -161,8 +161,8 @@ class PlacementService extends Service
         $placement->status = PlacementStatus::Confirmed;
         $placement->save();
 
-        if ($branch) {
-            $branch->employees()->syncWithoutDetaching($employee);
+        if ($location) {
+            $location->employees()->syncWithoutDetaching($employee);
         }
 
         DB::commit();
@@ -182,7 +182,7 @@ class PlacementService extends Service
     {
         DB::beginTransaction();
         $posting = $placement->posting;
-        $branch = $posting->workAddress->model;
+        $location = $posting->workAddress->model;
 
         if ($placement->start_at->diffInHours(Carbon::now()) <= config('app.CANCEL_HOURS')) {
             throw new Exception('Placement cannot be cancelled within '.config('app.CANCEL_HOURS').' hours.', 403);
@@ -201,9 +201,9 @@ class PlacementService extends Service
         $placement->status = PlacementStatus::Open;
         $placement->save();
 
-        // Remove employee from branch if it has not worked before.
-        if ($branch) {
-            $branch->employees()->detach($employee);
+        // Remove employee from location if it has not worked before.
+        if ($location) {
+            $location->employees()->detach($employee);
         }
 
         // Remove employee if not used on other placements and agency is connected to an external system.
@@ -232,9 +232,9 @@ class PlacementService extends Service
     ) {
         $workAddress = $posting->workAddress;
 
-        // Check if placement_type is from same branch
-        if ($placementType && $placementType->branch_id !== $workAddress->model->id) {
-            throw new Exception('Placement type does not exist in this branch.', 500);
+        // Check if placement_type is from same location
+        if ($placementType && $placementType->location_id !== $workAddress->model->id) {
+            throw new Exception('Placement type does not exist in this location.', 500);
         }
 
         // Check if posting address_id = workplace address_id

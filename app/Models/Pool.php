@@ -13,7 +13,7 @@ class Pool extends Model
         'type',
         'name',
         'created_by',
-        'branch_id',
+        'location_id',
     ];
 
     public function createdBy()
@@ -26,8 +26,8 @@ class Pool extends Model
         return $this->belongsToMany(Employee::class, 'pool_employees');
     }
 
-    public function branch()
+    public function location()
     {
-        return $this->belongsTo(Branch::class, 'branch_id');
+        return $this->belongsTo(Location::class, 'location_id');
     }
 }

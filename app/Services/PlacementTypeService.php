@@ -3,7 +3,7 @@
 namespace App\Services;
 
 use Exception;
-use App\Models\Branch;
+use App\Models\Location;
 use App\Models\PlacementType;
 use Illuminate\Support\Facades\Auth;
 
@@ -11,9 +11,9 @@ class PlacementTypeService extends Service
 {
     public function store(array $data)
     {
-        $branch = Branch::findOrFail($data['branch_id']);
-        if ($branch->client !== Auth::user()->client_id) {
-            throw new Exception("You don't have permission to add a placement type in this branch.", 403);
+        $location = Location::findOrFail($data['location_id']);
+        if ($location->client !== Auth::user()->client_id) {
+            throw new Exception("You don't have permission to add a placement type in this location.", 403);
         }
 
         return PlacementType::create($data);
@@ -25,8 +25,8 @@ class PlacementTypeService extends Service
 
     public function delete(mixed $placementType)
     {
-        if ($placementType->branch_id !== Auth::user()->client_id) {
-            throw new Exception("You don't have permission to delete this placement type from this branch.", 403);
+        if ($placementType->location_id !== Auth::user()->client_id) {
+            throw new Exception("You don't have permission to delete this placement type from this location.", 403);
         }
 
         // if placementType is linked to future postings, block.
@@ -45,9 +45,9 @@ class PlacementTypeService extends Service
     {
     }
 
-    public function listByBranch(int $branch, string $query = null)
+    public function listByLocation(int $location, string $query = null)
     {
-        return PlacementType::where('branch_id', $branch)
+        return PlacementType::where('location_id', $location)
             ->when($query, function ($q) use ($query) {
                 $q->where('name', 'like', '%'.$query.'%');
             })

@@ -3,11 +3,11 @@
 namespace Database\Seeders;
 
 use App\Models\Pool;
-use App\Models\Branch;
 use App\Models\Client;
 use App\Models\Region;
 use App\Enums\PoolType;
 use App\Models\Address;
+use App\Models\Location;
 use App\Models\Workplace;
 use App\Enums\AddressType;
 use App\Models\PlacementType;
@@ -28,7 +28,7 @@ class ClientSeeder extends Seeder
 
         $address = Address::updateOrCreate([
             'name' => 'Vestigingsadres 1',
-            'type' => AddressType::Branch,
+            'type' => AddressType::Location,
             'street_name' => 'Dillehof',
             'number' => 123,
             'zip_code' => '1234AB',
@@ -36,13 +36,13 @@ class ClientSeeder extends Seeder
             'country' => 'Nederland',
         ]);
 
-        $branch = Branch::updateOrCreate([
+        $location = Location::updateOrCreate([
             'name' => 'Vestiging 1',
             'client_id' => $client->id,
         ]);
 
-        $branch->regions()->attach($regions);
-        $branch->address($address);
+        $location->regions()->attach($regions);
+        $location->address($address);
 
         $address = Address::updateOrCreate([
             'name' => 'Werkadres 1',
@@ -54,7 +54,7 @@ class ClientSeeder extends Seeder
             'country' => 'Nederland',
         ]);
 
-        $branch->workAddresses()->save($address);
+        $location->workAddresses()->save($address);
 
         $workplace = Workplace::updateOrCreate([
             'name' => 'Restaurant',
@@ -73,38 +73,38 @@ class ClientSeeder extends Seeder
 
         $placementType = PlacementType::updateOrCreate([
             'name' => 'Winkel medewerker',
-            'branch_id' => $branch->id,
+            'location_id' => $location->id,
         ]);
 
         $placementType = PlacementType::updateOrCreate([
             'name' => 'Keukenhulp',
-            'branch_id' => $branch->id,
+            'location_id' => $location->id,
         ]);
 
         $placementType = PlacementType::updateOrCreate([
             'name' => 'Housekeeping',
-            'branch_id' => $branch->id,
+            'location_id' => $location->id,
         ]);
 
         $placementType = PlacementType::updateOrCreate([
             'name' => 'Afwas medewerker',
-            'branch_id' => $branch->id,
+            'location_id' => $location->id,
         ]);
 
         $placementType = PlacementType::updateOrCreate([
             'name' => 'Bar medewerker',
-            'branch_id' => $branch->id,
+            'location_id' => $location->id,
         ]);
 
         $placementType = PlacementType::updateOrCreate([
             'name' => 'Bedieningsmedewerker',
-            'branch_id' => $branch->id,
+            'location_id' => $location->id,
         ]);
 
         $pool = Pool::updateOrCreate([
             'name' => 'Favorieten',
             'type' => PoolType::Default,
-            'branch_id' => $branch->id,
+            'location_id' => $location->id,
         ]);
     }
 }

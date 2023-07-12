@@ -13,12 +13,12 @@ class PlacementType extends Model
 
     protected $fillable = [
         'name',
-        'branch_id',
+        'location_id',
     ];
 
-    public function branch()
+    public function location()
     {
-        return $this->belongsTo(Branch::class, 'branch_id');
+        return $this->belongsTo(Location::class, 'location_id');
     }
 
     public function placements()

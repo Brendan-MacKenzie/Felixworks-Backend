@@ -24,9 +24,9 @@ class Address extends Model
         'created_by',
     ];
 
-    public function branch()
+    public function location()
     {
-        return $this->hasOne(Branch::class, 'address_id');
+        return $this->hasOne(Location::class, 'address_id');
     }
 
     public function createdBy()

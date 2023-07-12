@@ -46,9 +46,9 @@ class User extends Authenticatable
         return $this->belongsTo(Client::class, 'client_id');
     }
 
-    public function branches()
+    public function locations()
     {
-        return $this->belongsToMany(Branch::class, 'user_branches');
+        return $this->belongsToMany(Location::class, 'user_locations');
     }
 
     public function createdBy()

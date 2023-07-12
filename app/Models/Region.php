@@ -33,8 +33,8 @@ class Region extends Model
         return $this->morphedByMany(Agency::class, 'model', 'region_models');
     }
 
-    public function branches()
+    public function locations()
     {
-        return $this->morphedByMany(Branch::class, 'model', 'region_models');
+        return $this->morphedByMany(Location::class, 'model', 'region_models');
     }
 }

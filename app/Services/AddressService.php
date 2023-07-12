@@ -3,9 +3,9 @@
 namespace App\Services;
 
 use Exception;
-use App\Models\Branch;
 use App\Models\Office;
 use App\Models\Address;
+use App\Models\Location;
 use App\Models\Workplace;
 use App\Enums\AddressType;
 use App\Enums\AgencyActionType;
@@ -94,7 +94,7 @@ class AddressService extends Service
     public function get(mixed $address)
     {
         $address->load([
-            'branch',
+            'location',
             'office',
             'model',
             'workplaces',
@@ -116,8 +116,8 @@ class AddressService extends Service
             throw new Exception("You can't link an office on this address.", 500);
         }
 
-        if ($model instanceof Branch && $address->type !== AddressType::Branch) {
-            throw new Exception("You can't link an branch on this address.", 500);
+        if ($model instanceof Location && $address->type !== AddressType::Location) {
+            throw new Exception("You can't link an location on this address.", 500);
         }
 
         $address->model()->save($model);

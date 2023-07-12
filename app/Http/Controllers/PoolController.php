@@ -54,7 +54,7 @@ class PoolController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
-            'branch_id' => 'required|integer',
+            'location_id' => 'required|integer',
             'employees' => 'array',
             'employees.*' => 'integer',
         ]);
@@ -66,7 +66,7 @@ class PoolController extends Controller
         try {
             $pool = $this->poolService->store($request->only([
                 'name',
-                'branch_id',
+                'location_id',
                 'employees',
             ]));
 

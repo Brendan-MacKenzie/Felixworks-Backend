@@ -3,20 +3,20 @@
 namespace App\Http\Controllers;
 
 use Exception;
-use App\Models\Branch;
+use App\Models\Location;
 use Illuminate\Http\Request;
-use App\Services\BranchService;
 use App\Services\AddressService;
+use App\Services\LocationService;
 use Illuminate\Support\Facades\Validator;
 
-class BranchController extends Controller
+class LocationController extends Controller
 {
-    private $branchService;
+    private $locationService;
     private $addressService;
 
-    public function __construct(BranchService $branchService, AddressService $addressService)
+    public function __construct(LocationService $locationService, AddressService $addressService)
     {
-        $this->branchService = $branchService;
+        $this->locationService = $locationService;
         $this->addressService = $addressService;
     }
 
@@ -34,23 +34,23 @@ class BranchController extends Controller
         $search = $request->input('search', null);
 
         try {
-            $branches = $this->branchService->list($perPage, $search);
+            $locations = $this->locationService->list($perPage, $search);
         } catch (Exception $exception) {
             return $this->failedExceptionResponse($exception);
         }
 
-        return $this->successResponse($branches);
+        return $this->successResponse($locations);
     }
 
-    public function show(Branch $branch)
+    public function show(Location $location)
     {
         try {
-            $branch = $this->branchService->get($branch);
+            $location = $this->locationService->get($location);
         } catch (Exception $exception) {
             return $this->failedExceptionResponse($exception);
         }
 
-        return $this->successResponse($branch);
+        return $this->successResponse($location);
     }
 
     public function store(Request $request)
@@ -69,24 +69,24 @@ class BranchController extends Controller
         }
 
         try {
-            $branch = $this->branchService->store($request->only([
+            $location = $this->locationService->store($request->only([
                 'name',
                 'dresscode',
                 'briefing',
                 'regions',
             ]));
 
-            $this->addressService->linkModel($request->input('address_id'), $branch);
+            $this->addressService->linkModel($request->input('address_id'), $location);
 
-            $branch = $this->branchService->get($branch);
+            $location = $this->locationService->get($location);
         } catch (Exception $exception) {
             return $this->failedExceptionResponse($exception);
         }
 
-        return $this->successResponse($branch);
+        return $this->successResponse($location);
     }
 
-    public function update(Request $request, Branch $branch)
+    public function update(Request $request, Location $location)
     {
         $validator = Validator::make($request->all(), [
             'name' => 'string|max:255',
@@ -101,18 +101,18 @@ class BranchController extends Controller
         }
 
         try {
-            $branch = $this->branchService->update($request->only([
+            $location = $this->locationService->update($request->only([
                 'name',
                 'dresscode',
                 'briefing',
                 'regions',
-            ]), $branch);
+            ]), $location);
 
-            $branch = $this->branchService->get($branch);
+            $location = $this->locationService->get($location);
         } catch (Exception $exception) {
             return $this->failedExceptionResponse($exception);
         }
 
-        return $this->successResponse($branch);
+        return $this->successResponse($location);
     }
 }

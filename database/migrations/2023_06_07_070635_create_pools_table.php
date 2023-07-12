@@ -19,8 +19,8 @@ return new class extends Migration {
             $table->foreign('created_by')->references('id')->on('users')
                 ->onDelete('set null')
                 ->onUpdate('restrict');
-            $table->unsignedBigInteger('branch_id');
-            $table->foreign('branch_id')->references('id')->on('branches')
+            $table->unsignedBigInteger('location_id');
+            $table->foreign('location_id')->references('id')->on('locations')
                 ->onDelete('cascade')
                 ->onUpdate('restrict');
         });
@@ -33,7 +33,7 @@ return new class extends Migration {
     {
         Schema::table('pools', function (Blueprint $table) {
             $table->dropForeign('pools_created_by_foreign');
-            $table->dropForeign('pools_branch_id_foreign');
+            $table->dropForeign('pools_location_id_foreign');
         });
 
         Schema::dropIfExists('pools');

@@ -10,7 +10,7 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('branches', function (Blueprint $table) {
+        Schema::create('locations', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
             $table->string('name');
@@ -26,13 +26,13 @@ return new class extends Migration {
                 ->onUpdate('restrict');
         });
 
-        Schema::create('user_branches', function (Blueprint $table) {
+        Schema::create('user_locations', function (Blueprint $table) {
             $table->unsignedBigInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users')
                 ->onDelete('cascade')
                 ->onUpdate('restrict');
-            $table->unsignedBigInteger('branch_id');
-            $table->foreign('branch_id')->references('id')->on('branches')
+            $table->unsignedBigInteger('location_id');
+            $table->foreign('location_id')->references('id')->on('locations')
                 ->onDelete('cascade')
                 ->onUpdate('restrict');
         });
@@ -43,17 +43,17 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::table('branches', function (Blueprint $table) {
-            $table->dropForeign('branches_client_id_foreign');
-            $table->dropForeign('branches_created_by_foreign');
+        Schema::table('locations', function (Blueprint $table) {
+            $table->dropForeign('locations_client_id_foreign');
+            $table->dropForeign('locations_created_by_foreign');
         });
 
-        Schema::table('user_branches', function (Blueprint $table) {
-            $table->dropForeign('user_branches_user_id_foreign');
-            $table->dropForeign('user_branches_branch_id_foreign');
+        Schema::table('user_locations', function (Blueprint $table) {
+            $table->dropForeign('user_locations_user_id_foreign');
+            $table->dropForeign('user_locations_location_id_foreign');
         });
 
-        Schema::dropIfExists('user_branches');
-        Schema::dropIfExists('branches');
+        Schema::dropIfExists('user_locations');
+        Schema::dropIfExists('locations');
     }
 };

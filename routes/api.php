@@ -4,13 +4,13 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PoolController;
 use App\Http\Controllers\MediaController;
 use App\Http\Controllers\AgencyController;
-use App\Http\Controllers\BranchController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\OfficeController;
 use App\Http\Controllers\RegionController;
 use App\Http\Controllers\AddressController;
 use App\Http\Controllers\PostingController;
 use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\LocationController;
 use App\Http\Controllers\PlacementController;
 use App\Http\Controllers\WorkplaceController;
 use App\Http\Controllers\CommitmentController;
@@ -85,11 +85,11 @@ Route::group(['middleware' => ['api', 'authserver']], function () {
         Route::patch('/{client}', [ClientController::class, 'update']);
     });
 
-    Route::group(['prefix' => '/branches'], function () {
-        Route::get('/', [BranchController::class, 'index']);
-        Route::post('/', [BranchController::class, 'store']);
-        Route::get('/{branch}', [BranchController::class, 'show']);
-        Route::patch('/{branch}', [BranchController::class, 'update']);
+    Route::group(['prefix' => '/locations'], function () {
+        Route::get('/', [LocationController::class, 'index']);
+        Route::post('/', [LocationController::class, 'store']);
+        Route::get('/{location}', [LocationController::class, 'show']);
+        Route::patch('/{location}', [LocationController::class, 'update']);
     });
 
     Route::group(['prefix' => '/addresses'], function () {
@@ -107,7 +107,7 @@ Route::group(['middleware' => ['api', 'authserver']], function () {
     Route::group(['prefix' => '/placement-types'], function () {
         Route::post('/', [PlacementTypeController::class, 'store']);
         Route::delete('/{placement_type}', [PlacementTypeController::class, 'destroy']);
-        Route::get('/{branch}', [PlacementTypeController::class, 'getPlacementTypesByBranch']);
+        Route::get('/{location}', [PlacementTypeController::class, 'getPlacementTypesByLocation']);
     });
 
     Route::group(['prefix' => '/pools'], function () {

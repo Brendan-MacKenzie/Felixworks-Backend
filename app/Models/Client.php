@@ -19,9 +19,9 @@ class Client extends Model
         return $this->belongsTo(User::class, 'created_by');
     }
 
-    public function branches()
+    public function locations()
     {
-        return $this->hasMany(Branch::class, 'client_id');
+        return $this->hasMany(Location::class, 'client_id');
     }
 
     public function coordinators()

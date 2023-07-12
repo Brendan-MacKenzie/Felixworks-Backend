@@ -4,8 +4,8 @@ namespace App\Services;
 
 use Exception;
 use App\Models\Pool;
-use App\Models\Branch;
 use App\Enums\PoolType;
+use App\Models\Location;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 
@@ -15,9 +15,9 @@ class PoolService extends Service
     {
         $data['created_by'] = (Auth::check()) ? Auth::user()->id : null;
         $data['type'] = PoolType::Default;
-        $branch = Branch::findOrFail($data['branch_id']);
+        $location = Location::findOrFail($data['location_id']);
 
-        if ($branch->client_id !== Auth::user()->client_id) {
+        if ($location->client_id !== Auth::user()->client_id) {
             throw new Exception("You don't have permission to create this pool.", 403);
         }
 
@@ -34,7 +34,7 @@ class PoolService extends Service
 
     public function update(array $data, mixed $pool)
     {
-        if ($pool->branch->client_id !== Auth::user()->client_id) {
+        if ($pool->location->client_id !== Auth::user()->client_id) {
             throw new Exception("You don't have permission to update this pool.", 403);
         }
 
@@ -53,7 +53,7 @@ class PoolService extends Service
 
     public function delete(mixed $pool)
     {
-        if ($pool->branch->client_id !== Auth::user()->client_id) {
+        if ($pool->location->client_id !== Auth::user()->client_id) {
             throw new Exception("You don't have permission to delete this pool.", 403);
         }
 
@@ -65,7 +65,7 @@ class PoolService extends Service
     {
         $pool->load([
             'employees',
-            'branch',
+            'location',
         ]);
 
         return $pool;
@@ -76,16 +76,16 @@ class PoolService extends Service
         return Pool::when($query, function ($q) use ($query) {
             $q->where('name', 'like', "%{$query}%");
         })
-        ->with('branch')
+        ->with('location')
         ->get();
     }
 
     public function syncEmployees(array $employeeIds, Pool $pool)
     {
-        // Check if employees are known in the branch
-        $branch = $pool->branch;
-        $branchEmployeesIds = $branch->employees->pluck('id')->all();
-        if (count(array_diff($employeeIds, $branchEmployeesIds)) > 0) {
+        // Check if employees are known in the location
+        $location = $pool->location;
+        $locationEmployeesIds = $location->employees->pluck('id')->all();
+        if (count(array_diff($employeeIds, $locationEmployeesIds)) > 0) {
             throw new Exception('Some employees cannot be added to this pool.', 403);
         }
 
