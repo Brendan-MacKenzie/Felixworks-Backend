@@ -163,12 +163,13 @@ class PlacementService extends Service
         $placement->save();
 
         if ($location && $address) {
-            $location->employees()
-                ->syncWithoutDetaching([
-                    $employee, [
-                        'address_id' => $address->id,
-                    ],
-                ]);
+            $address
+                ->employees()
+                ->syncWithoutDetaching([$employee]);
+
+            $location
+                ->employees()
+                ->syncWithoutDetaching([$employee]);
         }
 
         DB::commit();
@@ -210,11 +211,34 @@ class PlacementService extends Service
 
         // Remove employee from location if it has not worked before.
         if ($location && $address) {
-            $location->employees()
-                ->where('location_id', $location->id)
-                ->where('address_id', $address->id)
+
+            $otherPlacementsWithAddressExist = Placement::
+                whereHas('posting', function ($q) use ($address) {
+                    $q->where('address_id', $address->id);
+                })
                 ->where('employee_id', $employee->id)
-                ->delete();
+                ->where('id', '!=', $placement->id)
+                ->exists();
+
+            if (!$otherPlacementsWithAddressExist) {
+                $address
+                    ->employees()
+                    ->detach([$employee]);
+            }
+
+            $otherPlacementsWithLocationExist = Placement::
+                whereHas('posting', function ($q) use ($location) {
+                    $q->where('location_id', $location->id);
+                })
+                ->where('employee_id', $employee->id)
+                ->where('id', '!=', $placement->id)
+                ->exists();
+
+            if (!$otherPlacementsWithLocationExist) {
+                $location
+                    ->employees()
+                    ->detach([$employee]);
+            }
         }
 
         // Remove employee if not used on other placements and agency is connected to an external system.

@@ -53,7 +53,6 @@ class PostingSeeder extends Seeder
                 'car' => true,
             ]);
             $employee->pools()->attach($pools);
-            $employee->locations()->attach($location, ['address_id' => $posting->address_id]);
 
             $employee = Employee::updateOrCreate([
                 'agency_id' => 1,
@@ -76,6 +75,9 @@ class PostingSeeder extends Seeder
                     'start_at' => $startAt,
                     'end_at' => $startAt->copy()->addHours(5),
                 ]);
+
+                $employee->locations()->attach($location);
+                $employee->workAddresses()->attach($posting->address);
             }
 
             $placement = Placement::updateOrCreate([

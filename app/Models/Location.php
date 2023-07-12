@@ -56,7 +56,12 @@ class Location extends Model
 
     public function employees()
     {
-        return $this->belongsToMany(Employee::class, 'location_employees')->withPivot('address_id');
+        return $this->belongsToMany(Employee::class, 'location_employees')->withPivot('nogo');
+    }
+
+    public function employeeWorkAddresses()
+    {
+        return $this->belongsToMany(Employee::class, 'address_employees');
     }
 
     public function pools()
