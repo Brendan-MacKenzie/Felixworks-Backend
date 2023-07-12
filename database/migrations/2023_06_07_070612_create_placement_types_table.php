@@ -15,6 +15,7 @@ return new class extends Migration {
             $table->timestamps();
             $table->softDeletes();
             $table->string('name');
+            $table->text('description')->nullable();
             $table->unsignedBigInteger('location_id');
             $table->foreign('location_id')->references('id')->on('locations')
                 ->onDelete('cascade')

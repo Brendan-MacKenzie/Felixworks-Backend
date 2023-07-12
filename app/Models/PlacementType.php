@@ -13,6 +13,7 @@ class PlacementType extends Model
 
     protected $fillable = [
         'name',
+        'description',
         'location_id',
     ];
 
