@@ -19,6 +19,7 @@ return new class extends Migration {
             $table->foreign('address_id')->references('id')->on('addresses')
                 ->onDelete('cascade')
                 ->onUpdate('restrict');
+            $table->boolean('pinned')->default(false);
         });
     }
 

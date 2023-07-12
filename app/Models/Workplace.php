@@ -14,6 +14,7 @@ class Workplace extends Model
     protected $fillable = [
         'name',
         'address_id',
+        'pinned',
     ];
 
     public function placements()
