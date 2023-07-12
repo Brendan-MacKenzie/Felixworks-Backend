@@ -34,6 +34,7 @@ class Agency extends Model
         'ip_address',
         'webhook',
         'webhook_key',
+        'pivot',
     ];
 
     public function toArray()
@@ -99,5 +100,15 @@ class Agency extends Model
     public function users()
     {
         return $this->hasMany(User::class, 'agency_id');
+    }
+
+    public function defaultLocations()
+    {
+        return $this->morphedByMany(Location::class, 'model', 'agency_models');
+    }
+
+    public function defaultWorkAddresses()
+    {
+        return $this->morphedByMany(Address::class, 'model', 'agency_models');
     }
 }

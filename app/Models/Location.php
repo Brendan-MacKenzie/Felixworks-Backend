@@ -63,4 +63,9 @@ class Location extends Model
     {
         return $this->hasMany(Pool::class, 'location_id');
     }
+
+    public function defaultAgencies()
+    {
+        return $this->morphToMany(Agency::class, 'model', 'agency_models');
+    }
 }

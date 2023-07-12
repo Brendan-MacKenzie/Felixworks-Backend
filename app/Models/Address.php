@@ -61,4 +61,9 @@ class Address extends Model
     {
         return $this->belongsToMany(Employee::class, 'location_employees', 'address_id', 'employee_id')->withPivot('location_id');
     }
+
+    public function defaultAgencies()
+    {
+        return $this->morphToMany(Agency::class, 'model', 'agency_models');
+    }
 }
