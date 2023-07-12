@@ -21,6 +21,7 @@ class Address extends Model
         'country',
         'briefing',
         'dresscode',
+        'position',
         'model_type',
         'model_id',
         'created_by',
