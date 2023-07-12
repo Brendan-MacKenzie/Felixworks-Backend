@@ -20,6 +20,8 @@ return new class extends Migration {
                 ->onDelete('cascade')
                 ->onUpdate('restrict');
             $table->boolean('pinned')->default(false);
+            $table->text('dresscode')->nullable();
+            $table->text('briefing')->nullable();
         });
     }
 

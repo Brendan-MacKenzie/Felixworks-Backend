@@ -21,6 +21,8 @@ return new class extends Migration {
             $table->string('zip_code');
             $table->string('city');
             $table->string('country');
+            $table->text('dresscode')->nullable();
+            $table->text('briefing')->nullable();
             $table->nullableMorphs('model');
             $table->unsignedBigInteger('created_by')->nullable();
             $table->foreign('created_by')->references('id')->on('users')

@@ -19,6 +19,8 @@ class Address extends Model
         'zip_code',
         'city',
         'country',
+        'briefing',
+        'dresscode',
         'model_type',
         'model_id',
         'created_by',

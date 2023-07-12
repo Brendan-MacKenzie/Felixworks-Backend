@@ -15,6 +15,8 @@ class Workplace extends Model
         'name',
         'address_id',
         'pinned',
+        'briefing',
+        'dresscode',
     ];
 
     public function placements()
