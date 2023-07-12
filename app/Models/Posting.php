@@ -13,6 +13,7 @@ class Posting extends Model
 
     protected $fillable = [
         'name',
+        'location_id',
         'address_id',
         'start_at',
         'dresscode',
@@ -40,6 +41,11 @@ class Posting extends Model
     public function scopeFuture($query)
     {
         return $query->where('start_at', '>=', Carbon::now());
+    }
+
+    public function location()
+    {
+        return $this->belongsTo(Location::class, 'location_id');
     }
 
     public function workAddress()

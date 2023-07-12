@@ -107,7 +107,6 @@ class PostingController extends Controller
     {
         $validator = Validator::make($request->all(), [
            'name' => 'string|max:255',
-           'address_id' => 'integer|exists:addresses,id',
            'dresscode' => 'string|max:255',
            'briefing' => 'string|max:255',
            'information' => 'string|max:255',
@@ -124,7 +123,6 @@ class PostingController extends Controller
         try {
             $posting = $this->postingService->update($request->only([
                 'name',
-                'address_id',
                 'dresscode',
                 'briefing',
                 'information',

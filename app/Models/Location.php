@@ -44,6 +44,11 @@ class Location extends Model
         return $this->morphMany(Address::class, 'model')->where('type', AddressType::Default);
     }
 
+    public function postings()
+    {
+        return $this->hasMany(Posting::class, 'location_id');
+    }
+
     public function regions()
     {
         return $this->morphToMany(Region::class, 'model', 'region_models');
@@ -51,7 +56,7 @@ class Location extends Model
 
     public function employees()
     {
-        return $this->belongsToMany(Employee::class, 'location_employees');
+        return $this->belongsToMany(Employee::class, 'location_employees')->withPivot('address_id');
     }
 
     public function pools()

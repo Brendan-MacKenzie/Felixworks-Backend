@@ -14,6 +14,10 @@ return new class extends Migration {
             $table->id();
             $table->timestamps();
             $table->string('name');
+            $table->unsignedBigInteger('location_id');
+            $table->foreign('location_id')->references('id')->on('locations')
+                ->onDelete('cascade')
+                ->onUpdate('restrict');
             $table->unsignedBigInteger('address_id');
             $table->foreign('address_id')->references('id')->on('addresses')
                 ->onDelete('cascade')
@@ -36,6 +40,7 @@ return new class extends Migration {
     public function down(): void
     {
         Schema::table('postings', function (Blueprint $table) {
+            $table->dropForeign('postings_location_id_foreign');
             $table->dropForeign('postings_address_id_foreign');
             $table->dropForeign('postings_created_by_foreign');
         });

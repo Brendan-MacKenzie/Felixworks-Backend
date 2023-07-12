@@ -40,8 +40,8 @@ class AddressController extends Controller
             'zip_code' => 'required|string|max:255',
             'city' => 'required|string|max:255',
             'country' => 'required|string|max:255',
-            'model_type' => 'nullable|string|max:255',
-            'model_id' => 'nullable|integer',
+            'model_type' => 'required_if:type,0,nullable|string|max:255',
+            'model_id' => 'required_if:type,0|nullable|integer',
             'workplaces' => 'array',
             'workplaces.*.name' => 'string|max:255',
         ]);

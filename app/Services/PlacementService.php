@@ -146,6 +146,7 @@ class PlacementService extends Service
         DB::beginTransaction();
         $posting = $placement->posting;
         $location = $posting->workAddress->model;
+        $address = $posting->workAddress;
 
         if (config('app.PLAN_HOURS') > 0 && $placement->start_at->diffInHours(Carbon::now()) <= config('app.PLAN_HOURS')) {
             throw new Exception('The time limit of '.config('app.PLAN_HOURS').' hours to plan someone on this placement is exceeded.', 403);
@@ -161,8 +162,13 @@ class PlacementService extends Service
         $placement->status = PlacementStatus::Confirmed;
         $placement->save();
 
-        if ($location) {
-            $location->employees()->syncWithoutDetaching($employee);
+        if ($location && $address) {
+            $location->employees()
+                ->syncWithoutDetaching([
+                    $employee, [
+                        'address_id' => $address->id,
+                    ],
+                ]);
         }
 
         DB::commit();
@@ -183,6 +189,7 @@ class PlacementService extends Service
         DB::beginTransaction();
         $posting = $placement->posting;
         $location = $posting->workAddress->model;
+        $address = $posting->workAddress;
 
         if ($placement->start_at->diffInHours(Carbon::now()) <= config('app.CANCEL_HOURS')) {
             throw new Exception('Placement cannot be cancelled within '.config('app.CANCEL_HOURS').' hours.', 403);
@@ -202,8 +209,12 @@ class PlacementService extends Service
         $placement->save();
 
         // Remove employee from location if it has not worked before.
-        if ($location) {
-            $location->employees()->detach($employee);
+        if ($location && $address) {
+            $location->employees()
+                ->where('location_id', $location->id)
+                ->where('address_id', $address->id)
+                ->where('employee_id', $employee->id)
+                ->delete();
         }
 
         // Remove employee if not used on other placements and agency is connected to an external system.

@@ -53,4 +53,9 @@ class Address extends Model
     {
         return $this->hasMany(Workplace::class, 'address_id');
     }
+
+    public function employees()
+    {
+        return $this->belongsToMany(Employee::class, 'location_employees', 'address_id', 'employee_id')->withPivot('location_id');
+    }
 }

@@ -34,6 +34,7 @@ class PostingService extends Service
 
         $postingData = [
             'name' => $data['name'],
+            'location_id' => $workAddress->model_id,
             'address_id' => $data['address_id'],
             'dresscode' => $data['dresscode'] ?? null,
             'briefing' => $data['briefing'] ?? null,
@@ -97,9 +98,18 @@ class PostingService extends Service
         if (isset($data['regions'])) {
             $posting->regions()->sync($data['regions']);
         }
+
+        if (key_exists('location_id', $data)) {
+            unset($data['location_id']);
+        }
+
+        if (key_exists('address_id', $data)) {
+            unset($data['address_id']);
+        }
+
         $posting->refresh();
 
-        $posting->load('placements.placementType', 'placements.workplace', 'regions', 'agencies', 'workAddress');
+        $posting->load('placements.placementType', 'placements.workplace', 'regions', 'agencies', 'location', 'workAddress');
 
         // Make action job for agencies.
         SyncHelper::syncInBulk($posting->agencies, $posting, AgencyActionType::PostingUpdate, $posting->id);
@@ -121,6 +131,7 @@ class PostingService extends Service
             'placements.declarations',
             'regions',
             'agencies',
+            'location',
             'workAddress',
             'commitments'
         );
@@ -137,6 +148,7 @@ class PostingService extends Service
                 'placements.employee',
                 'regions',
                 'agencies',
+                'location',
                 'workAddress',
             ])
             ->get();
@@ -152,6 +164,7 @@ class PostingService extends Service
             'placements.declarations',
             'regions',
             'agencies',
+            'location',
             'workAddress',
             'commitments',
         ])
@@ -195,10 +208,10 @@ class PostingService extends Service
 
         // Get posting with all relations
         $posting->load([
+            'location',
+            'location.address',
+            'location.client',
             'workAddress',
-            'workAddress.model',
-            'workAddress.model.address',
-            'workAddress.model.client',
             'placements',
             'placements.workplace',
             'placements.placementType',
