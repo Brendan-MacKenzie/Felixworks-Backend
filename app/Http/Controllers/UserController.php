@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use Exception;
+use App\Models\User;
 use Illuminate\Http\Request;
 use App\Services\UserService;
 use Illuminate\Support\Facades\Validator;
@@ -19,13 +21,13 @@ class UserController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'first_name' => 'required|string|max:255',
-            'last_name' => 'nullable|string|max:255',
+            'last_name' => 'required|string|max:255',
             'email' => 'required|email|string|max:255',
             'agency_id' => 'nullable|integer|exists:agencies,id',
             'client_id' => 'nullable|integer|exists:clients,id',
             'role' => 'required|string|in:admin,agent,client',
-            // 'locations' => 'required|array|min:1',
-            // 'locations.*' => 'integer|exists:locations,id',
+            'locations' => 'array|min:1',
+            'locations.*' => 'integer|exists:locations,id',
 
         ]);
 
@@ -41,8 +43,36 @@ class UserController extends Controller
                 'agency_id',
                 'client_id',
                 'role',
-                // 'locations',
+                'locations',
             ]));
+        } catch (Exception $exception) {
+            return $this->failedExceptionResponse($exception);
+        }
+
+        return $this->successResponse($user);
+    }
+
+    public function update(Request $request, User $user)
+    {
+        $validator = Validator::make($request->all(), [
+            'first_name' => 'nullable|string|max:255',
+            'last_name' => 'nullable|string|max:255',
+            'email' => 'email|string|max:255',
+            'locations' => 'array|min:1',
+            'locations.*' => 'integer|exists:locations,id',
+        ]);
+
+        if ($validator->fails()) {
+            return $this->failedValidationResponse($validator);
+        }
+
+        try {
+            $user = $this->userService->update($request->only([
+                'first_name',
+                'last_name',
+                'email',
+                'locations',
+            ]), $user);
         } catch (Exception $exception) {
             return $this->failedExceptionResponse($exception);
         }

@@ -20,6 +20,9 @@ class UserService extends Service
         $data['created_by'] = (Auth::check()) ? Auth::user()->id : null;
 
         $user = User::create($data);
+        if (isset($data['locations'])) {
+            $user->locations()->sync($data['locations']);
+        }
 
         // Assign role and attach to agency or client based on the role
         if (isset($data['role'])) {
@@ -42,11 +45,18 @@ class UserService extends Service
         $user->profile_id = $authProfile->getProfileId();
         $user->save();
 
-        return $user->load('agency', 'client', 'roles', 'permissions');
+        return $user->load('agency', 'client', 'roles', 'permissions', 'locations');
     }
 
     public function update(array $data, mixed $user)
     {
+        $user->update($data);
+
+        if (isset($data['locations'])) {
+            $user->locations()->sync($data['locations']);
+        }
+
+        return $user->load('agency', 'client', 'roles', 'permissions', 'locations');
     }
 
     public function delete(mixed $user)
