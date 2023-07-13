@@ -17,6 +17,28 @@ class UserController extends Controller
         $this->userService = $userService;
     }
 
+    public function index(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'search' => 'string',
+        ]);
+
+        if ($validator->fails()) {
+            return $this->failedValidationResponse($validator);
+        }
+
+        $search = $request->input('search', null);
+        $perPage = $request->input('per_page', 25);
+
+        try {
+            $users = $this->userService->list($perPage, $search);
+        } catch (Exception $exception) {
+            return $this->failedExceptionResponse($exception);
+        }
+
+        return $this->successResponse($users);
+    }
+
     public function show(User $user)
     {
         try {

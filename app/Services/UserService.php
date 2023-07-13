@@ -94,5 +94,18 @@ class UserService extends Service
 
     public function list(int $perPage = 25, string $query = null)
     {
+        return User::with([
+            'agency',
+            'client',
+            'roles',
+            'permissions',
+            'locations',
+            'settings',
+        ])
+        ->when($query, function ($q) use ($query) {
+            $q->where('first_name', 'like', '%'.$query.'%')
+                ->orWhere('last_name', 'like', '%'.$query.'%')
+                ->orWhere('email', 'like', '%'.$query.'%');
+        })->paginate($perPage);
     }
 }
