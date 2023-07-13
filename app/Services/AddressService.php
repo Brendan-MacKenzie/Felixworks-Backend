@@ -102,7 +102,7 @@ class AddressService extends Service
 
     private function checkFuturePostings(Address $address)
     {
-        if ($address->type !== AddressType::Default) {
+        if ($address->type !== AddressType::WorkAddress) {
             return collect();
         }
 

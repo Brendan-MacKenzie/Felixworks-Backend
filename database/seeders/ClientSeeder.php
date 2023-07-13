@@ -46,7 +46,7 @@ class ClientSeeder extends Seeder
 
         $address = Address::updateOrCreate([
             'name' => 'Werkadres 1',
-            'type' => AddressType::Default,
+            'type' => AddressType::WorkAddress,
             'street_name' => 'Fellenoord',
             'number' => 200,
             'zip_code' => '4907BG',

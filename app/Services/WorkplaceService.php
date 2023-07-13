@@ -72,7 +72,7 @@ class WorkplaceService extends Service
             throw new Exception('Could not find address.', 404);
         }
 
-        if ($address->type !== AddressType::Default) {
+        if ($address->type !== AddressType::WorkAddress) {
             throw new Exception('This address is not an workplace address.', 403);
         }
 

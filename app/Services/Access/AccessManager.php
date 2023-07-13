@@ -104,7 +104,7 @@ trait AccessManager
 
         // From client
         if (
-            $address->type == AddressType::Default ||
+            $address->type == AddressType::WorkAddress ||
             $address->type == AddressType::Location
         ) {
             // Auth needs to be admin or client.

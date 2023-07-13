@@ -41,7 +41,7 @@ class Location extends Model
 
     public function workAddresses()
     {
-        return $this->morphMany(Address::class, 'model')->where('type', AddressType::Default);
+        return $this->morphMany(Address::class, 'model')->where('type', AddressType::WorkAddress);
     }
 
     public function postings()

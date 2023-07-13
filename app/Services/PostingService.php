@@ -28,7 +28,7 @@ class PostingService extends Service
         $createdPostings = collect();
 
         $workAddress = Address::findOrFail($data['address_id']);
-        if ($workAddress->type !== AddressType::Default) {
+        if ($workAddress->type !== AddressType::WorkAddress) {
             throw new Exception('Address is not a workadress.', 403);
         }
 
