@@ -90,4 +90,15 @@ class UserController extends Controller
 
         return $this->successResponse($user);
     }
+
+    public function destroy(User $user)
+    {
+        try {
+            $this->userService->delete($user);
+        } catch (Exception $exception) {
+            return $this->failedExceptionResponse($exception);
+        }
+
+        return $this->messageResponse('User removed successfully.');
+    }
 }

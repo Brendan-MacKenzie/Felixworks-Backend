@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use Exception;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use BrendanMacKenzie\AuthServerClient\AuthServer;
@@ -61,6 +62,29 @@ class UserService extends Service
 
     public function delete(mixed $user)
     {
+        // throw exception if the user has the admin role.
+        if ($user->hasRole('admin')) {
+            throw new Exception('Cannot delete an admin user');
+        }
+
+        // if the user has the client role and the client only has 1 user.
+        if ($user->hasRole('client') && $user->client_id !== null) {
+            $numberOfUsersWithSameClient = User::where('client_id', $user->client_id)->count();
+            if ($numberOfUsersWithSameClient <= 1) {
+                throw new Exception('Cannot delete this user. The client associated has only this one user.');
+            }
+        }
+
+        // if the user has the agency role and the agency only has 1 user.
+        if ($user->hasRole('agent') && $user->agency_id !== null) {
+            $numberOfUsersWithSameAgency = User::where('agency_id', $user->agency_id)->count();
+            if ($numberOfUsersWithSameAgency <= 1) {
+                throw new Exception('Cannot delete this user. The agency associated has only this one user.');
+            }
+        }
+
+        // else delete the user.
+        $user->delete();
     }
 
     public function get(mixed $user)
