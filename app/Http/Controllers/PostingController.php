@@ -69,6 +69,7 @@ class PostingController extends Controller
            'placements.*.report_at' => 'required|date',
            'placements.*.start_at' => 'required|date',
            'placements.*.end_at' => 'required|date',
+           'placement.*.amount' => 'required|integer',
         ]);
 
         if ($validator->fails()) {

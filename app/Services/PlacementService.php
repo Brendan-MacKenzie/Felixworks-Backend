@@ -58,9 +58,15 @@ class PlacementService extends Service
     {
         $data = collect($placements);
         foreach ($placements as $placement) {
-            $placement['posting_id'] = $posting->id;
-            $placement = $this->store($placement, false);
-            $data->push($placement);
+            $amount = $placement['amount'] ?? 1; // Default to 1 if 'amount' is not set
+
+            // Remove the 'amount' attribute so it doesn't interfere with the creation of the placement
+            unset($placement['amount']);
+            for ($i = 0; $i < $amount; $i++) {
+                $placement['posting_id'] = $posting->id;
+                $createdPlacement = $this->store($placement, false);
+                $data->push($createdPlacement);
+            }
         }
 
         // Make action job for agencies.
@@ -211,11 +217,9 @@ class PlacementService extends Service
 
         // Remove employee from location if it has not worked before.
         if ($location && $address) {
-
-            $otherPlacementsWithAddressExist = Placement::
-                whereHas('posting', function ($q) use ($address) {
-                    $q->where('address_id', $address->id);
-                })
+            $otherPlacementsWithAddressExist = Placement::whereHas('posting', function ($q) use ($address) {
+                $q->where('address_id', $address->id);
+            })
                 ->where('employee_id', $employee->id)
                 ->where('id', '!=', $placement->id)
                 ->exists();
@@ -226,10 +230,9 @@ class PlacementService extends Service
                     ->detach([$employee]);
             }
 
-            $otherPlacementsWithLocationExist = Placement::
-                whereHas('posting', function ($q) use ($location) {
-                    $q->where('location_id', $location->id);
-                })
+            $otherPlacementsWithLocationExist = Placement::whereHas('posting', function ($q) use ($location) {
+                $q->where('location_id', $location->id);
+            })
                 ->where('employee_id', $employee->id)
                 ->where('id', '!=', $placement->id)
                 ->exists();
