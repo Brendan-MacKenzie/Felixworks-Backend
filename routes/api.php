@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PoolController;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\MediaController;
 use App\Http\Controllers\AgencyController;
 use App\Http\Controllers\ClientController;
@@ -146,5 +147,13 @@ Route::group(['middleware' => ['api', 'authserver']], function () {
         Route::post('/', [DeclarationController::class, 'store']);
         Route::patch('/{declaration}', [DeclarationController::class, 'update']);
         Route::delete('/{declaration}', [DeclarationController::class, 'destroy']);
+    });
+
+    Route::group(['prefix' => '/users'], function () {
+        Route::get('/', [UserController::class, 'index']);
+        Route::post('/', [UserController::class, 'store']);
+        Route::patch('/{user}', [UserController::class, 'update']);
+        Route::get('/{user}', [UserController::class, 'show']);
+        Route::delete('/{user}', [UserController::class, 'destroy']);
     });
 });
