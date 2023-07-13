@@ -17,6 +17,17 @@ class UserController extends Controller
         $this->userService = $userService;
     }
 
+    public function show(User $user)
+    {
+        try {
+            $user = $this->userService->get($user);
+        } catch (Exception $exception) {
+            return $this->failedExceptionResponse($exception);
+        }
+
+        return $this->successResponse($user);
+    }
+
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [

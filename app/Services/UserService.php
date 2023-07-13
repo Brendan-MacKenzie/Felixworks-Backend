@@ -65,6 +65,7 @@ class UserService extends Service
 
     public function get(mixed $user)
     {
+        return $user->load('agency', 'client', 'roles', 'permissions', 'locations', 'settings');
     }
 
     public function list(int $perPage = 25, string $query = null)
