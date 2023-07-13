@@ -2,14 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Agency;
 use Exception;
 use App\Models\Employee;
+use App\Models\Media;
+use App\Services\Access\AccessManager;
 use Illuminate\Http\Request;
 use App\Services\EmployeeService;
 use Illuminate\Support\Facades\Validator;
 
 class EmployeeController extends Controller
 {
+    use AccessManager;
+
     private $employeeService;
 
     public function __construct(EmployeeService $employeeService)
@@ -31,6 +36,7 @@ class EmployeeController extends Controller
         $perPage = $request->input('per_page', 25);
 
         try {
+            $this->rolesCanAccess(['admin']);
             $employees = $this->employeeService->list($perPage, $search);
         } catch (Exception $exception) {
             return $this->failedExceptionResponse($exception);
@@ -42,6 +48,7 @@ class EmployeeController extends Controller
     public function show(Employee $employee)
     {
         try {
+            $this->canAccess($employee);
             $employee = $this->employeeService->get($employee);
         } catch (Exception $exception) {
             return $this->failedExceptionResponse($exception);
@@ -68,6 +75,14 @@ class EmployeeController extends Controller
         }
 
         try {
+            $agency = Agency::findOrFail($request->input('agency_id'));
+            $this->canAccess($agency);
+
+            if ($request->has('avatar_uuid')) {
+                $media = Media::findOrFail($request->input('avatar_uuid'));
+                $this->canAccess($media);
+            }
+
             $employee = $this->employeeService->store($request->only([
                 'agency_id',
                 'external_id',
@@ -103,6 +118,13 @@ class EmployeeController extends Controller
         }
 
         try {
+            $this->canAccess($employee);
+
+            if ($request->has('avatar_uuid')) {
+                $media = Media::findOrFail($request->input('avatar_uuid'));
+                $this->canAccess($media);
+            }
+
             $employee = $this->employeeService->update($request->only([
                 'first_name',
                 'last_name',
@@ -123,6 +145,7 @@ class EmployeeController extends Controller
     public function destroy(Employee $employee)
     {
         try {
+            $this->canAccess($employee);
             $this->employeeService->delete($employee);
         } catch (Exception $exception) {
             return $this->failedExceptionResponse($exception);

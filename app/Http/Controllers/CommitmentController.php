@@ -2,14 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Agency;
 use Exception;
 use App\Models\Commitment;
+use App\Models\Posting;
+use App\Services\Access\AccessManager;
 use Illuminate\Http\Request;
 use App\Services\CommitmentService;
 use Illuminate\Support\Facades\Validator;
 
 class CommitmentController extends Controller
 {
+    use AccessManager;
+
     private $commitmentService;
 
     public function __construct(CommitmentService $commitmentService)
@@ -31,6 +36,7 @@ class CommitmentController extends Controller
         $perPage = $request->input('per_page', 25);
 
         try {
+            $this->rolesCanAccess(['admin']);
             $commitments = $this->commitmentService->list($perPage, $search);
         } catch (Exception $exception) {
             return $this->failedExceptionResponse($exception);
@@ -42,6 +48,7 @@ class CommitmentController extends Controller
     public function show(Commitment $commitment)
     {
         try {
+            $this->canAccess($commitment);
             $commitment = $this->commitmentService->get($commitment);
         } catch (Exception $exception) {
             return $this->failedExceptionResponse($exception);
@@ -53,8 +60,8 @@ class CommitmentController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'posting_id' => 'required|integer|exists:postings,id',
-            'agency_id' => 'required|integer|exists:agencies,id',
+            'posting_id' => 'required|integer',
+            'agency_id' => 'required|integer',
             'amount' => 'required|integer',
         ]);
 
@@ -63,6 +70,12 @@ class CommitmentController extends Controller
         }
 
         try {
+            $agency = Agency::findOrFail($request->input('agency_id'));
+            $posting = Posting::findOrFail($request->input('posting_id'));
+
+            $this->rolesCanAccess(['admin', 'agent']);
+            $this->canAccess([$agency, $posting]);
+
             $commitment = $this->commitmentService->store($request->only([
                 'posting_id',
                 'agency_id',
@@ -86,6 +99,7 @@ class CommitmentController extends Controller
         }
 
         try {
+            $this->canAccess($commitment);
             $commitment = $this->commitmentService->update($request->only([
                 'amount',
             ]), $commitment, );
@@ -99,6 +113,7 @@ class CommitmentController extends Controller
     public function destroy(Commitment $commitment)
     {
         try {
+            $this->canAccess($commitment);
             $this->commitmentService->delete($commitment);
         } catch (Exception $exception) {
             return $this->failedExceptionResponse($exception);

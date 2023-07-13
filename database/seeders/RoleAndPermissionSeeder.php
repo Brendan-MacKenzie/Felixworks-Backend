@@ -29,5 +29,15 @@ class RoleAndPermissionSeeder extends Seeder
             'name' => 'agent',
             'guard_name' => 'api',
         ]);
+
+        $canChangeClientPermission = Permission::firstOrCreate([
+            'name' => 'manage client',
+            'guard_name' => 'api',
+        ]);
+
+        $canChangeAgencyPermission = Permission::firstOrCreate([
+            'name' => 'manage agency',
+            'guard_name' => 'api',
+        ]);
     }
 }

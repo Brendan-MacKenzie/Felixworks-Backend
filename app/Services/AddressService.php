@@ -14,44 +14,13 @@ use Illuminate\Support\Facades\Auth;
 
 class AddressService extends Service
 {
-    public function store(array $data)
+    public function store(array $data, mixed $object = null)
     {
         $data['created_by'] = (Auth::check()) ? Auth::user()->id : null;
 
-        $workplacesData = $data['workplaces'] ?? [];
-        unset($data['workplaces']);
-
-        if (
-            key_exists('model_type', $data) &&
-            key_exists('model_id', $data) &&
-            $data['model_type'] &&
-            $data['model_id']
-        ) {
-            $model = app($data['model_type']);
-            $object = $model->find($data['model_id']);
-
-            if (!$object) {
-                throw new Exception('Could not find model.', 500);
-            }
-            unset($data['model_type']);
-            unset($data['model_id']);
-        }
-
         $address = Address::create($data);
 
-        $workplaces = [];
-        foreach ($workplacesData as $workplaceData) {
-            $workplaces[] = new Workplace([
-                'name' => $workplaceData['name'],
-                'address_id' => $address->id,
-            ]);
-        }
-
-        if (count($workplaces) > 0) {
-            $address->workplaces()->saveMany($workplaces);
-        }
-
-        if (isset($object)) {
+        if ($object) {
             $this->linkModel($address->id, $object);
         }
 

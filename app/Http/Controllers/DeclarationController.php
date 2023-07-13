@@ -4,12 +4,16 @@ namespace App\Http\Controllers;
 
 use Exception;
 use App\Models\Declaration;
+use App\Models\Placement;
+use App\Services\Access\AccessManager;
 use Illuminate\Http\Request;
 use App\Services\DeclarationService;
 use Illuminate\Support\Facades\Validator;
 
 class DeclarationController extends Controller
 {
+    use AccessManager;
+
     private $declarationService;
 
     public function __construct(DeclarationService $declarationService)
@@ -30,6 +34,10 @@ class DeclarationController extends Controller
         }
 
         try {
+            $placement = Placement::findOrFail($request->input('placement_id'));
+            $this->rolesCanAccess(['admin', 'agent']);
+            $this->canAccess($placement);
+
             $declaration = $this->declarationService->store($request->only([
                 'title',
                 'total',
@@ -56,6 +64,8 @@ class DeclarationController extends Controller
         }
 
         try {
+            $this->canAccess($declaration);
+
             $declaration = $this->declarationService->update($request->only([
                 'title',
                 'total',
@@ -72,6 +82,7 @@ class DeclarationController extends Controller
     public function destroy(Declaration $declaration)
     {
         try {
+            $this->canAccess($declaration);
             $this->declarationService->delete($declaration);
         } catch (Exception $exception) {
             return $this->failedExceptionResponse($exception);

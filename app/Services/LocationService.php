@@ -16,6 +16,7 @@ class LocationService extends Service
 
         $location = Location::create($data);
         $location->regions()->sync($data['regions']);
+        $location->users()->attach(Auth::user());
 
         return $location;
     }

@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Exception;
 use App\Models\Posting;
 use App\Enums\RepeatType;
+use App\Models\Address;
+use App\Services\Access\AccessManager;
 use Illuminate\Http\Request;
 use App\Services\PostingService;
 use App\Services\PlacementService;
@@ -13,6 +15,8 @@ use Illuminate\Support\Facades\Validator;
 
 class PostingController extends Controller
 {
+    use AccessManager;
+
     private $postingService;
     private $placementService;
 
@@ -39,6 +43,8 @@ class PostingController extends Controller
         $cancelled = boolval($request->input('cancelled', false));
 
         try {
+            $this->rolesCanAccess(['admin']);
+
             $postings = $this->postingService->list($perPage, $search, $cancelled);
         } catch (Exception $exception) {
             return $this->failedExceptionResponse($exception);
@@ -51,7 +57,7 @@ class PostingController extends Controller
     {
         $validator = Validator::make($request->all(), [
            'name' => 'required|string|max:255',
-           'address_id' => 'required|integer|exists:addresses,id',
+           'address_id' => 'required|integer',
            'dresscode' => 'string|max:255',
            'briefing' => 'string|max:255',
            'information' => 'string|max:255',
@@ -76,6 +82,9 @@ class PostingController extends Controller
         }
 
         try {
+            $address = Address::findOrFail($request->input('address_id'));
+            $this->canAccess($address);
+
             DB::beginTransaction();
             $postings = $this->postingService->store($request->only([
                 'name',
@@ -121,6 +130,9 @@ class PostingController extends Controller
         }
 
         try {
+            $this->rolesCanAccess(['admin', 'client']);
+            $this->canAccess($posting);
+
             $posting = $this->postingService->update($request->only([
                 'name',
                 'dresscode',
@@ -141,6 +153,8 @@ class PostingController extends Controller
     public function show(Posting $posting)
     {
         try {
+            $this->canAccess($posting);
+
             $posting = $this->postingService->get($posting);
         } catch (Exception $exception) {
             return $this->failedExceptionResponse($exception);
@@ -152,6 +166,9 @@ class PostingController extends Controller
     public function cancel(Posting $posting)
     {
         try {
+            $this->rolesCanAccess(['admin', 'client']);
+            $this->canAccess($posting);
+
             $posting = $this->postingService->cancel($posting);
         } catch (Exception $exception) {
             return $this->failedExceptionResponse($exception);

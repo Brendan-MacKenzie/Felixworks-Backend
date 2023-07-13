@@ -2,14 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Location;
 use Exception;
 use App\Models\Pool;
+use App\Services\Access\AccessManager;
 use Illuminate\Http\Request;
 use App\Services\PoolService;
 use Illuminate\Support\Facades\Validator;
 
 class PoolController extends Controller
 {
+    use AccessManager;
+
     private $poolService;
 
     public function __construct(PoolService $poolService)
@@ -31,6 +35,7 @@ class PoolController extends Controller
         $search = $request->input('search', null);
 
         try {
+            $this->rolesCanAccess(['admin']);
             $pools = $this->poolService->list($perPage, $search);
         } catch (Exception $exception) {
             return $this->failedExceptionResponse($exception);
@@ -42,6 +47,8 @@ class PoolController extends Controller
     public function show(Pool $pool)
     {
         try {
+            $this->canAccess($pool);
+
             $pool = $this->poolService->get($pool);
         } catch (Exception $exception) {
             return $this->failedExceptionResponse($exception);
@@ -64,6 +71,9 @@ class PoolController extends Controller
         }
 
         try {
+            $location = Location::findOrFail($request->input('location_id'));
+            $this->canAccess($location);
+
             $pool = $this->poolService->store($request->only([
                 'name',
                 'location_id',
@@ -91,6 +101,8 @@ class PoolController extends Controller
         }
 
         try {
+            $this->canAccess($pool);
+
             $pool = $this->poolService->update($request->only([
                 'name',
                 'employees',
@@ -107,6 +119,8 @@ class PoolController extends Controller
     public function destroy(Pool $pool)
     {
         try {
+            $this->canAccess($pool);
+            
             $this->poolService->delete($pool);
         } catch (Exception $exception) {
             return $this->failedExceptionResponse($exception);

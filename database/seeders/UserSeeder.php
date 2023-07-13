@@ -56,6 +56,7 @@ class UserSeeder extends Seeder
             'client_id' => 1,
         ]);
         $user->assignRole('client');
+        $user->givePermissionTo('manage client');
 
         $authProfile = $this->authServerClient->register($user, true, null);
         $user->profile_id = $authProfile->getProfileId();
@@ -69,6 +70,7 @@ class UserSeeder extends Seeder
             'agency_id' => 1,
         ]);
         $user->assignRole('agent');
+        $user->givePermissionTo('manage agency');
 
         $authProfile = $this->authServerClient->register($user, true, null);
         $user->profile_id = $authProfile->getProfileId();

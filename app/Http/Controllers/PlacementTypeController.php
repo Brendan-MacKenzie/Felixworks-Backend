@@ -2,14 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Location;
 use Exception;
 use Illuminate\Http\Request;
 use App\Models\PlacementType;
+use App\Services\Access\AccessManager;
 use App\Services\PlacementTypeService;
 use Illuminate\Support\Facades\Validator;
 
 class PlacementTypeController extends Controller
 {
+    use AccessManager;
+
     private $placementTypeService;
 
     public function __construct(PlacementTypeService $placementTypeService)
@@ -30,6 +34,7 @@ class PlacementTypeController extends Controller
         $search = $request->input('search', null);
 
         try {
+            $this->canAccess($location);
             $placementTypes = $this->placementTypeService->listByLocation($location, $search);
         } catch (Exception $exception) {
             return $this->failedExceptionResponse($exception);
@@ -42,7 +47,7 @@ class PlacementTypeController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
-            'location_id' => 'required|integer|exists:locations,id',
+            'location_id' => 'required|integer',
         ]);
 
         if ($validator->fails()) {
@@ -50,6 +55,9 @@ class PlacementTypeController extends Controller
         }
 
         try {
+            $location = Location::findOrFail($request->input('location_id'));
+            $this->canAccess($location);
+
             $placementType = $this->placementTypeService->store($request->only([
                 'name',
                 'location_id',
@@ -64,6 +72,7 @@ class PlacementTypeController extends Controller
     public function destroy(PlacementType $placementType)
     {
         try {
+            $this->canAccess($placementType);
             $this->placementTypeService->delete($placementType);
         } catch (Exception $exception) {
             return $this->failedExceptionResponse($exception);

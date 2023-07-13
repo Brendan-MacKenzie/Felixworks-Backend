@@ -7,10 +7,13 @@ use App\Models\Address;
 use App\Enums\AddressType;
 use Illuminate\Http\Request;
 use App\Services\AddressService;
+use App\Services\Access\AccessManager;
 use Illuminate\Support\Facades\Validator;
 
 class AddressController extends Controller
 {
+    use AccessManager;
+
     private $addressService;
 
     public function __construct(AddressService $addressService)
@@ -21,6 +24,7 @@ class AddressController extends Controller
     public function index()
     {
         try {
+            $this->rolesCanAccess(['admin']);
             $addresses = $this->addressService->list();
         } catch (Exception $exception) {
             return $this->failedExceptionResponse($exception);
@@ -42,8 +46,6 @@ class AddressController extends Controller
             'country' => 'required|string|max:255',
             'model_type' => 'required_if:type,0,nullable|string|max:255',
             'model_id' => 'required_if:type,0|nullable|integer',
-            'workplaces' => 'array',
-            'workplaces.*.name' => 'string|max:255',
         ]);
 
         if ($validator->fails()) {
@@ -51,7 +53,17 @@ class AddressController extends Controller
         }
 
         try {
-            $address = $this->addressService->store($request->only([
+            $model = app($request->input('model_type'));
+            $object = $model->find($request->input('model_id'));
+
+            if (!$object) {
+                throw new Exception('Could not find model.', 404);
+            }
+
+            $this->canAccess($object);
+
+            $address = $this->addressService->store($request->only(
+                [
                 'name',
                 'type',
                 'street_name',
@@ -59,10 +71,9 @@ class AddressController extends Controller
                 'zip_code',
                 'city',
                 'country',
-                'model_type',
-                'model_id',
-                'workplaces',
-            ]));
+            ],
+                $object
+            ));
 
             $address = $this->addressService->get($address);
         } catch (Exception $exception) {
@@ -89,6 +100,8 @@ class AddressController extends Controller
         }
 
         try {
+            $this->canAccess($address);
+
             $address = $this->addressService->update($request->only([
                 'name',
                 'street_name',
@@ -109,6 +122,8 @@ class AddressController extends Controller
     public function destroy(Address $address)
     {
         try {
+            $this->canAccess($address);
+
             $this->addressService->delete($address);
         } catch (Exception $exception) {
             return $this->failedExceptionResponse($exception);

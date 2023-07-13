@@ -133,7 +133,7 @@ class PlacementService extends Service
             'workplace',
             'placementType',
             'employee',
-            'agency',
+            'employee.agency',
         ]);
     }
 

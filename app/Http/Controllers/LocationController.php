@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Address;
 use Exception;
 use App\Models\Location;
+use App\Services\Access\AccessManager;
 use Illuminate\Http\Request;
 use App\Services\AddressService;
 use App\Services\LocationService;
@@ -11,6 +13,8 @@ use Illuminate\Support\Facades\Validator;
 
 class LocationController extends Controller
 {
+    use AccessManager;
+
     private $locationService;
     private $addressService;
 
@@ -34,6 +38,7 @@ class LocationController extends Controller
         $search = $request->input('search', null);
 
         try {
+            $this->rolesCanAccess(['admin']);
             $locations = $this->locationService->list($perPage, $search);
         } catch (Exception $exception) {
             return $this->failedExceptionResponse($exception);
@@ -45,6 +50,7 @@ class LocationController extends Controller
     public function show(Location $location)
     {
         try {
+            $this->canAccess($location);
             $location = $this->locationService->get($location);
         } catch (Exception $exception) {
             return $this->failedExceptionResponse($exception);
@@ -69,6 +75,7 @@ class LocationController extends Controller
         }
 
         try {
+            $this->rolesCanAccess(['admin', 'client']);
             $location = $this->locationService->store($request->only([
                 'name',
                 'dresscode',
@@ -101,6 +108,7 @@ class LocationController extends Controller
         }
 
         try {
+            $this->canAccess($location);
             $location = $this->locationService->update($request->only([
                 'name',
                 'dresscode',

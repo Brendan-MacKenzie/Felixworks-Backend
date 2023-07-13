@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Exception;
 use App\Models\Agency;
+use App\Models\Media;
+use App\Services\Access\AccessManager;
 use Illuminate\Http\Request;
 use App\Services\AgencyService;
 use App\Services\DeclarationService;
@@ -11,8 +13,9 @@ use Illuminate\Support\Facades\Validator;
 
 class AgencyController extends Controller
 {
-    private $agencyService;
+    use AccessManager;
 
+    private $agencyService;
     private $declarationService;
 
     public function __construct(AgencyService $agencyService, DeclarationService $declarationService)
@@ -35,6 +38,7 @@ class AgencyController extends Controller
         $search = $request->input('search', null);
 
         try {
+            $this->rolesCanAccess(['admin']);
             $agencies = $this->agencyService->list($perPage, $search);
         } catch (Exception $exception) {
             return $this->failedExceptionResponse($exception);
@@ -63,6 +67,8 @@ class AgencyController extends Controller
         }
 
         try {
+            $this->rolesCanAccess(['admin']);
+            
             $agency = $this->agencyService->store($request->only([
                 'name',
                 'full_name',
@@ -102,6 +108,13 @@ class AgencyController extends Controller
         }
 
         try {
+            $this->canAccess($agency, true);
+
+            if ($request->has('logo_uuid')) {
+                $media = Media::findOrFail($request->input('logo_uuid'));
+                $this->canAccess($media);
+            }
+            
             $agency = $this->agencyService->update($request->only([
                 'name',
                 'full_name',
@@ -123,6 +136,7 @@ class AgencyController extends Controller
     public function show(Agency $agency)
     {
         try {
+            $this->canAccess($agency);
             $agency = $this->agencyService->get($agency);
 
             $agency->load('regions');
@@ -147,6 +161,7 @@ class AgencyController extends Controller
         $search = $request->input('search', null);
 
         try {
+            $this->canAccess($agency);
             $declarations = $this->declarationService->listAgencyDeclarations($perPage, $search, $agency);
         } catch (Exception $exception) {
             return $this->failedExceptionResponse($exception);

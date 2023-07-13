@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Exception;
 use App\Models\Office;
+use App\Services\Access\AccessManager;
 use Illuminate\Http\Request;
 use App\Services\OfficeService;
 use App\Services\AddressService;
@@ -11,6 +12,8 @@ use Illuminate\Support\Facades\Validator;
 
 class OfficeController extends Controller
 {
+    use AccessManager;
+
     private $officeService;
     private $addressService;
 
@@ -38,6 +41,7 @@ class OfficeController extends Controller
         }
 
         try {
+            $this->rolesCanAccess(['admin', 'agent']);
             $office = $this->officeService->store($request->only([
                 'agency_id',
                 'name',
@@ -71,6 +75,7 @@ class OfficeController extends Controller
         }
 
         try {
+            $this->canAccess($office);
             $office = $this->officeService->update($request->only([
                 'name',
                 'description',
@@ -89,6 +94,7 @@ class OfficeController extends Controller
     public function destroy(Office $office)
     {
         try {
+            $this->canAccess($office);
             $this->addressService->unlinkModel($office->address);
             $this->officeService->delete($office);
         } catch (Exception $exception) {

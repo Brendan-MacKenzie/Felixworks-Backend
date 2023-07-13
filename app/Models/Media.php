@@ -15,4 +15,14 @@ class Media extends Model
         'name',
         'type',
     ];
+
+    public function employee()
+    {
+        return $this->hasOne(Employee::class, 'avatar_uuid');
+    }
+
+    public function agency()
+    {
+        return $this->hasOne(Agency::class, 'logo_uuid');
+    }
 }
