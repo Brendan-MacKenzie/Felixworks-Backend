@@ -43,6 +43,7 @@ class PlacementTypeController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'location_id' => 'required|integer|exists:locations,id',
+            'description' => 'nullable|string',
         ]);
 
         if ($validator->fails()) {
@@ -53,6 +54,7 @@ class PlacementTypeController extends Controller
             $placementType = $this->placementTypeService->store($request->only([
                 'name',
                 'location_id',
+                'description',
             ]));
         } catch (Exception $exception) {
             return $this->failedExceptionResponse($exception);
