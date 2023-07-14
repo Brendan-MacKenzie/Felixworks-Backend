@@ -43,6 +43,9 @@ class WorkplaceController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'address_id' => 'required|integer',
+            'dresscode' => 'string',
+            'briefing' => 'string',
+            'pinned' => 'boolean',
         ]);
 
         if ($validator->fails()) {
@@ -53,6 +56,9 @@ class WorkplaceController extends Controller
             $workplace = $this->workplaceService->store($request->only([
                 'name',
                 'address_id',
+                'dresscode',
+                'briefing',
+                'pinned',
             ]));
 
             $workplace = $this->workplaceService->get($workplace);
@@ -67,6 +73,9 @@ class WorkplaceController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' => 'string|max:255',
+            'dresscode' => 'string',
+            'briefing' => 'string',
+            'pinned' => 'boolean',
         ]);
 
         if ($validator->fails()) {
@@ -76,6 +85,9 @@ class WorkplaceController extends Controller
         try {
             $workplace = $this->workplaceService->update($request->only([
                 'name',
+                'dresscode',
+                'briefing',
+                'pinned',
             ]), $workplace);
 
             $workplace = $this->workplaceService->get($workplace);
