@@ -43,8 +43,8 @@ class WorkplaceController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'address_id' => 'required|integer',
-            'dresscode' => 'string',
-            'briefing' => 'string',
+            'dresscode' => 'nullable|string',
+            'briefing' => 'nullable|string',
             'pinned' => 'boolean',
         ]);
 
@@ -73,8 +73,8 @@ class WorkplaceController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' => 'string|max:255',
-            'dresscode' => 'string',
-            'briefing' => 'string',
+            'dresscode' => 'nullable|string',
+            'briefing' => 'nullable|string',
             'pinned' => 'boolean',
         ]);
 
