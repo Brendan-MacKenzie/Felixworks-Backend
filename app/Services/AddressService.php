@@ -33,6 +33,11 @@ class AddressService extends Service
             if (!$object) {
                 throw new Exception('Could not find model.', 500);
             }
+        }
+
+        if ($object instanceof Location) {
+            $maxPosition = Address::getMaxPosition($object->id);
+            $data['position'] = $maxPosition !== null ? $maxPosition + 1 : 1;
             unset($data['model_type']);
             unset($data['model_id']);
         }
@@ -52,7 +57,7 @@ class AddressService extends Service
         }
 
         if (isset($object)) {
-            $this->linkModel($address->id, $object);
+            $address = $this->linkModel($address->id, $object);
         }
 
         $address->refresh();
@@ -62,7 +67,15 @@ class AddressService extends Service
 
     public function update(array $data, mixed $address)
     {
-        $address->update($data);
+        // If position is included in $data
+        if (key_exists('position', $data) && $address->model_type === Location::class) {
+            $this->reorderLocationPositions($data, $address);
+            $address->update($data);
+            $this->fixAddressesPositionOrder($address);
+        } else {
+            // If position is not included or model type is not Location, just update the address
+            $address->update($data);
+        }
 
         $address->refresh();
 
@@ -89,12 +102,13 @@ class AddressService extends Service
 
         $address->workplaces()->delete();
         $address->delete();
+
+        $this->fixAddressesPositionOrder($address);
     }
 
     public function get(mixed $address)
     {
         $address->load([
-            'location',
             'office',
             'model',
             'workplaces',
@@ -103,7 +117,7 @@ class AddressService extends Service
 
     public function list(int $perPage = 25, string $query = null)
     {
-        $addresses = Address::with('workplaces')->get();
+        $addresses = Address::with('workplaces', 'model')->get();
 
         return $addresses;
     }
@@ -120,7 +134,9 @@ class AddressService extends Service
             throw new Exception("You can't link an location on this address.", 500);
         }
 
-        $address->model()->save($model);
+        $address->model()->associate($model);
+
+        $address->save();
 
         return $address;
     }
@@ -138,5 +154,36 @@ class AddressService extends Service
         }
 
         return $address->postings()->future()->get();
+    }
+
+    private function reorderLocationPositions(array &$data, Address $address)
+    {
+        // Find maximum position for this location
+        $maxPosition = Address::getMaxPosition($address->model_id);
+
+        if ($maxPosition === null) {
+            $data['position'] = 1;
+        } elseif ($data['position'] > $maxPosition) {
+            $data['position'] = $maxPosition + 1;
+        } else {
+            $addresses = Address::where('model_id', $address->model_id)->where('model_type', $address->model_type)->where('position', '>=', $data['position'])->get();
+            foreach ($addresses as $address) {
+                $address->position++;
+                $address->save();
+            }
+        }
+    }
+
+    private function fixAddressesPositionOrder(Address $address)
+    {
+        $addresses = Address::where('model_id', $address->model_id)->where('model_type', $address->model_type)->orderBy('position')->get();
+
+        $index = 1;
+        foreach ($addresses as $address) {
+            $address->position = $index;
+            $address->save();
+
+            $index++;
+        }
     }
 }

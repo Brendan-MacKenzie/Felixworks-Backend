@@ -27,11 +27,6 @@ class Address extends Model
         'created_by',
     ];
 
-    public function location()
-    {
-        return $this->hasOne(Location::class, 'address_id');
-    }
-
     public function createdBy()
     {
         return $this->belongsTo(User::class, 'created_by');
@@ -65,5 +60,12 @@ class Address extends Model
     public function defaultAgencies()
     {
         return $this->morphToMany(Agency::class, 'model', 'agency_models');
+    }
+
+    public static function getMaxPosition($locationId)
+    {
+        return self::where('model_type', Location::class)
+                    ->where('model_id', $locationId)
+                    ->max('position');
     }
 }

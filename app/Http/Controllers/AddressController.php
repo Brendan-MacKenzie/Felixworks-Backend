@@ -63,8 +63,6 @@ class AddressController extends Controller
                 'model_id',
                 'workplaces',
             ]));
-
-            $address = $this->addressService->get($address);
         } catch (Exception $exception) {
             return $this->failedExceptionResponse($exception);
         }
@@ -82,6 +80,7 @@ class AddressController extends Controller
             'zip_code' => 'required_with:street_name,number,city,country|string|max:255',
             'city' => 'required_with:street_name,number,zip_code,country|string|max:255',
             'country' => 'required_with:street_name,number,zip_code,city|string|max:255',
+            'position' => 'integer|min:1',
         ]);
 
         if ($validator->fails()) {
@@ -96,6 +95,7 @@ class AddressController extends Controller
                 'zip_code',
                 'city',
                 'country',
+                'position',
             ]), $address);
 
             $address = $this->addressService->get($address);
